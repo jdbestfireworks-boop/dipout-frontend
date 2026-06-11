@@ -5,12 +5,26 @@ import { Input } from '@/components/ui/input';
 import { MessageCircle, Phone, Send, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function RideChat({ ride, myEmail, myRole, otherEmail }) {
+export default function RideChat({ ride, myEmail, myRole, otherEmail, driverPhone, riderPhone }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [unread, setUnread] = useState(0);
   const bottomRef = useRef(null);
+
+  // Use masked phone number (show last 4 digits only)
+  const maskPhoneNumber = (phone) => {
+    if (!phone) return null;
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length < 4) return null;
+    return '***-***-' + cleaned.slice(-4);
+  };
+
+  const myPhone = myRole === 'rider' ? riderPhone : driverPhone;
+  const maskedPhone = maskPhoneNumber(myPhone);
+  const otherPhone = myRole === 'rider' ? driverPhone : riderPhone;
+  const maskedOtherPhone = maskPhoneNumber(otherPhone);
+  const hasPhone = otherPhone && otherPhone.trim();
 
   useEffect(() => {
     if (!ride?.id) return;
@@ -49,9 +63,6 @@ export default function RideChat({ ride, myEmail, myRole, otherEmail }) {
     if (e.key === 'Enter') send();
   };
 
-  const phoneNumber = myRole === 'rider' ? ride.driver_phone : ride.rider_phone;
-  const hasPhone = phoneNumber && phoneNumber.trim();
-
   return (
     <div className="space-y-2">
       {/* Action buttons */}
@@ -69,14 +80,14 @@ export default function RideChat({ ride, myEmail, myRole, otherEmail }) {
             </span>
           )}
         </Button>
-        {hasPhone && (
-          <a href={`tel:${phoneNumber}`} className="flex-1">
+        {hasPhone ? (
+          <a href={`tel:${otherPhone}`} className="flex-1" title="Call (your number is private)">
             <Button variant="outline" className="w-full rounded-xl gap-2">
-              <Phone className="w-4 h-4" /> Call
+              <Phone className="w-4 h-4" />
+              <span className="text-xs">{maskedOtherPhone || 'Call'}</span>
             </Button>
           </a>
-        )}
-        {!hasPhone && (
+        ) : (
           <div className="flex-1 text-xs text-muted-foreground text-center py-2">
             Phone not available
           </div>

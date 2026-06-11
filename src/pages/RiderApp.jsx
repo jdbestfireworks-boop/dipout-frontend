@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -13,18 +13,39 @@ import { useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 import EmptyState from '@/components/ui/empty-state';
 
-function DriverContactCard({ ride, myEmail }) {
+function DriverContactCard({ ride, myEmail, user, onToggleGps, gpsEnabled }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-      <div>
-        <p className="text-muted-foreground text-xs mb-1">Your driver</p>
-        <p className="font-medium">{ride.driver_email}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-muted-foreground text-xs mb-1">Your driver</p>
+          <p className="font-medium">{ride.driver_email}</p>
+          {ride.driver_phone && (
+            <p className="text-xs text-muted-foreground">Phone: {ride.driver_phone}</p>
+          )}
+        </div>
+        <button
+          onClick={onToggleGps}
+          className={`p-2 rounded-full transition-colors ${
+            gpsEnabled ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'
+          }`}
+          title={gpsEnabled ? 'GPS is on' : 'GPS is off'}
+        >
+          {gpsEnabled ? <MapPinned className="w-5 h-5" /> : <MapPinOff className="w-5 h-5" />}
+        </button>
+      </div>
+      <div className="flex items-center gap-2 text-xs">
+        <span className={gpsEnabled ? 'text-green-500' : 'text-gray-500'}>
+          {gpsEnabled ? '● Location sharing on' : '○ Location sharing off'}
+        </span>
       </div>
       <RideChat
         ride={ride}
         myEmail={myEmail}
         myRole="rider"
         otherEmail={ride.driver_email}
+        driverPhone={ride.driver_phone}
+        riderPhone={user?.phone_number}
       />
     </div>
   );
@@ -150,6 +171,8 @@ export default function RiderApp() {
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null);
   const [isRequesting, setIsRequesting] = useState(false);
+  const [gpsEnabled, setGpsEnabled] = useState(true);
+  const [gpsWatchId, setGpsWatchId] = useState(null);
 
   // Resume an active ride
   useEffect(() => {
@@ -183,6 +206,58 @@ export default function RiderApp() {
     });
     return unsubscribe;
   }, [ride?.id]);
+
+  // GPS tracking for rider (when enabled)
+  useEffect(() => {
+    if (!gpsEnabled || !ride || !['accepted', 'in_progress'].includes(ride.status)) return;
+
+    let watchId = null;
+    const updateInterval = 10000; // Update every 10 seconds
+    let lastUpdate = 0;
+
+    const startTracking = () => {
+      if ('geolocation' in navigator) {
+        watchId = navigator.geolocation.watchPosition(
+          async (position) => {
+            const now = Date.now();
+            if (now - lastUpdate < updateInterval) return;
+            lastUpdate = now;
+
+            const { latitude: lat, longitude: lng } = position.coords;
+            try {
+              await base44.entities.Ride.update(ride.id, {
+                rider_lat: lat,
+                rider_lng: lng,
+              });
+            } catch (error) {
+              console.error('Failed to update rider location:', error);
+            }
+          },
+          (error) => {
+            console.error('GPS error:', error);
+            if (error.code === 1) {
+              toast.error('Location permission denied');
+              setGpsEnabled(false);
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+        setGpsWatchId(watchId);
+      }
+    };
+
+    startTracking();
+
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, [gpsEnabled, ride?.id, ride?.status]);
 
   const getQuote = async () => {
     if (!pickupAddress.trim() || !dropoffAddress.trim()) {
@@ -289,6 +364,36 @@ export default function RiderApp() {
     setQuote(null);
     setDistanceKm(0);
     setPayMethod(null);
+    // Clear GPS tracking
+    if (gpsWatchId !== null) {
+      navigator.geolocation.clearWatch(gpsWatchId);
+      setGpsWatchId(null);
+    }
+  };
+
+  const toggleGps = async () => {
+    if (!gpsEnabled) {
+      if ('geolocation' in navigator) {
+        try {
+          const permission = await navigator.permissions.query({ name: 'geolocation' });
+          if (permission.state === 'denied') {
+            toast.error('GPS permission denied. Please enable in browser settings.');
+            return;
+          }
+          setGpsEnabled(true);
+          toast.success('GPS tracking enabled');
+        } catch (error) {
+          toast.error('Failed to enable GPS');
+        }
+      }
+    } else {
+      if (gpsWatchId !== null) {
+        navigator.geolocation.clearWatch(gpsWatchId);
+        setGpsWatchId(null);
+      }
+      setGpsEnabled(false);
+      toast.info('GPS tracking disabled');
+    }
   };
 
   const riderCompleteTrip = async () => {
@@ -471,9 +576,42 @@ export default function RiderApp() {
                 <p className="text-xs text-muted-foreground mt-1 capitalize">Payment: {ride.payment_method}</p>
               </div>
 
-              {/* Driver info */}
+              {/* Driver info with GPS toggle */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <DriverContactCard ride={ride} myEmail={user?.email} />
+                <div className="space-y-3">
+                  {/* GPS Toggle */}
+                  <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${gpsEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                      <div>
+                        <p className="text-sm font-medium">GPS Tracking</p>
+                        <p className="text-xs text-muted-foreground">
+                          {gpsEnabled ? 'Driver can see your location' : 'Location sharing off'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={toggleGps}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        gpsEnabled ? 'bg-primary' : 'bg-gray-400'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          gpsEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <DriverContactCard 
+                    ride={ride} 
+                    myEmail={user?.email}
+                    user={user}
+                    onToggleGps={toggleGps}
+                    gpsEnabled={gpsEnabled}
+                  />
+                </div>
               )}
 
               {/* Post-ride rating + payment */}

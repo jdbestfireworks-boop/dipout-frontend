@@ -19,7 +19,9 @@ function buildMimeEmail({ to, subject, body }) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { ride_id } = await req.json();
+    const body = await req.json();
+    // Called from automation (entity event) or directly with ride_id
+    const ride_id = body.ride_id || body.event?.entity_id;
 
     const ride = await base44.asServiceRole.entities.Ride.get(ride_id);
     if (!ride) return Response.json({ error: 'Ride not found' }, { status: 404 });

@@ -212,16 +212,21 @@ export default function DriverApp() {
   };
 
   const acceptRide = async (ride) => {
-    await base44.entities.Ride.update(ride.id, {
-      status: 'accepted',
-      driver_email: user.email,
-    });
-    await base44.entities.DriverProfile.update(profile.id, { status: 'busy' });
-    setProfile({ ...profile, status: 'busy' });
-    setActiveRide({ ...ride, status: 'accepted', driver_email: user.email });
-    setRequests((prev) => prev.filter((r) => r.id !== ride.id));
-    setSelectedRequest(null);
-    toast.success('Ride accepted — open Maps to navigate');
+    try {
+      await base44.entities.Ride.update(ride.id, {
+        status: 'accepted',
+        driver_email: user.email,
+      });
+      await base44.entities.DriverProfile.update(profile.id, { status: 'busy' });
+      setProfile({ ...profile, status: 'busy' });
+      setActiveRide({ ...ride, status: 'accepted', driver_email: user.email });
+      setRequests((prev) => prev.filter((r) => r.id !== ride.id));
+      setSelectedRequest(null);
+      toast.success('Ride accepted — navigate to pickup location');
+    } catch (error) {
+      console.error('Accept ride error:', error);
+      toast.error('Failed to accept ride. Please try again.');
+    }
   };
 
   const declineRide = () => {

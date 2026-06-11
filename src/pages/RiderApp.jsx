@@ -106,31 +106,46 @@ export default function RiderApp() {
       }
     }
     setQuoting(true);
-    // Calculate real distance if both coords known, otherwise fall back to 5 miles
-    let miles = distanceKm > 0 ? distanceKm : 5;
-    if (pickupCoords && dropoffCoords) {
-      miles = haversineMiles(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
-      miles = Math.max(miles, 0.5);
+    try {
+      // Calculate real distance if both coords known, otherwise fall back to 5 miles
+      let miles = distanceKm > 0 ? distanceKm : 5;
+      if (pickupCoords && dropoffCoords) {
+        miles = haversineMiles(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
+        miles = Math.max(miles, 0.5);
+        setDistanceKm(miles);
+      }
+      const q = await getDynamicFare({
+        distanceMiles: miles,
+        pickupAddress,
+        dropoffAddress,
+      });
+      setQuote(q);
       setDistanceKm(miles);
+    } catch (error) {
+      console.error('Fare calculation error:', error);
+      toast.error('Failed to calculate fare. Please try again.');
+    } finally {
+      setQuoting(false);
     }
-    const q = await getDynamicFare({
-      distanceMiles: miles,
-      pickupAddress,
-      dropoffAddress,
-    });
-    setQuote(q);
-    setDistanceKm(miles);
-    setQuoting(false);
   };
 
   const requestRide = async () => {
     if (!payMethod) { toast.error('Choose a payment method'); return; }
+    if (!quote) { toast.error('Please get a fare quote first'); return; }
     setIsRequesting(true);
     try {
       const me = user || await base44.auth.me();
+      
+      // Validate phone number exists
+      if (!me.phone_number || !me.phone_number.trim()) {
+        toast.error('Please add your phone number in Notification Settings first');
+        navigate('/notifications');
+        return;
+      }
+      
       const created = await base44.entities.Ride.create({
         rider_email: me.email,
-        rider_phone: me.phone_number || '',
+        rider_phone: me.phone_number,
         pickup_address: pickupAddress,
         dropoff_address: dropoffAddress,
         pickup_lat: pickupCoords?.lat || 0,
@@ -147,9 +162,10 @@ export default function RiderApp() {
         payment_method: payMethod,
       });
       setRide(created);
-      toast.success('Ride requested!');
+      toast.success('Ride requested! Waiting for driver acceptance...');
     } catch (error) {
-      toast.error('Failed to request ride');
+      console.error('Ride request error:', error);
+      toast.error('Failed to request ride. Please try again.');
     } finally {
       setIsRequesting(false);
     }

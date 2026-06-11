@@ -4,9 +4,26 @@ import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, 
 import { format } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function RideHistoryPage() {
+  // Check URL params for payment status
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentStatus = urlParams.get('payment');
+  const rideId = urlParams.get('ride_id');
   const navigate = useNavigate();
+  
+  // Show payment success/error message on mount
+  useEffect(() => {
+    if (paymentStatus === 'success' && rideId) {
+      toast.success('Payment successful! Thank you for your ride.');
+      // Clean URL
+      window.history.replaceState({}, document.title, '/rides');
+    } else if (paymentStatus === 'cancelled' && rideId) {
+      toast.error('Payment was cancelled. Please contact support if you were charged.');
+      window.history.replaceState({}, document.title, '/rides');
+    }
+  }, [paymentStatus, rideId]);
   const [rides, setRides] = useState([]);
   const [driverNames, setDriverNames] = useState({});
   const [loading, setLoading] = useState(true);

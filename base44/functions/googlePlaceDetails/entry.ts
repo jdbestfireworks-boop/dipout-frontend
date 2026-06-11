@@ -17,7 +17,8 @@ Deno.serve(async (req) => {
 
         const apiKey = Deno.env.get("GOOGLE_MAPS_API_KEY");
         if (!apiKey) {
-            return Response.json({ error: 'Google Maps API key not configured' }, { status: 500 });
+            console.error('Google Maps API key missing');
+            return Response.json({ error: 'GOOGLE_MAPS_API_KEY not configured' }, { status: 500 });
         }
 
         // Place Details API

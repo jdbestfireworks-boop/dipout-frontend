@@ -11,6 +11,8 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
+  const iconBg = icon?.props?.className?.includes('text-primary') ? 'bg-primary/10' : 'bg-muted';
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -64,7 +66,7 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
   return (
     <div className="relative" ref={wrapperRef}>
       {icon && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+        <div className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full flex items-center justify-center ${iconBg}`}>
           {icon}
         </div>
       )}
@@ -74,8 +76,8 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
         onChange={handleInputChange}
         onFocus={() => value && value.length >= 3 && setIsOpen(true)}
         className={cn(
-          "h-12 rounded-xl text-base font-medium",
-          icon && "pl-11"
+          "h-12 rounded-xl text-base font-medium pl-11",
+          "bg-transparent border-border focus:border-primary transition-colors"
         )}
       />
       {loading && (
@@ -83,21 +85,21 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
       )}
       
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-xl shadow-xl max-h-80 overflow-auto">
+        <div className="absolute z-50 w-full mt-2 bg-card border border-border rounded-xl shadow-xl max-h-80 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <button
               key={suggestion.place_id}
               onClick={() => handleSelect(suggestion)}
               className={cn(
-                "w-full px-5 py-4 text-left hover:bg-accent transition-colors",
+                "w-full px-4 py-3 text-left hover:bg-accent transition-colors",
                 "flex items-start gap-3",
                 index !== suggestions.length - 1 && "border-b border-border"
               )}
             >
-              <MapPin className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div className="flex-1">
                 {suggestion.description && (
-                  <div className="font-semibold text-base text-foreground leading-snug">{suggestion.description}</div>
+                  <div className="font-medium text-sm text-foreground leading-snug">{suggestion.description}</div>
                 )}
               </div>
             </button>

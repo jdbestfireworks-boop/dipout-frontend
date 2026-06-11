@@ -319,7 +319,7 @@ export default function RiderApp() {
         {!ride && (
           <div className="mb-6">
             <h1 className="text-3xl font-display font-bold">Where to?</h1>
-            <p className="text-sm text-muted-foreground mt-1">Enter your pickup and destination for an instant fare estimate.</p>
+            <p className="text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
           </div>
         )}
 
@@ -365,11 +365,23 @@ export default function RiderApp() {
               )}
 
               {ride.status === 'cancelled' && (
-                <EmptyState
-                  icon={X}
-                  title="Ride Cancelled"
-                  description="Your ride has been cancelled. Ready to book again?"
-                />
+                <div className="bg-card rounded-2xl border border-border p-6 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+                    <X className="w-8 h-8 text-destructive" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">Ride Cancelled</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Your ride has been cancelled</p>
+                    {ride.cancellation_fee > 0 && (
+                      <p className="text-xs text-destructive mt-2 font-medium">
+                        Cancellation fee: ${ride.cancellation_fee.toFixed(2)}
+                      </p>
+                    )}
+                  </div>
+                  <Button onClick={resetAll} variant="outline" className="w-full">
+                    Book a new ride
+                  </Button>
+                </div>
               )}
 
               <ActiveRideCard

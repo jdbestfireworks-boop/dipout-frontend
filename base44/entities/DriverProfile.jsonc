@@ -5,6 +5,10 @@
     "user_email": {
       "type": "string"
     },
+    "phone": {
+      "type": "string",
+      "description": "Driver's contact phone number"
+    },
     "vehicle": {
       "type": "string"
     },

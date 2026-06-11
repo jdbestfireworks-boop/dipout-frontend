@@ -13,9 +13,31 @@ import DriverRating from '@/components/rider/DriverRating';
 import SafetyButton from '@/components/rider/SafetyButton';
 import SavedAddresses from '@/components/rider/SavedAddresses';
 import SchedulePicker from '@/components/rider/SchedulePicker';
+import RideChat from '@/components/ride/RideChat';
 import { haversineKm } from '@/lib/geo';
 import { Link } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
+
+function DriverContactCard({ ride }) {
+  const [driverPhone, setDriverPhone] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!ride.driver_email) return;
+    base44.entities.DriverProfile.filter({ user_email: ride.driver_email }).then((profiles) => {
+      if (profiles.length) setDriverPhone(profiles[0].phone || null);
+    });
+  }, [ride.driver_email]);
+
+  return (
+    <div className="space-y-2">
+      <div className="rounded-2xl border border-border bg-card p-4 text-sm">
+        <p className="text-muted-foreground text-xs mb-1">Your driver</p>
+        <p className="font-medium">{ride.driver_email}</p>
+      </div>
+      <RideChat ride={ride} senderRole="rider" otherPartyEmail={ride.driver_email} otherPartyPhone={driverPhone} />
+    </div>
+  );
+}
 
 const statusLabels = {
   requested: 'Finding your driver…',
@@ -356,12 +378,9 @@ export default function RiderApp() {
                 </div>
               </div>
 
-              {/* Driver info */}
+              {/* Driver info + chat/call */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <div className="rounded-2xl border border-border bg-card p-4 text-sm">
-                  <p className="text-muted-foreground text-xs mb-1">Your driver</p>
-                  <p className="font-medium">{ride.driver_email}</p>
-                </div>
+                <DriverContactCard ride={ride} />
               )}
 
               {/* Payment confirmation on completion */}

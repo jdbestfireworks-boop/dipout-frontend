@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Phone } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Phone, Car, Flag, Star } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -28,6 +28,98 @@ function DriverContactCard({ ride, myEmail }) {
         myRole="rider"
         otherEmail={ride.driver_email}
       />
+    </div>
+  );
+}
+
+function TripMilestones({ status }) {
+  const milestones = [
+    { 
+      id: 'requested', 
+      label: 'Request Sent', 
+      icon: Flag,
+      description: 'Looking for a driver'
+    },
+    { 
+      id: 'accepted', 
+      label: 'Driver Arrived', 
+      icon: Car,
+      description: 'Driver is on the way'
+    },
+    { 
+      id: 'in_progress', 
+      label: 'Trip In Progress', 
+      icon: Navigation,
+      description: 'Heading to destination'
+    },
+    { 
+      id: 'completed', 
+      label: 'Trip Completed', 
+      icon: Star,
+      description: 'Journey complete'
+    },
+  ];
+
+  const getStatusIndex = (status) => milestones.findIndex(m => m.id === status);
+  const currentIndex = getStatusIndex(status);
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Trip Progress</h3>
+      <div className="relative">
+        {/* Progress line */}
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-border">
+          <div 
+            className="bg-primary transition-all duration-500"
+            style={{ 
+              height: `${Math.min(100, (currentIndex / (milestones.length - 1)) * 100)}%`,
+              width: '100%'
+            }}
+          />
+        </div>
+        
+        {/* Milestone nodes */}
+        <div className="space-y-6 relative">
+          {milestones.map((milestone, index) => {
+            const Icon = milestone.icon;
+            const isActive = index === currentIndex;
+            const isCompleted = index < currentIndex;
+            const isPending = index > currentIndex;
+
+            return (
+              <div key={milestone.id} className="flex items-start gap-4">
+                <div
+                  className={`
+                    relative z-10 w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300
+                    ${isActive ? 'bg-primary border-primary text-primary-foreground scale-110 shadow-lg shadow-primary/30' : ''}
+                    ${isCompleted ? 'bg-primary border-primary text-primary-foreground' : ''}
+                    ${isPending ? 'bg-background border-border text-muted-foreground' : ''}
+                  `}
+                >
+                  <Icon className="w-5 h-5" />
+                  {isCompleted && !isActive && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 pt-1">
+                  <p className={`font-semibold text-sm ${isActive || isCompleted ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {milestone.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{milestone.description}</p>
+                  {isActive && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                      <span className="text-xs text-primary font-medium">Current step</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -309,16 +401,8 @@ export default function RiderApp() {
             </motion.div>
           ) : (
             <motion.div key="trip" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-display font-bold">{statusLabels[ride.status]}</h2>
-                <Badge variant="outline" className="capitalize">{ride.status.replace('_', ' ')}</Badge>
-              </div>
-
-              {ride.status === 'requested' && (
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  Matching you with a driver…
-                </div>
+              {ride.status !== 'cancelled' && (
+                <TripMilestones status={ride.status} />
               )}
 
               {ride.status === 'cancelled' && (

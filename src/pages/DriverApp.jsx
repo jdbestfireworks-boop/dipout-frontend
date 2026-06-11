@@ -11,6 +11,7 @@ import EarningsChart from '@/components/driver/EarningsChart';
 import RideChat from '@/components/ride/RideChat';
 import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
 import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
+import WeeklyStats from '@/components/driver/WeeklyStats';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -161,9 +162,8 @@ export default function DriverApp() {
 
       <SurgeAlertBanner driverEmail={user.email} />
 
-      <DriverSummaryPanel profile={profile} driverEmail={user.email} />
-
-      {!activeRide && <EarningsChart driverEmail={user.email} />}
+      {!activeRide && <WeeklyStats profile={profile} driverEmail={user.email} />}
+      {activeRide && <DriverSummaryPanel profile={profile} driverEmail={user.email} />}
 
       <AnimatePresence mode="wait">
         {activeRide ? (

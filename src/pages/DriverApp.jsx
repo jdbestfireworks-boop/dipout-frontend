@@ -3,8 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock } from 'lucide-react';
+import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import EarningsChart from '@/components/driver/EarningsChart';
@@ -25,8 +25,6 @@ function dirLink(from, to) {
 export default function DriverApp() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [vehicle, setVehicle] = useState('');
-  const [plate, setPlate] = useState('');
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
 
@@ -65,19 +63,6 @@ export default function DriverApp() {
   const loadRequests = async () => {
     const reqs = await base44.entities.Ride.filter({ status: 'requested' }, '-created_date', 20);
     setRequests(reqs);
-  };
-
-  const createProfile = async () => {
-    const p = await base44.entities.DriverProfile.create({
-      user_email: user.email,
-      vehicle,
-      plate,
-      status: 'offline',
-      rating: 5,
-      total_earnings: 0,
-      trips_completed: 0,
-    });
-    setProfile(p);
   };
 
   const toggleOnline = async (online) => {
@@ -130,20 +115,7 @@ export default function DriverApp() {
   }
 
   if (!profile) {
-    return (
-      <div className="max-w-md mx-auto p-6 pt-10 space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
-          <Car className="w-6 h-6 text-primary-foreground" />
-        </div>
-        <h1 className="text-2xl font-display font-bold">Become a Dip Out driver</h1>
-        <p className="text-sm text-muted-foreground">Set up your vehicle to start receiving ride requests.</p>
-        <Input placeholder="Vehicle (e.g. Toyota Prius 2022)" value={vehicle} onChange={(e) => setVehicle(e.target.value)} />
-        <Input placeholder="License plate" value={plate} onChange={(e) => setPlate(e.target.value)} />
-        <Button onClick={createProfile} disabled={!vehicle || !plate} className="w-full h-12 rounded-xl font-semibold">
-          Start driving
-        </Button>
-      </div>
-    );
+    return <DriverOnboarding user={user} onComplete={(p) => setProfile(p)} />;
   }
 
   return (

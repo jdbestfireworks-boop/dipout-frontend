@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { startOfWeek, endOfWeek, format, eachDayOfInterval } from 'date-fns';
+import { startOfWeek, endOfWeek, subWeeks, format, eachDayOfInterval } from 'date-fns';
 import { DollarSign, Navigation, Star, TrendingUp, Clock } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 
 export default function WeeklyStats({ profile, driverEmail }) {
   const weekStart = useMemo(() => startOfWeek(new Date(), { weekStartsOn: 1 }), []);
@@ -43,6 +43,21 @@ export default function WeeklyStats({ profile, driverEmail }) {
   });
 
   const bestDay = chartData.reduce((best, d) => d.earnings > best.earnings ? d : best, chartData[0]);
+
+  // 4-week trend data
+  const fourWeekData = useMemo(() => {
+    return [3, 2, 1, 0].map((weeksAgo) => {
+      const wStart = startOfWeek(subWeeks(new Date(), weeksAgo), { weekStartsOn: 1 });
+      const wEnd = endOfWeek(subWeeks(new Date(), weeksAgo), { weekStartsOn: 1 });
+      const label = weeksAgo === 0 ? 'This wk' : weeksAgo === 1 ? 'Last wk' : `${weeksAgo}w ago`;
+      const weekRides = allRides.filter((r) => {
+        const d = new Date(r.created_date);
+        return d >= wStart && d <= wEnd;
+      });
+      const earnings = parseFloat(weekRides.reduce((sum, r) => sum + (r.fare || 0) * 0.8, 0).toFixed(2));
+      return { label, earnings, trips: weekRides.length };
+    });
+  }, [allRides]);
 
   const stats = [
     {
@@ -128,6 +143,35 @@ export default function WeeklyStats({ profile, driverEmail }) {
           </BarChart>
         </ResponsiveContainer>
         <p className="text-[10px] text-muted-foreground text-center mt-1">Today highlighted in gold</p>
+      </div>
+
+      {/* 4-week trend chart */}
+      <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+        <p className="text-sm font-semibold">4-Week Trend</p>
+        <ResponsiveContainer width="100%" height={160}>
+          <BarChart data={fourWeekData} barGap={4} barSize={20}>
+            <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+            <YAxis yAxisId="earnings" hide />
+            <YAxis yAxisId="trips" orientation="right" hide />
+            <Tooltip
+              contentStyle={{
+                background: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '12px',
+                fontSize: '12px',
+              }}
+              formatter={(v, name) => name === 'earnings' ? [`$${v.toFixed(2)}`, 'Earnings'] : [v, 'Trips']}
+              cursor={{ fill: 'hsl(var(--accent))' }}
+            />
+            <Legend
+              iconType="circle"
+              iconSize={8}
+              formatter={(v) => <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>{v === 'earnings' ? 'Earnings' : 'Trips'}</span>}
+            />
+            <Bar yAxisId="earnings" dataKey="earnings" radius={[6,6,0,0]} fill="hsl(var(--primary))" opacity={0.9} />
+            <Bar yAxisId="trips" dataKey="trips" radius={[6,6,0,0]} fill="hsl(var(--secondary))" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* All-time footer */}

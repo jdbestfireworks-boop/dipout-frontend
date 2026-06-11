@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell, Phone } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
@@ -378,24 +377,54 @@ export default function DriverApp() {
         </div>
       </div>
 
-      {/* Online/Offline Status Card */}
-      <div className="rounded-2xl border border-border bg-card p-5 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
-          <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</p>
-            <p className={`text-lg font-bold ${profile.status === 'offline' ? 'text-gray-400' : 'text-green-500'}`}>
-              {profile.status === 'offline' ? 'Offline' : 'Online'}
-            </p>
+      {/* Online/Offline Status Card - Production Ready */}
+      <motion.div 
+        initial={{ scale: 0.98, opacity: 0 }}
+        animate={{ 
+          scale: 1, 
+          opacity: 1,
+          boxShadow: profile.status !== 'offline' ? '0 0 30px -5px rgba(34,197,94,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+        transition={{ duration: 0.3 }}
+        className={`p-6 rounded-3xl border-2 transition-all duration-500 ${
+          profile.status !== 'offline' 
+            ? 'bg-green-500/10 border-green-500/50' 
+            : 'bg-card border-border'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className={`w-4 h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
+              {profile.status !== 'offline' && (
+                <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-500 animate-ping opacity-75"></div>
+              )}
+            </div>
+            <div>
+              <h3 className="text-xl font-bold font-display">
+                {profile.status === 'offline' ? 'Ready to drive?' : 'You are Online'}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                {profile.status === 'offline' 
+                  ? 'Go online to start receiving ride requests' 
+                  : 'You are currently visible to nearby riders'}
+              </p>
+            </div>
           </div>
+          <Button 
+            size="lg"
+            disabled={!!activeRide}
+            className={`rounded-full px-8 font-bold text-sm shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              profile.status !== 'offline' 
+                ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' 
+                : 'bg-green-500 hover:bg-green-600 shadow-green-500/30'
+            }`}
+            onClick={() => toggleOnline(profile.status === 'offline')}
+          >
+            {profile.status === 'offline' ? 'GO ONLINE' : 'GO OFFLINE'}
+          </Button>
         </div>
-        <Switch 
-          checked={profile.status !== 'offline'} 
-          onCheckedChange={toggleOnline} 
-          disabled={!!activeRide}
-          className="scale-110"
-        />
-      </div>
+      </motion.div>
 
       {/* Status indicators */}
       {profile.status !== 'offline' && (

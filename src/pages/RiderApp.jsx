@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Phone, Car, Flag, Star } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-
-
 import PostRideScreen from '@/components/rider/PostRideScreen';
 import RideChat from '@/components/ride/RideChat';
 import { haversineMiles, isInLouisiana, checkLouisianaAddress } from '@/lib/geo';
@@ -141,6 +139,7 @@ function mapsLink(address) {
 export default function RiderApp() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [pickupAddress, setPickupAddress] = useState('');
   const [pickupCoords, setPickupCoords] = useState(null);
   const [dropoffAddress, setDropoffAddress] = useState('');
@@ -149,8 +148,7 @@ export default function RiderApp() {
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
-  const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
-
+  const [payMethod, setPayMethod] = useState(null);
   const [isRequesting, setIsRequesting] = useState(false);
 
   // Resume an active ride
@@ -171,6 +169,8 @@ export default function RiderApp() {
         if (current) setRide(current);
       } catch (error) {
         console.error('Error loading ride:', error);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -189,6 +189,10 @@ export default function RiderApp() {
       toast.error('Enter both pickup and destination addresses');
       return;
     }
+    if (!pickupCoords || !dropoffCoords) {
+      toast.error('Please select valid addresses from the suggestions');
+      return;
+    }
     // Check if addresses are in Louisiana
     if (!checkLouisianaAddress(pickupAddress) || !checkLouisianaAddress(dropoffAddress)) {
       toast.error('Dip Out is only available in Louisiana');
@@ -204,11 +208,10 @@ export default function RiderApp() {
     setQuoting(true);
     try {
       // Calculate real distance if both coords known, otherwise fall back to 5 miles
-      let miles = distanceKm > 0 ? distanceKm : 5;
+      let miles = 5;
       if (pickupCoords && dropoffCoords) {
         miles = haversineMiles(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
         miles = Math.max(miles, 0.5);
-        setDistanceKm(miles);
       }
       const q = await getDynamicFare({
         distanceMiles: miles,
@@ -228,6 +231,10 @@ export default function RiderApp() {
   const requestRide = async () => {
     if (!payMethod) { toast.error('Choose a payment method'); return; }
     if (!quote) { toast.error('Please get a fare quote first'); return; }
+    if (!pickupCoords || !dropoffCoords) {
+      toast.error('Please select valid addresses from the suggestions');
+      return;
+    }
     setIsRequesting(true);
     try {
       const me = user || await base44.auth.me();
@@ -245,10 +252,10 @@ export default function RiderApp() {
         rider_phone: me.phone_number,
         pickup_address: pickupAddress,
         dropoff_address: dropoffAddress,
-        pickup_lat: pickupCoords?.lat || 0,
-        pickup_lng: pickupCoords?.lng || 0,
-        dropoff_lat: dropoffCoords?.lat || 0,
-        dropoff_lng: dropoffCoords?.lng || 0,
+        pickup_lat: pickupCoords.lat,
+        pickup_lng: pickupCoords.lng,
+        dropoff_lat: dropoffCoords.lat,
+        dropoff_lng: dropoffCoords.lng,
         status: 'requested',
         distance_km: Math.round(distanceKm * 10) / 10,
         base_fare: quote.baseFare,
@@ -291,10 +298,17 @@ export default function RiderApp() {
     setRide({ ...ride, status: 'completed' });
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
-
 
         {/* Header */}
         {!ride && (

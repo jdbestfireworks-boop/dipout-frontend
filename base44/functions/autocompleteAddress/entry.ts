@@ -22,10 +22,14 @@ Deno.serve(async (req) => {
         url.searchParams.set('limit', '5');
         url.searchParams.set('addressdetails', '1');
         url.searchParams.set('countrycodes', 'us');
+        // Bias to Louisiana area
+        url.searchParams.set('viewbox', '-94.0,33.0,-88.8,28.8');
+        url.searchParams.set('bounded', '1');
 
         const response = await fetch(url.toString(), {
             headers: {
-                'User-Agent': 'DipOutRideApp/1.0'
+                'User-Agent': 'DipOutRideApp/1.0',
+                'Accept': 'application/json'
             }
         });
         

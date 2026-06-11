@@ -33,6 +33,7 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
         const response = await base44.functions.invoke('autocompleteAddress', { query: val });
         if (response.data.error) {
           console.error('Autocomplete API error:', response.data.error);
+          toast.error('Unable to fetch addresses. Please try again.');
           setSuggestions([]);
         } else {
           setSuggestions(response.data.suggestions || []);
@@ -40,6 +41,7 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
         }
       } catch (error) {
         console.error('Autocomplete error:', error);
+        toast.error('Unable to fetch addresses. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -49,7 +51,11 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
     }
   };
 
-  const handleSelect = async (suggestion) => {
+  const handleSelect = (suggestion) => {
+    if (!suggestion.lat || !suggestion.lng) {
+      toast.error('Invalid location selected');
+      return;
+    }
     onChange(suggestion.description, { lat: suggestion.lat, lng: suggestion.lng });
     setIsOpen(false);
     setSuggestions([]);

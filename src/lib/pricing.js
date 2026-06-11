@@ -9,13 +9,13 @@ export async function getDynamicFare({ distanceMiles, pickupAddress, dropoffAddr
 
   try {
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are a dynamic pricing engine for a ride-sharing service.
+      prompt: `You are a dynamic pricing engine for a ride-sharing service in Louisiana.
 Current time: ${now.toString()}.
 Trip: from "${pickupAddress}" to "${dropoffAddress}", distance ${distanceMiles.toFixed(1)} miles.
-Using current local traffic conditions, weather, time of day, day of week, and typical ride demand patterns for this area, determine a surge multiplier between 0.8 and 2.5.
-1.0 = normal conditions. Higher = heavy traffic / high demand / bad weather / rush hour / events. Lower = very quiet off-peak.
-Give a one-sentence rider-friendly reason.`,
-      add_context_from_internet: true,
+Determine a surge multiplier between 0.8 and 2.5 based on: time of day, day of week, rush hour patterns, weather, and local events.
+1.0 = normal, >1.0 = high demand (rush hour, bad weather, events), <1.0 = slow period.
+Return a brief rider-friendly reason (max 8 words).`,
+      add_context_from_internet: false,
       response_json_schema: {
         type: 'object',
         properties: {

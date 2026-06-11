@@ -53,13 +53,18 @@ export default function DriverApp() {
 
   useEffect(() => {
     (async () => {
-      const me = await base44.auth.me();
-      setUser(me);
-      const existing = await base44.entities.DriverProfile.filter({ user_email: me.email });
-      if (existing.length) setProfile(existing[0]);
-      const myRides = await base44.entities.Ride.filter({ driver_email: me.email }, '-created_date', 5);
-      const current = myRides.find((r) => ['accepted', 'in_progress'].includes(r.status));
-      if (current) setActiveRide(current);
+      try {
+        const me = await base44.auth.me();
+        setUser(me);
+        const existing = await base44.entities.DriverProfile.filter({ user_email: me.email });
+        if (existing.length) setProfile(existing[0]);
+        const myRides = await base44.entities.Ride.filter({ driver_email: me.email }, '-created_date', 5);
+        const current = myRides.find((r) => ['accepted', 'in_progress'].includes(r.status));
+        if (current) setActiveRide(current);
+      } catch (error) {
+        console.error('Driver app init error:', error);
+        toast.error('Failed to load driver profile');
+      }
     })();
   }, []);
 
@@ -252,8 +257,7 @@ export default function DriverApp() {
       toast.success('Ride accepted — navigate to pickup location');
     } catch (error) {
       console.error('Accept ride error:', error);
-      toast.error('Failed to accept ride. Please try again.');
-      // Reload requests to ensure consistency
+      toast.error('Failed to accept ride. Another driver may have taken it.');
       loadRequests();
     }
   };
@@ -304,6 +308,7 @@ export default function DriverApp() {
       });
       toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
       setActiveRide(null);
+      setRequests([]); // Clear requests after completion
     } catch (error) {
       console.error('Complete trip error:', error);
       toast.error('Failed to complete trip');

@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, Phone } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import EarningsChart from '@/components/driver/EarningsChart';
-import RideChat from '@/components/ride/RideChat';
 import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
+import RideChat from '@/components/ride/RideChat';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -71,7 +71,7 @@ export default function DriverApp() {
       user_email: user.email,
       vehicle,
       plate,
-      phone,
+      phone: phone || '',
       status: 'offline',
       rating: 5,
       total_earnings: 0,
@@ -139,7 +139,7 @@ export default function DriverApp() {
         <p className="text-sm text-muted-foreground">Set up your vehicle to start receiving ride requests.</p>
         <Input placeholder="Vehicle (e.g. Toyota Prius 2022)" value={vehicle} onChange={(e) => setVehicle(e.target.value)} />
         <Input placeholder="License plate" value={plate} onChange={(e) => setPlate(e.target.value)} />
-        <Input placeholder="Phone number (optional, for riders to call)" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" />
+        <Input placeholder="Phone number (for riders to call)" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" />
         <Button onClick={createProfile} disabled={!vehicle || !plate} className="w-full h-12 rounded-xl font-semibold">
           Start driving
         </Button>
@@ -246,8 +246,7 @@ export default function DriverApp() {
               </a>
             </div>
 
-            {/* Chat */}
-            <RideChat rideId={activeRide.id} userEmail={user.email} role="driver" />
+            <RideChat ride={activeRide} senderRole="driver" otherPartyEmail={activeRide.rider_email} />
 
             {activeRide.status === 'accepted' && (
               <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold" variant="outline">

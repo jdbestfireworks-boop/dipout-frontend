@@ -1,0 +1,34 @@
+{
+  "name": "SurgeZone",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Area name (e.g. Downtown, Airport)"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "radius_km": {
+      "type": "number",
+      "default": 2,
+      "description": "Alert radius in km"
+    },
+    "surge_multiplier": {
+      "type": "number",
+      "default": 1.5
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "lat",
+    "lng"
+  ]
+}

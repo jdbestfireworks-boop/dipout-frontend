@@ -1,0 +1,33 @@
+{
+  "name": "DriverAlert",
+  "type": "object",
+  "properties": {
+    "driver_email": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "surge_zone"
+      ],
+      "default": "surge_zone"
+    },
+    "surge_multiplier": {
+      "type": "number"
+    },
+    "zone_name": {
+      "type": "string"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "driver_email",
+    "message"
+  ]
+}

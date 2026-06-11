@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles } from 'lucide-react';
 import AddressInput from '@/components/rider/AddressInput';
@@ -9,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
 import SafetyButton from '@/components/rider/SafetyButton';
+
 import PostRideScreen from '@/components/rider/PostRideScreen';
 import SavedAddresses from '@/components/rider/SavedAddresses';
 import SchedulePicker from '@/components/rider/SchedulePicker';
@@ -81,9 +81,8 @@ export default function RiderApp() {
     (async () => {
       const me = await base44.auth.me();
       setUser(me);
-      const user = me;
       const active = await base44.entities.Ride.filter(
-        { rider_email: user.email },
+        { rider_email: me.email },
         '-created_date',
         5
       );

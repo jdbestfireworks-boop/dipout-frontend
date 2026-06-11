@@ -89,7 +89,7 @@ export default function AdminDashboard() {
               ))}
               {rides.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">No rides yet</TableCell>
+                  <TableCell colSpan={9} className="text-center text-muted-foreground py-8">No rides yet</TableCell>
                 </TableRow>
               )}
             </TableBody>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import EarningsChart from '@/components/driver/EarningsChart';
@@ -188,6 +188,14 @@ export default function DriverApp() {
                   }
                 </Badge>
               </div>
+              {activeRide.scheduled_for && (
+                <div className="flex items-center justify-between border-t border-border pt-2">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Scheduled</span>
+                  <span className="font-medium text-primary">
+                    {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(activeRide.scheduled_for))}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Pickup card with Maps link */}
@@ -271,6 +279,12 @@ export default function DriverApp() {
                       </Badge>
                     </div>
                   </div>
+                  {r.scheduled_for && (
+                    <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
+                      <Clock className="w-3.5 h-3.5" />
+                      Scheduled: {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(r.scheduled_for))}
+                    </div>
+                  )}
                   <div className="text-sm space-y-1">
                     <p className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />

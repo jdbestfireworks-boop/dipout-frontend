@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
 import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
 import WeeklyStats from '@/components/driver/WeeklyStats';
 import RideRequestModal from '@/components/driver/RideRequestModal';
+import { useNavigate } from 'react-router-dom';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -24,6 +25,7 @@ function dirLink(from, to) {
 }
 
 export default function DriverApp() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [requests, setRequests] = useState([]);
@@ -156,13 +158,18 @@ export default function DriverApp() {
         />
       )}
 
-      {/* Header + online toggle */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-display font-bold">Driver hub</h1>
-          <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+      {/* Header with back button + online toggle */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-1">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 shrink-0">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-display font-bold">Driver hub</h1>
+            <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
           <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
         </div>

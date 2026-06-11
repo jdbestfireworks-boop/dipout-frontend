@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles, ArrowLeft } from 'lucide-react';
 import AddressInput from '@/components/rider/AddressInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -14,7 +14,7 @@ import SavedAddresses from '@/components/rider/SavedAddresses';
 import SchedulePicker from '@/components/rider/SchedulePicker';
 import RideChat from '@/components/ride/RideChat';
 import { haversineKm } from '@/lib/geo';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 import RidePreview from '@/components/rider/RidePreview';
 import EmptyState from '@/components/ui/empty-state';
@@ -65,6 +65,7 @@ function mapsLink(address) {
 }
 
 export default function RiderApp() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [pickupAddress, setPickupAddress] = useState('');
   const [pickupCoords, setPickupCoords] = useState(null);
@@ -185,16 +186,21 @@ export default function RiderApp() {
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
         {/* Tabs */}
-        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
-          <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
-            Book
-          </span>
-          <Link
-            to="/rides"
-            className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
-          >
-            History
-          </Link>
+        <div className="flex items-center gap-3 mb-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div className="flex gap-1 p-1 rounded-xl bg-secondary">
+            <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
+              Book
+            </span>
+            <Link
+              to="/rides"
+              className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
+            >
+              History
+            </Link>
+          </div>
         </div>
 
         <>

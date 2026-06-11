@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, ChevronUp, User, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export default function RideHistoryPage() {
+  const navigate = useNavigate();
   const [rides, setRides] = useState([]);
   const [driverNames, setDriverNames] = useState({});
   const [loading, setLoading] = useState(true);
@@ -44,8 +46,19 @@ export default function RideHistoryPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
 
+        {/* Header with back button */}
+        <div className="flex items-center gap-3 mb-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-display font-bold">Trip History</h1>
+            <p className="text-sm text-muted-foreground mt-1">All your completed rides in one place.</p>
+          </div>
+        </div>
+
         {/* Tabs */}
-        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
+        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit mb-6">
           <Link
             to="/"
             className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
@@ -55,12 +68,6 @@ export default function RideHistoryPage() {
           <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
             History
           </span>
-        </div>
-
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-display font-bold">Trip History</h1>
-          <p className="text-sm text-muted-foreground mt-1">All your completed rides in one place.</p>
         </div>
 
         {loading ? (

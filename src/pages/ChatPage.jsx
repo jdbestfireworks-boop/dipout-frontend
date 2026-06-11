@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, MessageCircle, Loader2 } from 'lucide-react';
+import { Send, MessageCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function ChatPage() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [rides, setRides] = useState([]);
   const [selectedRideId, setSelectedRideId] = useState(null);
@@ -19,7 +20,6 @@ export default function ChatPage() {
     (async () => {
       const me = await base44.auth.me();
       setUser(me);
-      // Load rides where user is rider or driver with messages
       const [asRider, asDriver] = await Promise.all([
         base44.entities.Ride.filter({ rider_email: me.email }, '-created_date', 20),
         base44.entities.Ride.filter({ driver_email: me.email }, '-created_date', 20),
@@ -27,7 +27,6 @@ export default function ChatPage() {
       const allRides = [...asRider, ...asDriver].filter(
         (r) => ['accepted', 'in_progress', 'completed'].includes(r.status)
       );
-      // Deduplicate by id
       const seen = new Set();
       const unique = allRides.filter((r) => { if (seen.has(r.id)) return false; seen.add(r.id); return true; });
       unique.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
@@ -92,6 +91,16 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* Back button header */}
+      <div className="px-4 py-3 border-b border-border bg-card flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/home')} className="h-9 w-9">
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <div>
+          <h2 className="font-display font-bold text-lg">Messages</h2>
+          <p className="text-xs text-muted-foreground">Your ride conversations</p>
+        </div>
+      </div>
       {/* Sidebar — ride list */}
       <div className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-card flex-shrink-0">
         <div className="p-4 border-b border-border">

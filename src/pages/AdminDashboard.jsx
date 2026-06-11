@@ -3,9 +3,11 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle } from 'lucide-react';
+import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
@@ -18,7 +20,10 @@ const statusColors = {
   cancelled: 'bg-destructive/15 text-destructive',
 };
 
+
+
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const approveDriver = async (driver) => {
@@ -51,9 +56,14 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto p-5 md:p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-display font-bold">Operations</h1>
-        <p className="text-sm text-muted-foreground">Live fleet, rides and dynamic pricing analytics.</p>
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-display font-bold">Operations</h1>
+          <p className="text-sm text-muted-foreground">Live fleet, rides and dynamic pricing analytics.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

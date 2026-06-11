@@ -1,10 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Car, UserPlus, Zap, Shield, Star, DollarSign, MapPin, MessageCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Car, UserPlus, Zap, Shield, Star, DollarSign, MapPin, MessageCircle, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Back button */}
+      <div className="absolute top-4 left-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+      </div>
       {/* Hero */}
       <section className="flex flex-col items-center justify-center text-center px-6 pt-20 pb-12 max-w-2xl mx-auto space-y-5">
         <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">

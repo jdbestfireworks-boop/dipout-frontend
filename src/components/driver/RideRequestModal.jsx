@@ -1,131 +1,128 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import { Car, Banknote, CreditCard, MapPin, Navigation, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Banknote, CreditCard, X, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+function mapsLink(address) {
+  return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+}
+
 export default function RideRequestModal({ ride, onAccept, onDecline }) {
-  const audioRef = useRef(null);
-
-  useEffect(() => {
-    // Play notification sound when modal opens
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {
-        // Silent fail if audio autoplay is blocked
-        console.log('Audio autoplay blocked');
-      });
-    }
-  }, []);
-
-  if (!ride) return null;
-
   return (
-    <>
-      {/* Hidden audio element for notification sound */}
-      <audio
-        ref={audioRef}
-        src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
-        preload="auto"
-      />
-      
-      {/* Backdrop */}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={onDecline}
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        className="rounded-2xl border border-border bg-card w-full max-w-md shadow-2xl overflow-hidden"
       >
-        {/* Modal */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="bg-card border border-border rounded-3xl p-6 max-w-md w-full shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header with bell icon */}
-          <div className="flex items-center justify-between mb-4">
+        {/* Header */}
+        <div className="p-5 border-b border-border">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center animate-pulse">
-                <Bell className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Car className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-display font-bold">New Ride Request!</h2>
-                <p className="text-xs text-muted-foreground">Customer is waiting</p>
+                <h3 className="text-xl font-bold">New Ride Request</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Tap accept to claim this ride</p>
               </div>
             </div>
-            <button
-              onClick={onDecline}
-              className="w-8 h-8 rounded-full hover:bg-accent flex items-center justify-center transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-5 space-y-4">
+          {/* Earnings */}
+          <div className="rounded-xl bg-muted/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Your Earnings</p>
+                <p className="text-3xl font-bold text-primary mt-1">${((ride.fare || 0) * 0.8).toFixed(2)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Fare</p>
+                <p className="text-xl font-semibold mt-1">${ride.fare?.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Fare badge */}
-          <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 mb-4 flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Your earnings</span>
-            <span className="text-3xl font-bold text-primary">
-              ${((ride.fare || 0) * 0.8).toFixed(2)}
-            </span>
-          </div>
-
-          {/* Ride details */}
-          <div className="space-y-3 mb-5">
+          {/* Route */}
+          <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <MapPin className="w-4 h-4 text-primary" />
+              </div>
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground mb-0.5">Pickup</p>
-                <p className="font-medium text-sm">{ride.pickup_address}</p>
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Pickup</p>
+                <p className="text-sm font-medium leading-snug">{ride.pickup_address}</p>
+                <a
+                  href={mapsLink(ride.pickup_address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-medium"
+                >
+                  Open in Maps ↗
+                </a>
               </div>
             </div>
-            <div className="border-t border-border" />
+
             <div className="flex items-start gap-3">
-              <Navigation className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <p className="text-xs text-muted-foreground mb-0.5">Drop-off</p>
-                <p className="font-medium text-sm">{ride.dropoff_address}</p>
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                <Navigation className="w-4 h-4 text-muted-foreground" />
               </div>
-            </div>
-            <div className="border-t border-border" />
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Distance</span>
-              <span className="font-semibold">{ride.distance_km} mi</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Total fare</span>
-              <span className="font-bold">${ride.fare?.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Payment</span>
-              <Badge variant="outline" className="capitalize flex items-center gap-1">
-                {ride.payment_method === 'cash'
-                  ? <><Banknote className="w-3 h-3" /> Cash</>
-                  : <><CreditCard className="w-3 h-3" /> Card</>
-                }
-              </Badge>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">Drop-off</p>
+                <p className="text-sm font-medium leading-snug">{ride.dropoff_address}</p>
+                <a
+                  href={mapsLink(ride.dropoff_address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-medium"
+                >
+                  Open in Maps ↗
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="outline"
-              onClick={onDecline}
-              className="h-12 rounded-xl font-semibold border-destructive text-destructive hover:bg-destructive/10"
-            >
-              Decline
-            </Button>
-            <Button
-              onClick={onAccept}
-              className="h-12 rounded-xl font-semibold bg-primary hover:bg-primary/90"
-            >
-              Accept Ride
-            </Button>
+          {/* Payment Method */}
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="capitalize flex items-center gap-1.5">
+              {ride.payment_method === 'cash' ? (
+                <><Banknote className="w-3.5 h-3.5" /> Cash</>
+              ) : (
+                <><CreditCard className="w-3.5 h-3.5" /> Card</>
+              )}
+            </Badge>
+            <span className="text-xs text-muted-foreground">{ride.distance_km} miles</span>
           </div>
-        </motion.div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="p-5 pt-0 flex gap-3">
+          <Button
+            variant="outline"
+            onClick={onDecline}
+            className="flex-1 h-12 border-2 hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Decline
+          </Button>
+          <Button
+            onClick={onAccept}
+            className="flex-1 h-12 bg-primary text-primary-foreground font-semibold hover:opacity-90 shadow-lg shadow-primary/20"
+          >
+            Accept Ride
+          </Button>
+        </div>
       </motion.div>
-    </>
+    </motion.div>
   );
 }

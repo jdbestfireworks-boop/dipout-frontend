@@ -7,6 +7,8 @@ import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, C
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import RideChat from '@/components/ride/RideChat';
+import ActiveTripCard from '@/components/driver/ActiveTripCard';
+import RideRequestCard from '@/components/driver/RideRequestCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { isInLouisiana, haversineMiles } from '@/lib/geo';
@@ -357,24 +359,26 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
-      {/* Header with back button */}
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 shrink-0">
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-display font-bold">Driver hub</h1>
-          <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 shrink-0 rounded-xl">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-display font-bold">Driver Hub</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">{profile.vehicle} · {profile.plate}</p>
+          </div>
         </div>
       </div>
 
-      {/* Online/Offline Status Bar */}
-      <div className="rounded-2xl border-2 border-border bg-card p-4 flex items-center justify-between">
+      {/* Online/Offline Status Card */}
+      <div className="rounded-2xl border border-border bg-card p-5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <div className={`w-4 h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
+          <div className={`w-3 h-3 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Driver Status</p>
-            <p className={`text-2xl font-bold ${profile.status === 'offline' ? 'text-gray-400' : 'text-green-500'}`}>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</p>
+            <p className={`text-lg font-bold ${profile.status === 'offline' ? 'text-gray-400' : 'text-green-500'}`}>
               {profile.status === 'offline' ? 'Offline' : 'Online'}
             </p>
           </div>
@@ -383,7 +387,7 @@ export default function DriverApp() {
           checked={profile.status !== 'offline'} 
           onCheckedChange={toggleOnline} 
           disabled={!!activeRide}
-          className="scale-125"
+          className="scale-110"
         />
       </div>
 
@@ -428,139 +432,53 @@ export default function DriverApp() {
 
       <AnimatePresence mode="wait">
         {activeRide ? (
-          <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-lg">Current trip</h2>
-              <Badge className="capitalize">{activeRide.status.replace('_', ' ')}</Badge>
-            </div>
-
-            {/* Rider + payment info */}
-            <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-3">
-              <div>
-                <p className="text-muted-foreground text-xs mb-1">Rider</p>
-                <p className="font-medium">{activeRide.rider_email}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Fare</span>
-                <span className="font-bold text-base">${activeRide.fare?.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Payment</span>
-                <Badge variant="outline" className="capitalize flex items-center gap-1">
-                  {activeRide.payment_method === 'cash'
-                    ? <><Banknote className="w-3 h-3" /> Cash</>
-                    : <><CreditCard className="w-3 h-3" /> Card</>
-                  }
-                </Badge>
-              </div>
-              <RideChat
-                ride={activeRide}
-                myEmail={user.email}
-                myRole="driver"
-                otherEmail={activeRide.rider_email}
-              />
-            </div>
-
-            {/* Pickup card with Maps link */}
-            <div className="rounded-2xl border border-border bg-card p-4 space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs text-muted-foreground mb-0.5">Pickup</p>
-                  <p className="font-medium">{activeRide.pickup_address}</p>
-                  <a
-                    href={mapsLink(activeRide.pickup_address)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-semibold"
-                  >
-                    <ExternalLink className="w-3 h-3" /> Open in Maps
-                  </a>
-                </div>
-              </div>
-              <div className="border-t border-border" />
-              <div className="flex items-start gap-3">
-                <Navigation className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs text-muted-foreground mb-0.5">Drop-off</p>
-                  <p className="font-medium">{activeRide.dropoff_address}</p>
-                  <a
-                    href={mapsLink(activeRide.dropoff_address)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-semibold"
-                  >
-                    <ExternalLink className="w-3 h-3" /> Open in Maps
-                  </a>
-                </div>
-              </div>
-              {/* Full directions link */}
-              <a
-                href={dirLink(activeRide.pickup_address, activeRide.dropoff_address)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full mt-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity"
-              >
-                <Navigation className="w-4 h-4" /> Get full directions
-              </a>
-            </div>
-
-
-
-            {activeRide.status === 'accepted' && (
-              <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold" variant="outline">
-                Rider picked up — start trip
-              </Button>
-            )}
-            {activeRide.status === 'in_progress' && (
-              <Button onClick={completeTrip} className="w-full h-12 rounded-xl font-semibold">
-                Complete trip
-              </Button>
-            )}
+          <motion.div 
+            key="active" 
+            initial={{ opacity: 0, y: 8 }} 
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+          >
+            <ActiveTripCard
+              ride={activeRide}
+              user={user}
+              onStartTrip={startTrip}
+              onCompleteTrip={completeTrip}
+            />
           </motion.div>
         ) : (
-          <motion.div key="requests" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+          <motion.div 
+            key="requests" 
+            initial={{ opacity: 0, y: 8 }} 
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="space-y-3"
+          >
             <h2 className="font-semibold text-lg">Ride requests</h2>
             {profile.status === 'offline' ? (
-              <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-                Go online to start receiving ride requests.
+              <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                  <Car className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-bold">You're offline</h3>
+                <p className="text-sm text-muted-foreground mt-2">Toggle online above to start receiving ride requests</p>
               </div>
             ) : requests.length === 0 ? (
-              <div className="rounded-2xl border border-border bg-card p-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="w-4 h-4 animate-spin" /> Waiting for requests…
+              <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Car className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold">No rides available</h3>
+                <p className="text-sm text-muted-foreground mt-2">Stay online - you'll see requests here when riders book</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {requests.map((r) => (
-                  <div
+                  <RideRequestCard
                     key={r.id}
-                    onClick={() => setSelectedRequest(r)}
-                    className="rounded-2xl border border-border bg-card p-4 space-y-2 cursor-pointer hover:border-primary/50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">{r.distance_km} mi</span>
-                        <Badge variant="outline" className="text-xs flex items-center gap-1">
-                          {r.payment_method === 'cash'
-                            ? <><Banknote className="w-3 h-3" /> Cash</>
-                            : <><CreditCard className="w-3 h-3" /> Card</>
-                          }
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="text-sm space-y-1">
-                      <p className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                        <span className="truncate">{r.pickup_address}</span>
-                      </p>
-                      <p className="flex items-center gap-2 text-muted-foreground">
-                        <Navigation className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">{r.dropoff_address}</span>
-                      </p>
-                    </div>
-                  </div>
+                    ride={r}
+                    user={user}
+                    onSelect={() => setSelectedRequest(r)}
+                  />
                 ))}
               </div>
             )}

@@ -8,9 +8,8 @@ import AddressInput from '@/components/rider/AddressInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
-import TipSelector from '@/components/rider/TipSelector';
-import DriverRating from '@/components/rider/DriverRating';
 import SafetyButton from '@/components/rider/SafetyButton';
+import PostRideScreen from '@/components/rider/PostRideScreen';
 import SavedAddresses from '@/components/rider/SavedAddresses';
 import SchedulePicker from '@/components/rider/SchedulePicker';
 import RideChat from '@/components/ride/RideChat';
@@ -75,8 +74,6 @@ export default function RiderApp() {
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
 
-  const [tip, setTip] = useState(null); // null = not yet chosen
-  const [driverRating, setDriverRating] = useState(0);
   const [scheduledFor, setScheduledFor] = useState(null);
 
   // Resume an active ride
@@ -160,28 +157,6 @@ export default function RiderApp() {
     resetAll();
   };
 
-  const confirmPayment = async () => {
-    const finalFare = (ride.fare || 0) + (tip || 0);
-    await base44.entities.Ride.update(ride.id, { payment_status: 'paid', fare: finalFare });
-
-    // Save driver rating if given
-    if (driverRating > 0 && ride.driver_email) {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
-      if (profiles.length) {
-        const dp = profiles[0];
-        const totalRatings = (dp.total_ratings || 0) + 1;
-        const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + driverRating) / totalRatings;
-        await base44.entities.DriverProfile.update(dp.id, {
-          rating: Math.round(newRating * 10) / 10,
-          total_ratings: totalRatings,
-        });
-      }
-    }
-
-    toast.success(`Payment confirmed — thanks for riding with Dip Out!`);
-    resetAll();
-  };
-
   const resetAll = () => {
     setRide(null);
     setPickupAddress('');
@@ -191,8 +166,6 @@ export default function RiderApp() {
     setQuote(null);
     setDistanceKm(0);
     setPayMethod(null);
-    setTip(null);
-    setDriverRating(0);
     setScheduledFor(null);
   };
 
@@ -396,21 +369,9 @@ export default function RiderApp() {
                 <DriverContactCard ride={ride} myEmail={user?.email} />
               )}
 
-              {/* Payment confirmation on completion */}
+              {/* Post-ride rating + payment */}
               {ride.status === 'completed' && ride.payment_status === 'unpaid' && (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Rate your driver and confirm payment.</p>
-                  <DriverRating onRatingSelect={setDriverRating} />
-                  <TipSelector fare={ride.fare || 0} onTipChange={setTip} />
-                  {tip !== null && (
-                    <Button onClick={confirmPayment} className="w-full h-12 rounded-xl font-semibold">
-                      {ride.payment_method === 'cash'
-                        ? <><Banknote className="w-4 h-4 mr-2" /> Confirm cash · ${((ride.fare || 0) + tip).toFixed(2)}{tip > 0 ? ` (incl. $${tip.toFixed(2)} tip)` : ''}</>
-                        : <><CreditCard className="w-4 h-4 mr-2" /> Confirm card · ${((ride.fare || 0) + tip).toFixed(2)}{tip > 0 ? ` (incl. $${tip.toFixed(2)} tip)` : ''}</>
-                      }
-                    </Button>
-                  )}
-                </div>
+                <PostRideScreen ride={ride} onDone={resetAll} />
               )}
 
               {ride.status === 'completed' && ride.payment_status === 'paid' && (

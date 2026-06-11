@@ -93,7 +93,7 @@ export default function ChatPage() {
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       {/* Back button header */}
       <div className="px-4 py-3 border-b border-border bg-card flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/home')} className="h-9 w-9">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div>

@@ -159,15 +159,54 @@ export default function DriverApp() {
   };
 
   const toggleOnline = async (online) => {
-    if (online && profile.lat && profile.lng) {
+    if (online) {
+      // Request current location if not available
+      if (!profile.lat || !profile.lng) {
+        if ('geolocation' in navigator) {
+          try {
+            const position = await navigator.geolocation.getCurrentPosition({
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 0,
+            });
+            const { latitude: lat, longitude: lng } = position.coords;
+            
+            // Check if in Louisiana
+            if (!isInLouisiana(lat, lng)) {
+              toast.error('Dip Out is only available in Louisiana');
+              return;
+            }
+            
+            // Update location in database
+            await base44.entities.DriverProfile.update(profile.id, { lat, lng });
+            setProfile({ ...profile, lat, lng, status: 'available' });
+            toast.success('You\'re now online!');
+            return;
+          } catch (error) {
+            toast.error('Location access required to go online');
+            setLocationPermission('denied');
+            return;
+          }
+        } else {
+          toast.error('Geolocation not supported');
+          return;
+        }
+      }
+      
+      // Check existing location
       if (!isInLouisiana(profile.lat, profile.lng)) {
         toast.error('Dip Out is only available in Louisiana');
         return;
       }
+      
+      await base44.entities.DriverProfile.update(profile.id, { status: 'available' });
+      setProfile({ ...profile, status: 'available' });
+      toast.success('You\'re now online!');
+    } else {
+      await base44.entities.DriverProfile.update(profile.id, { status: 'offline' });
+      setProfile({ ...profile, status: 'offline' });
+      toast.info('You\'re now offline');
     }
-    const status = online ? 'available' : 'offline';
-    await base44.entities.DriverProfile.update(profile.id, { status });
-    setProfile({ ...profile, status });
   };
 
   const acceptRide = async (ride) => {

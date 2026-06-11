@@ -79,8 +79,9 @@ export default function PostRideScreen({ ride, onDone }) {
         if (window.self !== window.top) {
           // Store URL for later use
           window.localStorage.setItem('pending_stripe_url', response.data.url);
-          toast.error('Payment requires published app - opening in new tab');
+          toast.info('Payment opened in new tab - complete payment there');
           window.open(response.data.url, '_blank');
+          onDone(); // Allow user to continue in preview
         } else {
           // Redirect to Stripe checkout
           window.location.href = response.data.url;
@@ -233,30 +234,28 @@ export default function PostRideScreen({ ride, onDone }) {
       )}
 
       {/* Confirm button */}
-      {tip !== null && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <Button
+          onClick={confirm}
+          disabled={submitting || rating === 0 || tip === null}
+          className="w-full h-14 rounded-2xl font-bold text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Button
-            onClick={confirm}
-            disabled={submitting || rating === 0}
-            className="w-full h-14 rounded-2xl font-bold text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {submitting ? (
-              <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Processing...</>
-            ) : ride.payment_method === 'cash' ? (
-              <><Banknote className="w-5 h-5 mr-2" /> Confirm Payment · ${((ride.fare || 0) + tip).toFixed(2)}</>
-            ) : (
-              <><CreditCard className="w-5 h-5 mr-2" /> Pay ${((ride.fare || 0) + tip).toFixed(2)}</>
-            )}
-            {tip > 0 && <span className="ml-2 text-xs opacity-80">(+${tip.toFixed(2)} tip)</span>}
-          </Button>
-          <p className="text-xs text-center text-muted-foreground mt-3">
-            {rating === 0 ? 'Please rate your driver to continue' : 'Your feedback helps maintain quality standards'}
-          </p>
-        </motion.div>
-      )}
+          {submitting ? (
+            <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Processing...</>
+          ) : ride.payment_method === 'cash' ? (
+            <><Banknote className="w-5 h-5 mr-2" /> Confirm Payment · ${((ride.fare || 0) + tip).toFixed(2)}</>
+          ) : (
+            <><CreditCard className="w-5 h-5 mr-2" /> Pay ${((ride.fare || 0) + tip).toFixed(2)}</>
+          )}
+          {tip > 0 && <span className="ml-2 text-xs opacity-80">(+${tip.toFixed(2)} tip)</span>}
+        </Button>
+        <p className="text-xs text-center text-muted-foreground mt-3">
+          {rating === 0 ? 'Please rate your driver to continue' : 'Your feedback helps maintain quality standards'}
+        </p>
+      </motion.div>
     </motion.div>
   );
 }

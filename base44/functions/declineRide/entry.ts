@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // Filter out drivers who already declined
     const eligibleDrivers = allDrivers.filter(d => 
       d.user_email !== user.email && 
-      !declinedBy.includes(d.user_email) &&
+      !(d.declined_by || []).includes(ride_id) &&
       d.lat && d.lng &&
       ride.pickup_lat && ride.pickup_lng
     );

@@ -37,6 +37,22 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, message: 'Ride not yet completed, skipping receipt' });
     }
 
+    // Check user's notification preferences
+    try {
+      const riders = await base44.asServiceRole.entities.User.filter({ email: ride.rider_email });
+      if (riders.length > 0) {
+        const rider = riders[0];
+        const prefs = rider.data?.notification_preferences;
+        // Skip if user has disabled receipt emails
+        if (prefs && prefs.receipt_emails === false) {
+          return Response.json({ success: true, message: 'User has disabled receipt emails' });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking user preferences:', error);
+      // Continue with sending if we can't check preferences
+    }
+
     const fare = ride.fare || 0;
     // tip = final fare minus original base fare (if fare was updated with tip)
     const baseFare = ride.base_fare || fare;

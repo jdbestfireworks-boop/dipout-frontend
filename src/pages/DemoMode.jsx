@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Car, MapPin, User, Shield, CheckCircle2, Clock, DollarSign, 
-  Star, Phone, MessageCircle, ArrowRight, Play, RotateCcw
+  Star, Phone, MessageCircle, ArrowRight, Play, RotateCcw, Database, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const scenarios = [
   {
@@ -93,6 +95,22 @@ export default function DemoMode() {
   const [activeScenario, setActiveScenario] = useState(0);
   const [activeStep, setActiveStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+
+  const seedDemoData = async () => {
+    setSeeding(true);
+    try {
+      const response = await base44.functions.invoke('seedDemoData', {});
+      if (response.data.success) {
+        toast.success(`Demo data loaded: ${response.data.drivers} drivers, ${response.data.rides} rides`);
+        setTimeout(() => window.location.reload(), 1500);
+      }
+    } catch (error) {
+      toast.error('Failed to load demo data - make sure you\'re logged in as admin');
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const handlePlay = () => {
     setIsPlaying(true);
@@ -147,6 +165,34 @@ export default function DemoMode() {
             </button>
           ))}
         </div>
+
+        {/* Demo Data Seeder */}
+        <Card className="border-2 border-primary/50 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="font-bold flex items-center gap-2">
+                  <Database className="w-5 h-5 text-primary" />
+                  Quick Demo Setup
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Populate the app with sample drivers and rides for your demo
+                </p>
+              </div>
+              <Button 
+                onClick={seedDemoData}
+                disabled={seeding}
+                className="h-12 px-6 rounded-2xl font-semibold"
+              >
+                {seeding ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Loading...</>
+                ) : (
+                  <><Database className="w-4 h-4 mr-2" /> Load Demo Data</>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Playback Controls */}
         <div className="flex items-center justify-center gap-4">

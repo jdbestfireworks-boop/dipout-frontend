@@ -6,8 +6,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-6">
       {/* Logo */}
-      <div className="w-20 h-20 rounded-3xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 mb-8">
-        <Car className="w-10 h-10 text-primary-foreground" />
+      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-900 to-purple-700 flex items-center justify-center shadow-2xl shadow-primary/40 mb-8 overflow-hidden border-4 border-primary/30">
+        <img src="https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png" alt="Dip Out Logo" className="w-28 h-28 object-contain" />
       </div>
       
       <h1 className="text-4xl font-display font-bold mb-3">

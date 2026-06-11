@@ -167,6 +167,19 @@ export default function DriverApp() {
     return unsubscribe;
   }, [profile?.id, profile?.status, activeRide, selectedRequest, user?.email]);
 
+  // Auto-show first request when driver goes online or page loads
+  useEffect(() => {
+    if (!profile || profile.status === 'offline' || activeRide || selectedRequest || requests.length === 0) return;
+    
+    // Auto-show the most recent request
+    const mostRecent = requests[0];
+    setSelectedRequest(mostRecent);
+    
+    // Play notification sound
+    notificationSound.currentTime = 0;
+    notificationSound.play().catch(() => console.log('Audio autoplay blocked'));
+  }, [profile?.status, requests.length]);
+
   const loadRequests = async () => {
     const reqs = await base44.entities.Ride.filter({ status: 'requested' }, '-created_date', 20);
     // Filter out rides this driver already declined

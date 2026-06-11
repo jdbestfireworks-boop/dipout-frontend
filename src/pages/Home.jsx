@@ -17,41 +17,23 @@ export default function Home() {
           Fast, affordable rides at your fingertips. Or earn money on your own schedule as a driver.
         </p>
 
-        {/* App download buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
-          <a
-            href="https://apps.apple.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-foreground text-background font-semibold hover:opacity-90 transition-opacity"
-          >
-            <Apple className="w-5 h-5 shrink-0" />
-            <div className="text-left">
-              <p className="text-[10px] opacity-70 leading-none">Download on the</p>
-              <p className="text-sm leading-tight">App Store</p>
-            </div>
-          </a>
-          <a
-            href="https://play.google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-6 py-3.5 rounded-2xl bg-foreground text-background font-semibold hover:opacity-90 transition-opacity"
-          >
-            <Play className="w-5 h-5 shrink-0 fill-background" />
-            <div className="text-left">
-              <p className="text-[10px] opacity-70 leading-none">Get it on</p>
-              <p className="text-sm leading-tight">Google Play</p>
-            </div>
-          </a>
-        </div>
-
-        {/* Or use web app */}
-        <p className="text-sm text-muted-foreground">
-          Or use the web app —{' '}
-          <Link to="/" className="text-primary hover:underline font-medium">Book a ride</Link>
-          {' '}·{' '}
-          <Link to="/driver" className="text-primary hover:underline font-medium">Start driving</Link>
-        </p>
+        {/* Web app buttons */}
+         <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
+           <Link
+             to="/"
+             className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity"
+           >
+             <Car className="w-5 h-5 shrink-0" />
+             Book a Ride
+           </Link>
+           <Link
+             to="/driver"
+             className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-foreground text-background font-semibold hover:opacity-90 transition-opacity"
+           >
+             <Car className="w-5 h-5 shrink-0" />
+             Start Driving
+           </Link>
+         </div>
       </section>
 
       {/* Feature highlights */}

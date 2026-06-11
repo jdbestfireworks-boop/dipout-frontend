@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, MapPin } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export default function AddressAutocomplete({ placeholder, value, onChange, icon }) {
   const [suggestions, setSuggestions] = useState([]);
@@ -30,8 +31,14 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
       setLoading(true);
       try {
         const response = await base44.functions.invoke('googlePlacesAutocomplete', { query: val });
-        setSuggestions(response.data.suggestions || []);
-        setIsOpen(true);
+        if (response.data.error) {
+          console.error('Autocomplete API error:', response.data.error);
+          toast.error('Google Maps API key not configured');
+          setSuggestions([]);
+        } else {
+          setSuggestions(response.data.suggestions || []);
+          setIsOpen(true);
+        }
       } catch (error) {
         console.error('Autocomplete error:', error);
       } finally {
@@ -49,15 +56,18 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
       const response = await base44.functions.invoke('googlePlaceDetails', { 
         place_id: suggestion.place_id 
       });
-      const { formatted_address, lat, lng } = response.data;
-      onChange(formatted_address, { lat, lng });
+      if (response.data.error) {
+        console.error('Place details API error:', response.data.error);
+        onChange(suggestion.description, null);
+      } else {
+        const { formatted_address, lat, lng } = response.data;
+        onChange(formatted_address, { lat, lng });
+      }
       setIsOpen(false);
       setSuggestions([]);
     } catch (error) {
       console.error('Place details error:', error);
-      // Fallback to plain text
       onChange(suggestion.description, null);
-      setIsOpen(false);
     } finally {
       setLoading(false);
     }

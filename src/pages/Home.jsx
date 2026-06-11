@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, MapPin, Shield, Play, Bell, Loader2, Zap } from 'lucide-react';
+import { Car, MapPin, Shield, Play, Bell, Loader2, Zap, Sparkles } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
@@ -110,8 +110,8 @@ export default function Home() {
 
         <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <Link to="/rides" className="hover:text-primary transition-colors font-medium">Ride History</Link>
-          <Link to="/click-simulation" className="hover:text-primary transition-colors font-medium flex items-center gap-1">
-            <Zap className="w-3 h-3" /> Interactive Demo
+          <Link to="/simulation" className="hover:text-primary transition-colors font-medium flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> See How It Works
           </Link>
           <Link to="/demo" className="hover:text-primary transition-colors font-medium flex items-center gap-1">
             <Play className="w-3 h-3" /> How It Works

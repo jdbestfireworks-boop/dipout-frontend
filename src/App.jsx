@@ -23,6 +23,7 @@ import RideHistoryPage from '@/pages/RideHistoryPage';
 import DemoMode from '@/pages/DemoMode';
 import NotificationSettings from '@/pages/NotificationSettings';
 import ClickSimulation from '@/pages/ClickSimulation';
+import SimulationGuide from '@/pages/SimulationGuide';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
           <Route path="/demo" element={<DemoMode />} />
           <Route path="/notifications" element={<NotificationSettings />} />
           <Route path="/click-simulation" element={<ClickSimulation />} />
+          <Route path="/simulation" element={<SimulationGuide />} />
           <Route path="/admin/monitoring" element={<AdminMonitoring />} />
         </Route>
       </Route>

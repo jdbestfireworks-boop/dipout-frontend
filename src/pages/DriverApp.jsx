@@ -230,6 +230,7 @@ export default function DriverApp() {
   };
 
   const declineRide = () => {
+    setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
     setSelectedRequest(null);
     toast.info('Ride declined');
   };

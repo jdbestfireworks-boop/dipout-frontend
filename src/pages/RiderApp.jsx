@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink } from 'lucide-react';
-import AddressInput from '@/components/rider/AddressInput';
+import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -168,16 +168,16 @@ export default function RiderApp() {
 
               {/* Addresses */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                <AddressInput
+                <AddressAutocomplete
                   placeholder="Pickup address"
                   value={pickupAddress}
-                  onChange={(val) => { setPickupAddress(val); setQuote(null); }}
+                  onChange={(val, coords) => { setPickupAddress(val); setPickupCoords(coords); setQuote(null); }}
                   icon={<MapPin className="w-4 h-4 text-primary" />}
                 />
-                <AddressInput
+                <AddressAutocomplete
                   placeholder="Destination"
                   value={dropoffAddress}
-                  onChange={(val) => { setDropoffAddress(val); setQuote(null); }}
+                  onChange={(val, coords) => { setDropoffAddress(val); setDropoffCoords(coords); setQuote(null); }}
                   icon={<Navigation className="w-4 h-4 text-muted-foreground" />}
                 />
               </div>

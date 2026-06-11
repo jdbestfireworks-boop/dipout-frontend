@@ -1,0 +1,38 @@
+{
+  "name": "PricingConfig",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Configuration name"
+    },
+    "base_fare": {
+      "type": "number",
+      "default": 3.0,
+      "description": "Base fare in USD"
+    },
+    "per_km_rate": {
+      "type": "number",
+      "default": 1.5,
+      "description": "Rate per kilometer"
+    },
+    "driver_commission": {
+      "type": "number",
+      "default": 0.8,
+      "description": "Driver commission rate (0.8 = 80%)"
+    },
+    "min_fare": {
+      "type": "number",
+      "default": 5.0,
+      "description": "Minimum fare amount"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this pricing is active"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

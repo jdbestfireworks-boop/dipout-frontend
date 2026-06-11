@@ -12,6 +12,7 @@ import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
+import PricingControls from '@/components/admin/PricingControls';
 
 const statusColors = {
   requested: 'bg-accent text-accent-foreground',
@@ -74,7 +75,10 @@ export default function AdminDashboard() {
         <StatCard icon={TrendingUp} label="Avg surge" value={`${avgSurge.toFixed(2)}x`} sub="AI dynamic pricing" />
       </div>
 
-      <DailyRevenueChart rides={rides} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <DailyRevenueChart rides={rides} />
+        <PricingControls />
+      </div>
 
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="p-4 border-b border-border font-semibold">Recent rides</div>

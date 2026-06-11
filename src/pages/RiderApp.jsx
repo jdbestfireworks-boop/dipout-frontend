@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -173,6 +173,8 @@ export default function RiderApp() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [gpsEnabled, setGpsEnabled] = useState(true);
   const [gpsWatchId, setGpsWatchId] = useState(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancellationFee, setCancellationFee] = useState(0);
 
   // Resume an active ride
   useEffect(() => {
@@ -351,8 +353,35 @@ export default function RiderApp() {
   };
 
   const cancelRide = async () => {
-    await base44.entities.Ride.update(ride.id, { status: 'cancelled' });
-    resetAll();
+    try {
+      // Calculate cancellation fee based on ride status
+      const fee = ride.status === 'accepted' ? 5.0 : 0;
+      
+      await base44.entities.Ride.update(ride.id, {
+        status: 'cancelled',
+        cancellation_fee: fee,
+        cancelled_at: new Date().toISOString(),
+      });
+      
+      if (fee > 0) {
+        toast.info(`Cancellation fee of $${fee.toFixed(2)} charged`);
+      } else {
+        toast.success('Ride cancelled');
+      }
+      
+      resetAll();
+      setShowCancelConfirm(false);
+    } catch (error) {
+      console.error('Cancel ride error:', error);
+      toast.error('Failed to cancel ride');
+    }
+  };
+
+  const initiateCancel = () => {
+    // Calculate fee based on status
+    const fee = ride.status === 'accepted' ? 5.0 : 0;
+    setCancellationFee(fee);
+    setShowCancelConfirm(true);
   };
 
   const resetAll = () => {
@@ -626,9 +655,70 @@ export default function RiderApp() {
               )}
 
               {['requested', 'accepted'].includes(ride.status) && (
-                <Button variant="ghost" onClick={cancelRide} className="w-full text-destructive">
+                <Button 
+                  variant="ghost" 
+                  onClick={initiateCancel} 
+                  className="w-full text-destructive hover:bg-destructive/10"
+                >
+                  <AlertTriangle className="w-4 h-4 mr-2" />
                   Cancel ride
                 </Button>
+              )}
+
+              {/* Cancellation Confirmation Dialog */}
+              {showCancelConfirm && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                  onClick={() => setShowCancelConfirm(false)}
+                >
+                  <div 
+                    className="rounded-2xl border border-border bg-card p-6 max-w-sm w-full shadow-xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                        <AlertTriangle className="w-5 h-5 text-destructive" />
+                      </div>
+                      <h3 className="text-lg font-bold">Cancel Ride?</h3>
+                    </div>
+                    
+                    {cancellationFee > 0 && (
+                      <div className="mb-4 p-3 rounded-xl bg-destructive/5 border border-destructive/20">
+                        <p className="text-sm text-destructive font-medium">
+                          Cancellation Fee: ${cancellationFee.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          This fee will be charged to your payment method because the driver has already accepted your ride.
+                        </p>
+                      </div>
+                    )}
+                    
+                    <p className="text-sm text-muted-foreground mb-6">
+                      {ride.status === 'requested' 
+                        ? 'Are you sure you want to cancel this ride request?'
+                        : 'Are you sure you want to cancel this ride?'}
+                    </p>
+                    
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setShowCancelConfirm(false)}
+                      >
+                        Keep Ride
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        className="flex-1"
+                        onClick={cancelRide}
+                      >
+                        Cancel Ride
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
               )}
 
               {ride.status === 'cancelled' && (

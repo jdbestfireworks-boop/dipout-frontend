@@ -40,6 +40,14 @@
     "driver_lng": {
       "type": "number"
     },
+    "rider_lat": {
+      "type": "number",
+      "description": "Rider's current GPS location (when enabled)"
+    },
+    "rider_lng": {
+      "type": "number",
+      "description": "Rider's current GPS location (when enabled)"
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -86,6 +94,15 @@
         "paid"
       ],
       "default": "unpaid"
+    },
+    "cancellation_fee": {
+      "type": "number",
+      "description": "Fee charged if ride is cancelled after driver accepted"
+    },
+    "cancelled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the ride was cancelled"
     },
     "rider_rating": {
       "type": "number",

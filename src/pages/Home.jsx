@@ -31,18 +31,18 @@ export default function Home() {
               Book a ride in seconds. AI-powered pricing, real-time tracking, and in-app chat with your driver.
             </p>
           </div>
-          <div className="flex flex-col gap-2 mt-auto">
+          <div className="flex flex-col gap-3 mt-auto">
             <Link
               to="/"
-              className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-base shadow-lg shadow-primary/30"
+              className="flex items-center justify-center gap-2 px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-lg shadow-lg shadow-primary/30 hover:scale-[1.02]"
             >
-              <MapPin className="w-5 h-5" /> Book a ride now
+              <MapPin className="w-6 h-6" /> Book a ride now
             </Link>
             <Link
               to="/register"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-border font-semibold hover:bg-accent transition-colors text-sm"
+              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border-2 border-border font-bold hover:bg-accent transition-all text-base hover:scale-[1.02]"
             >
-              <UserPlus className="w-4 h-4" /> Create rider account
+              <UserPlus className="w-5 h-5" /> Create rider account
             </Link>
           </div>
         </div>
@@ -58,18 +58,18 @@ export default function Home() {
               Set your own hours, earn more with surge zones, and get paid instantly after every trip.
             </p>
           </div>
-          <div className="flex flex-col gap-2 mt-auto">
+          <div className="flex flex-col gap-3 mt-auto">
             <Link
               to="/driver"
-              className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-base shadow-lg shadow-primary/30"
+              className="flex items-center justify-center gap-2 px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-lg shadow-lg shadow-primary/30 hover:scale-[1.02]"
             >
-              <Car className="w-5 h-5" /> Go to driver hub
+              <Car className="w-6 h-6" /> Go to driver hub
             </Link>
             <Link
               to="/register"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-primary/40 font-semibold hover:bg-primary/10 transition-colors text-sm text-primary"
+              className="flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border-2 border-primary/50 font-bold hover:bg-primary/10 transition-all text-base hover:scale-[1.02] text-primary"
             >
-              <UserPlus className="w-4 h-4" /> Create driver account
+              <UserPlus className="w-5 h-5" /> Create driver account
             </Link>
           </div>
         </div>

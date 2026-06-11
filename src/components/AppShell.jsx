@@ -22,27 +22,27 @@ export default function AppShell() {
           </div>
           <span className="font-display font-700 font-bold tracking-tight text-lg">Dip Out</span>
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-2">
           {navItems.map(({ path, label, icon: Icon }) => (
             <Link
               key={path}
               to={path}
               className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors',
+                'flex items-center gap-2 px-4 py-2.5 rounded-full text-base font-semibold transition-all hover:scale-105',
                 location.pathname === path
-                  ? 'bg-primary text-primary-foreground font-semibold'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent border border-border'
               )}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-5 h-5" />
               <span className="hidden sm:inline">{label}</span>
             </Link>
           ))}
           <button
             onClick={() => base44.auth.logout()}
-            className="ml-2 p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            className="ml-2 p-2.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors border border-border"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5" />
           </button>
         </nav>
       </header>

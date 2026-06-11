@@ -270,7 +270,7 @@ export default function DriverApp() {
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground">{r.distance_km} km</span>
+                        <span className="text-xs text-muted-foreground">{r.distance_km} mi</span>
                         <Badge variant="outline" className="text-xs flex items-center gap-1">
                           {r.payment_method === 'cash'
                             ? <><Banknote className="w-3 h-3" /> Cash</>

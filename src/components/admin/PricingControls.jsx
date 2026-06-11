@@ -21,7 +21,7 @@ export default function PricingControls() {
 
   const defaultConfig = {
     base_fare: 3.0,
-    per_km_rate: 1.5,
+    per_mile_rate: 2.5,
     driver_commission: 0.8,
     min_fare: 5.0,
   };
@@ -99,13 +99,13 @@ export default function PricingControls() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="perKm">Per KM Rate ($)</Label>
+          <Label htmlFor="perMile">Per Mile Rate ($)</Label>
           <Input
-            id="perKm"
+            id="perMile"
             type="number"
             step="0.1"
-            value={formData.per_km_rate}
-            onChange={(e) => setFormData({ ...formData, per_km_rate: parseFloat(e.target.value) || 0 })}
+            value={formData.per_mile_rate}
+            onChange={(e) => setFormData({ ...formData, per_mile_rate: parseFloat(e.target.value) || 0 })}
             className="h-11"
           />
           <p className="text-xs text-muted-foreground">Distance-based pricing</p>
@@ -156,23 +156,23 @@ export default function PricingControls() {
 
       {/* Preview */}
       <div className="bg-accent/30 rounded-xl p-4 space-y-2 text-sm">
-        <p className="font-semibold text-xs uppercase text-muted-foreground mb-2">Example: 5 km ride</p>
+        <p className="font-semibold text-xs uppercase text-muted-foreground mb-2">Example: 5 mile ride</p>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Base fare</span>
           <span className="font-medium">${formData.base_fare?.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Distance (5 km × ${formData.per_km_rate?.toFixed(2)})</span>
-          <span className="font-medium">${(5 * formData.per_km_rate).toFixed(2)}</span>
+          <span className="text-muted-foreground">Distance (5 mi × ${formData.per_mile_rate?.toFixed(2)})</span>
+          <span className="font-medium">${(5 * formData.per_mile_rate).toFixed(2)}</span>
         </div>
         <div className="flex justify-between pt-2 border-t border-border font-bold text-base">
           <span>Total Fare</span>
-          <span className="text-primary">${Math.max(formData.base_fare + 5 * formData.per_km_rate, formData.min_fare).toFixed(2)}</span>
+          <span className="text-primary">${Math.max(formData.base_fare + 5 * formData.per_mile_rate, formData.min_fare).toFixed(2)}</span>
         </div>
         <div className="flex justify-between pt-2 border-t border-border text-xs">
           <span className="text-muted-foreground">Driver earns ({Math.round(formData.driver_commission * 100)}%)</span>
           <span className="text-green-600 font-semibold">
-            ${(Math.max(formData.base_fare + 5 * formData.per_km_rate, formData.min_fare) * formData.driver_commission).toFixed(2)}
+            ${(Math.max(formData.base_fare + 5 * formData.per_mile_rate, formData.min_fare) * formData.driver_commission).toFixed(2)}
           </span>
         </div>
       </div>

@@ -11,10 +11,10 @@
       "default": 3.0,
       "description": "Base fare in USD"
     },
-    "per_km_rate": {
+    "per_mile_rate": {
       "type": "number",
-      "default": 1.5,
-      "description": "Rate per kilometer"
+      "default": 2.5,
+      "description": "Rate per mile"
     },
     "driver_commission": {
       "type": "number",

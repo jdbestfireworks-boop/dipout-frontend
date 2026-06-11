@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 
 import PostRideScreen from '@/components/rider/PostRideScreen';
-import { haversineKm } from '@/lib/geo';
+import { haversineMiles } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 import EmptyState from '@/components/ui/empty-state';
@@ -85,20 +85,20 @@ export default function RiderApp() {
       return;
     }
     setQuoting(true);
-    // Calculate real distance if both coords known, otherwise fall back to 5 km
-    let km = distanceKm > 0 ? distanceKm : 5;
+    // Calculate real distance if both coords known, otherwise fall back to 5 miles
+    let miles = distanceKm > 0 ? distanceKm : 5;
     if (pickupCoords && dropoffCoords) {
-      km = haversineKm(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
-      km = Math.max(km, 0.5);
-      setDistanceKm(km);
+      miles = haversineMiles(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
+      miles = Math.max(miles, 0.5);
+      setDistanceKm(miles);
     }
     const q = await getDynamicFare({
-      distanceKm: km,
+      distanceMiles: miles,
       pickupAddress,
       dropoffAddress,
     });
     setQuote(q);
-    setDistanceKm(km);
+    setDistanceKm(miles);
     setQuoting(false);
   };
 
@@ -202,7 +202,7 @@ export default function RiderApp() {
                 <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Distance</span>
-                    <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                    <span className="font-medium">{distanceKm.toFixed(1)} mi</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Fare</span>

@@ -33,15 +33,16 @@ export default function DriverApp() {
 
   // Request browser notification permission on mount
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        setNotificationPermission(permission);
-        if (permission === 'granted') {
-          toast.success('Notifications enabled - you\'ll get alerts for new rides!');
-        }
-      });
-    } else if ('Notification' in window) {
+    if ('Notification' in window) {
       setNotificationPermission(Notification.permission);
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          setNotificationPermission(permission);
+          if (permission === 'granted') {
+            toast.success('Notifications enabled - you\'ll get alerts for new rides!');
+          }
+        });
+      }
     }
   }, []);
 
@@ -314,9 +315,19 @@ export default function DriverApp() {
             <Bell className="w-4 h-4 text-green-500" />
           )}
           {profile.status !== 'offline' && notificationPermission === 'denied' && (
-            <span className="text-xs text-destructive flex items-center gap-1">
-              Notifications blocked
-            </span>
+            <button
+              onClick={() => {
+                Notification.requestPermission().then(permission => {
+                  setNotificationPermission(permission);
+                  if (permission === 'granted') {
+                    toast.success('Notifications enabled!');
+                  }
+                });
+              }}
+              className="text-xs text-destructive flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              Notifications blocked - click to enable
+            </button>
           )}
           <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
           <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />

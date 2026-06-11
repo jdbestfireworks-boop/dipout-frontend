@@ -321,48 +321,58 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
-      {/* Header with back button + online toggle + test button */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 flex-1">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 shrink-0">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
+      {/* Header with back button */}
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 shrink-0">
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-display font-bold">Driver hub</h1>
+          <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+        </div>
+      </div>
+
+      {/* Online/Offline Status Bar */}
+      <div className="rounded-2xl border-2 border-border bg-card p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`w-4 h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
           <div>
-            <h1 className="text-2xl font-display font-bold">Driver hub</h1>
-            <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Driver Status</p>
+            <p className={`text-2xl font-bold ${profile.status === 'offline' ? 'text-gray-400' : 'text-green-500'}`}>
+              {profile.status === 'offline' ? 'Offline' : 'Online'}
+            </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            try {
-              const result = await base44.functions.invoke('simulateRideRequest', {});
-              toast.success(`Test ride created: $${result.data.ride.fare} - ${result.data.ride.distance}mi`);
-            } catch (error) {
-              toast.error('Failed to simulate ride');
-            }
-          }}
-          className="text-xs h-8"
-        >
-          🧪 Test Ride
-        </Button>
-        <div className="flex items-center gap-2 shrink-0">
-          {profile.status !== 'offline' && locationPermission === 'granted' && (
-            <span className="text-xs text-green-500 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <Switch 
+          checked={profile.status !== 'offline'} 
+          onCheckedChange={toggleOnline} 
+          disabled={!!activeRide}
+          className="scale-125"
+        />
+      </div>
+
+      {/* Status indicators */}
+      {profile.status !== 'offline' && (
+        <div className="flex items-center gap-4 text-xs">
+          {locationPermission === 'granted' && (
+            <span className="text-green-500 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-green-500"></span>
               GPS active
             </span>
           )}
-          {profile.status !== 'offline' && locationPermission === 'denied' && (
-            <span className="text-xs text-destructive flex items-center gap-1">
+          {locationPermission === 'denied' && (
+            <span className="text-destructive flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-destructive"></span>
               GPS denied
             </span>
           )}
-          {profile.status !== 'offline' && notificationPermission === 'granted' && (
-            <Bell className="w-4 h-4 text-green-500" />
+          {notificationPermission === 'granted' && (
+            <span className="text-green-500 flex items-center gap-1">
+              <Bell className="w-3 h-3" />
+              Notifications on
+            </span>
           )}
-          {profile.status !== 'offline' && notificationPermission === 'denied' && (
+          {notificationPermission === 'denied' && (
             <button
               onClick={() => {
                 Notification.requestPermission().then(permission => {
@@ -372,15 +382,13 @@ export default function DriverApp() {
                   }
                 });
               }}
-              className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary hover:underline cursor-pointer"
+              className="text-muted-foreground flex items-center gap-1 hover:text-primary hover:underline cursor-pointer"
             >
-              <Bell className="w-3 h-3" /> Notifications blocked - click to enable
+              <Bell className="w-3 h-3" /> Notifications blocked
             </button>
           )}
-          <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
-          <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
         </div>
-      </div>
+      )}
 
       <AnimatePresence mode="wait">
         {activeRide ? (

@@ -14,20 +14,23 @@ const STEPS = [
 function FileUpload({ label, value, uploading, onChange }) {
   const done = typeof value === 'string';
   return (
-    <div className="space-y-2">
-      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">{label}</p>
-      <label className={`flex items-center gap-3 p-4 rounded-2xl border-2 border-dashed cursor-pointer transition-all text-sm
-        ${done ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/40 text-muted-foreground'}
+    <div className="space-y-3">
+      <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+      <label className={`flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all
+        ${done ? 'border-primary bg-primary/10 text-primary' : 'border-border hover:border-primary/40 hover:bg-accent/20 text-muted-foreground'}
         ${uploading ? 'pointer-events-none opacity-60' : ''}
       `}>
         {uploading ? (
-          <Loader2 className="w-5 h-5 animate-spin text-primary shrink-0" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary shrink-0" />
         ) : done ? (
-          <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+          <CheckCircle2 className="w-10 h-10 text-primary shrink-0" />
         ) : (
-          <Upload className="w-5 h-5 shrink-0" />
+          <Upload className="w-10 h-10 shrink-0" />
         )}
-        <span>{uploading ? 'Uploading…' : done ? 'Uploaded ✓' : 'Tap to upload photo or PDF'}</span>
+        <div className="text-center">
+          <p className="font-semibold text-base">{uploading ? 'Uploading…' : done ? 'Uploaded Successfully ✓' : 'Tap to upload'}</p>
+          <p className="text-sm text-muted-foreground mt-1">Photo or PDF accepted</p>
+        </div>
         <input type="file" accept="image/*,.pdf" className="hidden"
           onChange={(e) => onChange(e.target.files[0] || null)} disabled={uploading} />
       </label>
@@ -82,19 +85,19 @@ export default function DriverOnboarding({ user, onComplete }) {
         <p className="text-sm text-muted-foreground">We just need a couple of quick details.</p>
       </div>
       <div className="space-y-4">
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Full name</p>
-          <Input value={user.full_name || ''} disabled className="h-12 rounded-2xl bg-secondary border-0 text-muted-foreground" />
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Full name</p>
+          <Input value={user.full_name || ''} disabled className="h-14 rounded-2xl bg-secondary border-0 text-lg text-muted-foreground" />
         </div>
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Phone number <span className="text-destructive">*</span></p>
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Phone number <span className="text-destructive">*</span></p>
           <Input value={personal.phone} onChange={(e) => setPersonal({ ...personal, phone: e.target.value })}
-            placeholder="+1 (555) 000-0000" type="tel" className="h-12 rounded-2xl" />
+            placeholder="+1 (555) 000-0000" type="tel" className="h-14 rounded-2xl text-lg" />
         </div>
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Date of birth <span className="text-destructive">*</span></p>
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Date of birth <span className="text-destructive">*</span></p>
           <Input value={personal.dob} onChange={(e) => setPersonal({ ...personal, dob: e.target.value })}
-            type="date" className="h-12 rounded-2xl" />
+            type="date" className="h-14 rounded-2xl text-lg" />
         </div>
       </div>
     </div>,
@@ -112,10 +115,10 @@ export default function DriverOnboarding({ user, onComplete }) {
           { label: 'Color', key: 'color', placeholder: 'e.g. Silver' },
           { label: 'License plate', key: 'plate', placeholder: 'e.g. ABC-1234' },
         ].map(({ label, key, placeholder, type }) => (
-          <div key={key} className="space-y-2">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">{label} <span className="text-destructive">*</span></p>
+          <div key={key} className="space-y-3">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{label} <span className="text-destructive">*</span></p>
             <Input value={vehicle[key]} onChange={(e) => setVehicle({ ...vehicle, [key]: e.target.value })}
-              placeholder={placeholder} type={type || 'text'} className="h-12 rounded-2xl" />
+              placeholder={placeholder} type={type || 'text'} className="h-14 rounded-2xl text-lg" />
           </div>
         ))}
       </div>
@@ -125,12 +128,14 @@ export default function DriverOnboarding({ user, onComplete }) {
       <div className="space-y-1">
         <p className="text-4xl font-display font-bold text-primary">03</p>
         <h2 className="text-2xl font-display font-bold">Documents</h2>
-        <p className="text-sm text-muted-foreground">Upload clear photos or PDFs — both are required.</p>
+        <p className="text-sm text-muted-foreground">Upload clear photos of both documents.</p>
       </div>
-      <FileUpload label="Driver's license *" value={license.url} uploading={license.uploading}
-        onChange={(f) => { if (f) uploadFile(f, setLicense); }} />
-      <FileUpload label="Insurance card *" value={insurance.url} uploading={insurance.uploading}
-        onChange={(f) => { if (f) uploadFile(f, setInsurance); }} />
+      <div className="space-y-6">
+        <FileUpload label="Driver's License" value={license.url} uploading={license.uploading}
+          onChange={(f) => { if (f) uploadFile(f, setLicense); }} />
+        <FileUpload label="Insurance Card" value={insurance.url} uploading={insurance.uploading}
+          onChange={(f) => { if (f) uploadFile(f, setInsurance); }} />
+      </div>
     </div>,
   ];
 
@@ -165,21 +170,21 @@ export default function DriverOnboarding({ user, onComplete }) {
 
       {/* Navigation */}
       <div className="fixed bottom-0 left-0 right-0 px-5 pb-8 pt-4 bg-background/80 backdrop-blur-sm">
-        <div className="max-w-md mx-auto flex gap-3">
+        <div className="max-w-md mx-auto flex gap-4">
           {step > 0 && (
-            <Button variant="outline" onClick={() => setStep(step - 1)} className="h-12 rounded-2xl w-14 flex-shrink-0 p-0">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="outline" onClick={() => setStep(step - 1)} className="h-16 rounded-2xl w-16 flex-shrink-0 p-0">
+              <ArrowLeft className="w-6 h-6" />
             </Button>
           )}
           {step < STEPS.length - 1 ? (
             <Button onClick={() => setStep(step + 1)} disabled={!canNext()}
-              className="h-12 rounded-2xl flex-1 font-semibold text-base">
-              Continue <ArrowRight className="w-4 h-4" />
+              className="h-16 rounded-2xl flex-1 font-bold text-lg">
+              Continue <ArrowRight className="w-5 h-5" />
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={!canNext() || saving || license.uploading || insurance.uploading}
-              className="h-12 rounded-2xl flex-1 font-semibold text-base">
-              {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</> : <>Start driving <ArrowRight className="w-4 h-4" /></>}
+              className="h-16 rounded-2xl flex-1 font-bold text-lg">
+              {saving ? <><Loader2 className="w-5 h-5 animate-spin" /> Submitting…</> : <>Start Driving <ArrowRight className="w-5 h-5" /></>}
             </Button>
           )}
         </div>

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MapPin, Navigation, ExternalLink, Car, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 import RideChat from '@/components/ride/RideChat';
 
 function mapsLink(address) {
@@ -15,21 +14,9 @@ export default function ActiveRideCard({
   onToggleGps,
   onCancelRide,
   onCompleteTrip,
-  onBookNewRide 
+  onBookNewRide,
+  onInitiateCancel
 }) {
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [cancellationFee, setCancellationFee] = useState(0);
-
-  const handleCancel = () => {
-    const fee = ride.status === 'accepted' ? 5.0 : 0;
-    setCancellationFee(fee);
-    setShowCancelConfirm(true);
-  };
-
-  const confirmCancel = async () => {
-    await onCancelRide();
-    setShowCancelConfirm(false);
-  };
 
   return (
     <>
@@ -135,7 +122,7 @@ export default function ActiveRideCard({
         {['requested', 'accepted'].includes(ride.status) && (
           <Button 
             variant="ghost" 
-            onClick={handleCancel}
+            onClick={onInitiateCancel}
             className="w-full text-destructive hover:bg-destructive/10 h-11"
           >
             <AlertTriangle className="w-4 h-4 mr-2" />
@@ -163,67 +150,6 @@ export default function ActiveRideCard({
           </Button>
         )}
       </div>
-
-      {/* Cancellation Dialog */}
-      {showCancelConfirm && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-          onClick={() => setShowCancelConfirm(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="rounded-2xl border border-border bg-card p-6 max-w-sm w-full shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-6 h-6 text-destructive" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Cancel Ride?</h3>
-                <p className="text-xs text-muted-foreground">This cannot be undone</p>
-              </div>
-            </div>
-            
-            {cancellationFee > 0 && (
-              <div className="mb-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20">
-                <p className="text-sm text-destructive font-semibold">
-                  Cancellation Fee: ${cancellationFee.toFixed(2)}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Charged because your driver has already accepted
-                </p>
-              </div>
-            )}
-            
-            <p className="text-sm text-muted-foreground mb-6">
-              {ride.status === 'requested' 
-                ? 'Are you sure you want to cancel this ride request?'
-                : 'Are you sure you want to cancel your ride?'}
-            </p>
-            
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1 h-11"
-                onClick={() => setShowCancelConfirm(false)}
-              >
-                Keep Ride
-              </Button>
-              <Button
-                variant="destructive"
-                className="flex-1 h-11"
-                onClick={confirmCancel}
-              >
-                Cancel Ride
-              </Button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
     </>
   );
 }

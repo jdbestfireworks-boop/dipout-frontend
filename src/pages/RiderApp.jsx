@@ -392,6 +392,7 @@ export default function RiderApp() {
                 onCancelRide={cancelRide}
                 onCompleteTrip={riderCompleteTrip}
                 onBookNewRide={resetAll}
+                onInitiateCancel={initiateCancel}
               />
 
               {ride.status === 'completed' && ride.payment_status === 'unpaid' && (

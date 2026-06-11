@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
 import RideHistory from '@/components/rider/RideHistory';
 import TipSelector from '@/components/rider/TipSelector';
+import DriverRating from '@/components/rider/DriverRating';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -36,6 +37,7 @@ export default function RiderApp() {
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
   const [tab, setTab] = useState('book'); // 'book' | 'history'
   const [tip, setTip] = useState(null); // null = not yet chosen
+  const [driverRating, setDriverRating] = useState(0);
 
   // Resume an active ride
   useEffect(() => {
@@ -113,6 +115,21 @@ export default function RiderApp() {
   const confirmPayment = async () => {
     const finalFare = (ride.fare || 0) + (tip || 0);
     await base44.entities.Ride.update(ride.id, { payment_status: 'paid', fare: finalFare });
+
+    // Save driver rating if given
+    if (driverRating > 0 && ride.driver_email) {
+      const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
+      if (profiles.length) {
+        const dp = profiles[0];
+        const totalRatings = (dp.total_ratings || 0) + 1;
+        const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + driverRating) / totalRatings;
+        await base44.entities.DriverProfile.update(dp.id, {
+          rating: Math.round(newRating * 10) / 10,
+          total_ratings: totalRatings,
+        });
+      }
+    }
+
     toast.success(`Payment confirmed — thanks for riding with Dip Out!`);
     resetAll();
   };
@@ -125,6 +142,7 @@ export default function RiderApp() {
     setDistanceKm(0);
     setPayMethod(null);
     setTip(null);
+    setDriverRating(0);
   };
 
   return (
@@ -321,7 +339,8 @@ export default function RiderApp() {
               {/* Payment confirmation on completion */}
               {ride.status === 'completed' && ride.payment_status === 'unpaid' && (
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Add a tip and confirm payment.</p>
+                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Rate your driver and confirm payment.</p>
+                  <DriverRating onRatingSelect={setDriverRating} />
                   <TipSelector fare={ride.fare || 0} onTipChange={setTip} />
                   {tip !== null && (
                     <Button onClick={confirmPayment} className="w-full h-12 rounded-xl font-semibold">

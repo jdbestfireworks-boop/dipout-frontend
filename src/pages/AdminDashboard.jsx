@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Car, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, Car, Users, TrendingUp, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import StatCard from '@/components/admin/StatCard';
 
@@ -104,6 +104,7 @@ export default function AdminDashboard() {
               <TableHead>Vehicle</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Trips</TableHead>
+              <TableHead>Rating</TableHead>
               <TableHead>Earnings</TableHead>
             </TableRow>
           </TableHeader>
@@ -116,6 +117,13 @@ export default function AdminDashboard() {
                   <Badge variant={d.status === 'offline' ? 'outline' : 'default'} className="capitalize">{d.status}</Badge>
                 </TableCell>
                 <TableCell>{d.trips_completed || 0}</TableCell>
+                <TableCell>
+                  <span className="flex items-center gap-1 font-medium">
+                    <Star className="w-3.5 h-3.5 text-primary fill-primary" />
+                    {(d.rating || 5).toFixed(1)}
+                    <span className="text-xs text-muted-foreground">({d.total_ratings || 0})</span>
+                  </span>
+                </TableCell>
                 <TableCell className="font-medium">${(d.total_earnings || 0).toFixed(2)}</TableCell>
               </TableRow>
             ))}

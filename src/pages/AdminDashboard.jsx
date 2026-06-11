@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Car, Users, TrendingUp, Star } from 'lucide-react';
+import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
@@ -18,6 +19,18 @@ const statusColors = {
 };
 
 export default function AdminDashboard() {
+  const queryClient = useQueryClient();
+
+  const approveDriver = async (driver) => {
+    await base44.entities.DriverProfile.update(driver.id, { approved: true });
+    queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
+  };
+
+  const fireDriver = async (driver) => {
+    await base44.entities.DriverProfile.update(driver.id, { approved: false, status: 'offline' });
+    queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
+  };
+
   const { data: rides = [] } = useQuery({
     queryKey: ['admin-rides'],
     queryFn: () => base44.entities.Ride.list('-created_date', 100),
@@ -98,23 +111,37 @@ export default function AdminDashboard() {
       </div>
 
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="p-4 border-b border-border font-semibold">Drivers</div>
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <span className="font-semibold">Drivers</span>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-primary" /> {drivers.filter(d => d.approved).length} hired</span>
+            <span className="flex items-center gap-1"><XCircle className="w-3.5 h-3.5 text-destructive" /> {drivers.filter(d => !d.approved).length} pending</span>
+          </div>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Driver</TableHead>
               <TableHead>Vehicle</TableHead>
+              <TableHead>Approval</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Trips</TableHead>
               <TableHead>Rating</TableHead>
               <TableHead>Earnings</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {drivers.map((d) => (
               <TableRow key={d.id}>
-                <TableCell className="max-w-[160px] truncate">{d.user_email}</TableCell>
+                <TableCell className="max-w-[140px] truncate">{d.user_email}</TableCell>
                 <TableCell className="text-muted-foreground">{d.vehicle} · {d.plate}</TableCell>
+                <TableCell>
+                  {d.approved
+                    ? <Badge className="bg-primary/15 text-primary border-0 flex items-center gap-1 w-fit"><CheckCircle2 className="w-3 h-3" /> Hired</Badge>
+                    : <Badge variant="outline" className="text-muted-foreground flex items-center gap-1 w-fit">Pending</Badge>
+                  }
+                </TableCell>
                 <TableCell>
                   <Badge variant={d.status === 'offline' ? 'outline' : 'default'} className="capitalize">{d.status}</Badge>
                 </TableCell>
@@ -127,11 +154,28 @@ export default function AdminDashboard() {
                   </span>
                 </TableCell>
                 <TableCell className="font-medium">${(d.total_earnings || 0).toFixed(2)}</TableCell>
+                <TableCell>
+                  {d.approved ? (
+                    <button
+                      onClick={() => fireDriver(d)}
+                      className="flex items-center gap-1 text-xs text-destructive hover:underline font-medium"
+                    >
+                      <XCircle className="w-3.5 h-3.5" /> Fire
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => approveDriver(d)}
+                      className="flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Hire
+                    </button>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
             {drivers.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">No drivers yet</TableCell>
+                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">No drivers yet</TableCell>
               </TableRow>
             )}
           </TableBody>

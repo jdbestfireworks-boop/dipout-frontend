@@ -23,6 +23,11 @@
       ],
       "default": "offline"
     },
+    "approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin has approved this driver to operate"
+    },
     "lat": {
       "type": "number"
     },

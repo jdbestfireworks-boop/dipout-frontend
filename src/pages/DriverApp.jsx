@@ -118,6 +118,21 @@ export default function DriverApp() {
     return <DriverOnboarding user={user} onComplete={(p) => setProfile(p)} />;
   }
 
+  if (!profile.approved) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full pt-32 px-6 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center">
+          <Loader2 className="w-7 h-7 text-muted-foreground animate-spin" />
+        </div>
+        <h2 className="text-xl font-display font-bold">Application under review</h2>
+        <p className="text-sm text-muted-foreground max-w-xs">
+          Your driver application has been submitted. An admin needs to approve your account before you can start driving.
+        </p>
+        <p className="text-xs text-muted-foreground">We'll update you once you're approved.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
       {/* Header + online toggle */}

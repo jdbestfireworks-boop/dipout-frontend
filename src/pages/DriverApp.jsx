@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ import RideChat from '@/components/ride/RideChat';
 import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
 import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
 import WeeklyStats from '@/components/driver/WeeklyStats';
+import RideRequestModal from '@/components/driver/RideRequestModal';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -27,6 +28,7 @@ export default function DriverApp() {
   const [profile, setProfile] = useState(null);
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -47,6 +49,10 @@ export default function DriverApp() {
     const unsubscribe = base44.entities.Ride.subscribe((event) => {
       if (event.type === 'create' && event.data.status === 'requested') {
         setRequests((prev) => [event.data, ...prev.filter((r) => r.id !== event.id)]);
+        // Auto-show modal for new requests when online
+        if (profile.status !== 'offline' && !activeRide) {
+          setSelectedRequest(event.data);
+        }
       }
       if (event.type === 'update') {
         setRequests((prev) => prev.filter((r) => r.id !== event.id || event.data.status === 'requested'));
@@ -58,7 +64,7 @@ export default function DriverApp() {
       }
     });
     return unsubscribe;
-  }, [profile?.id]);
+  }, [profile?.id, profile?.status, activeRide]);
 
   const loadRequests = async () => {
     const reqs = await base44.entities.Ride.filter({ status: 'requested' }, '-created_date', 20);
@@ -80,7 +86,13 @@ export default function DriverApp() {
     setProfile({ ...profile, status: 'busy' });
     setActiveRide({ ...ride, status: 'accepted', driver_email: user.email });
     setRequests((prev) => prev.filter((r) => r.id !== ride.id));
+    setSelectedRequest(null);
     toast.success('Ride accepted — open Maps to navigate');
+  };
+
+  const declineRide = async (ride) => {
+    setSelectedRequest(null);
+    toast.info('Ride declined');
   };
 
   const startTrip = async () => {
@@ -135,6 +147,15 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
+      {/* Ride request modal */}
+      {selectedRequest && (
+        <RideRequestModal
+          ride={selectedRequest}
+          onAccept={() => { acceptRide(selectedRequest); setSelectedRequest(null); }}
+          onDecline={() => { setSelectedRequest(null); }}
+        />
+      )}
+
       {/* Header + online toggle */}
       <div className="flex items-center justify-between">
         <div>
@@ -258,45 +279,49 @@ export default function DriverApp() {
                 <Loader2 className="w-4 h-4 animate-spin" /> Waiting for requests…
               </div>
             ) : (
-              requests.map((r) => (
-                <div key={r.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{r.distance_km} km</span>
-                      <Badge variant="outline" className="text-xs flex items-center gap-1">
-                        {r.payment_method === 'cash'
-                          ? <><Banknote className="w-3 h-3" /> Cash</>
-                          : <><CreditCard className="w-3 h-3" /> Card</>
-                        }
-                      </Badge>
+              <div className="space-y-3">
+                {requests.map((r) => (
+                  <div
+                    key={r.id}
+                    onClick={() => setSelectedRequest(r)}
+                    className="rounded-2xl border border-border bg-card p-4 space-y-3 cursor-pointer hover:border-primary/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">{r.distance_km} km</span>
+                        <Badge variant="outline" className="text-xs flex items-center gap-1">
+                          {r.payment_method === 'cash'
+                            ? <><Banknote className="w-3 h-3" /> Cash</>
+                            : <><CreditCard className="w-3 h-3" /> Card</>
+                          }
+                        </Badge>
+                      </div>
+                    </div>
+                    {r.scheduled_for && (
+                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        Scheduled: {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(r.scheduled_for))}
+                      </div>
+                    )}
+                    <div className="text-sm space-y-1">
+                      <p className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="truncate">{r.pickup_address}</span>
+                      </p>
+                      <p className="flex items-center gap-2 text-muted-foreground">
+                        <Navigation className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">{r.dropoff_address}</span>
+                      </p>
                     </div>
                   </div>
-                  {r.scheduled_for && (
-                    <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-                      <Clock className="w-3.5 h-3.5" />
-                      Scheduled: {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(r.scheduled_for))}
-                    </div>
-                  )}
-                  <div className="text-sm space-y-1">
-                    <p className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span className="truncate">{r.pickup_address}</span>
-                    </p>
-                    <p className="flex items-center gap-2 text-muted-foreground">
-                      <Navigation className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">{r.dropoff_address}</span>
-                    </p>
-                  </div>
-                  <Button size="sm" onClick={() => acceptRide(r)} className="w-full rounded-xl font-semibold h-10">
-                    Accept ride
-                  </Button>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 }

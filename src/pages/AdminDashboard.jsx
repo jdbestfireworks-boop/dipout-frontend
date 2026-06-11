@@ -3,20 +3,19 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowLeft, Download } from 'lucide-react';
+import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowLeft, Download, BarChart3, Sheet } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Activity, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
 import PricingControls from '@/components/admin/PricingControls';
 import AdminContact from '@/components/admin/AdminContact';
-import { Sheet } from 'lucide-react';
+
 
 const statusColors = {
   requested: 'bg-accent text-accent-foreground',

@@ -7,6 +7,7 @@ import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, Ext
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
+import RideHistory from '@/components/rider/RideHistory';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -32,6 +33,7 @@ export default function RiderApp() {
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
+  const [tab, setTab] = useState('book'); // 'book' | 'history'
 
   // Resume an active ride
   useEffect(() => {
@@ -124,11 +126,33 @@ export default function RiderApp() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-display font-bold">Where to?</h1>
-          <p className="text-sm text-muted-foreground mt-1">Enter your pickup and drop-off to get an AI fare estimate.</p>
+        {/* Tabs */}
+        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
+          <button
+            onClick={() => setTab('book')}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === 'book' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Book
+          </button>
+          <button
+            onClick={() => setTab('history')}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === 'history' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            History
+          </button>
         </div>
+
+        {tab === 'history' ? (
+          <RideHistory />
+        ) : (
+        <>
+        {/* Header */}
+        {!ride && (
+          <div>
+            <h1 className="text-3xl font-display font-bold">Where to?</h1>
+            <p className="text-sm text-muted-foreground mt-1">Enter your pickup and drop-off to get an AI fare estimate.</p>
+          </div>
+        )}
 
         <AnimatePresence mode="wait">
           {!ride ? (
@@ -329,6 +353,8 @@ export default function RiderApp() {
             </motion.div>
           )}
         </AnimatePresence>
+        </>
+        )}
       </div>
     </div>
   );

@@ -18,23 +18,33 @@ import { haversineKm } from '@/lib/geo';
 import { Link } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 
-function DriverContactCard({ ride }) {
-  const [driverPhone, setDriverPhone] = React.useState(null);
+function DriverContactCard({ ride, myEmail }) {
+  const [driverProfile, setDriverProfile] = React.useState(null);
 
   React.useEffect(() => {
     if (!ride.driver_email) return;
     base44.entities.DriverProfile.filter({ user_email: ride.driver_email }).then((profiles) => {
-      if (profiles.length) setDriverPhone(profiles[0].phone || null);
+      if (profiles.length) setDriverProfile(profiles[0]);
     });
   }, [ride.driver_email]);
 
   return (
     <div className="space-y-2">
-      <div className="rounded-2xl border border-border bg-card p-4 text-sm">
-        <p className="text-muted-foreground text-xs mb-1">Your driver</p>
+      <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-2">
+        <p className="text-muted-foreground text-xs">Your driver</p>
         <p className="font-medium">{ride.driver_email}</p>
+        {driverProfile && (
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{driverProfile.vehicle} · {driverProfile.plate}</span>
+            {driverProfile.phone && (
+              <a href={`tel:${driverProfile.phone}`} className="text-primary font-semibold hover:underline">
+                📞 {driverProfile.phone}
+              </a>
+            )}
+          </div>
+        )}
       </div>
-      <RideChat ride={ride} senderRole="rider" otherPartyEmail={ride.driver_email} otherPartyPhone={driverPhone} />
+      <RideChat ride={ride} myEmail={myEmail} myRole="rider" otherEmail={ride.driver_email} />
     </div>
   );
 }
@@ -54,6 +64,7 @@ function mapsLink(address) {
 }
 
 export default function RiderApp() {
+  const [user, setUser] = useState(null);
   const [pickupAddress, setPickupAddress] = useState('');
   const [pickupCoords, setPickupCoords] = useState(null);
   const [dropoffAddress, setDropoffAddress] = useState('');
@@ -71,7 +82,9 @@ export default function RiderApp() {
   // Resume an active ride
   useEffect(() => {
     (async () => {
-      const user = await base44.auth.me();
+      const me = await base44.auth.me();
+      setUser(me);
+      const user = me;
       const active = await base44.entities.Ride.filter(
         { rider_email: user.email },
         '-created_date',
@@ -119,9 +132,9 @@ export default function RiderApp() {
 
   const requestRide = async () => {
     if (!payMethod) { toast.error('Choose a payment method'); return; }
-    const user = await base44.auth.me();
+    const me = user || await base44.auth.me();
     const created = await base44.entities.Ride.create({
-      rider_email: user.email,
+      rider_email: me.email,
       pickup_address: pickupAddress,
       dropoff_address: dropoffAddress,
       pickup_lat: pickupCoords?.lat || 0,
@@ -380,7 +393,7 @@ export default function RiderApp() {
 
               {/* Driver info + chat/call */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <DriverContactCard ride={ride} />
+                <DriverContactCard ride={ride} myEmail={user?.email} />
               )}
 
               {/* Payment confirmation on completion */}

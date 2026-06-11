@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DollarSign, Car, Users, TrendingUp, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import StatCard from '@/components/admin/StatCard';
+import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
+import DriverDocViewer from '@/components/admin/DriverDocViewer';
 
 const statusColors = {
   requested: 'bg-accent text-accent-foreground',
@@ -135,6 +137,9 @@ export default function AdminDashboard() {
           </TableBody>
         </Table>
       </div>
+
+      <SurgeZoneManager />
+      <DriverDocViewer drivers={drivers} />
 
       {/* Leaderboard */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">

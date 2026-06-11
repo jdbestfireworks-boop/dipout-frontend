@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Loader2, DollarSign, Navigation, Star, Car, MapPin, ExternalLink, Banknote, CreditCard } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import EarningsChart from '@/components/driver/EarningsChart';
+import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -156,24 +157,7 @@ export default function DriverApp() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <DollarSign className="w-4 h-4 mx-auto text-primary mb-1" />
-          <p className="font-display font-bold text-lg">${(profile.total_earnings || 0).toFixed(0)}</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Earnings</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <Navigation className="w-4 h-4 mx-auto text-primary mb-1" />
-          <p className="font-display font-bold text-lg">{profile.trips_completed || 0}</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Trips</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <Star className="w-4 h-4 mx-auto text-primary mb-1" />
-          <p className="font-display font-bold text-lg">{(profile.rating || 5).toFixed(1)}</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rating</p>
-        </div>
-      </div>
+      <DriverSummaryPanel profile={profile} driverEmail={user.email} />
 
       {!activeRide && <EarningsChart driverEmail={user.email} />}
 

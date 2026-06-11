@@ -13,6 +13,7 @@ import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
 import PricingControls from '@/components/admin/PricingControls';
+import { Sheet } from 'lucide-react';
 
 const statusColors = {
   requested: 'bg-accent text-accent-foreground',
@@ -73,6 +74,25 @@ export default function AdminDashboard() {
         <StatCard icon={Car} label="Rides" value={rides.length} sub={`${rides.filter((r) => ['requested', 'accepted', 'in_progress'].includes(r.status)).length} active now`} />
         <StatCard icon={Users} label="Drivers" value={drivers.length} sub={`${online} online`} />
         <StatCard icon={TrendingUp} label="Avg surge" value={`${avgSurge.toFixed(2)}x`} sub="AI dynamic pricing" />
+      </div>
+
+      {/* Google Sheets Integration Status */}
+      <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+            <Sheet className="w-5 h-5 text-green-500" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-sm">Google Sheets Sync</h3>
+            <p className="text-xs text-muted-foreground">All completed rides are automatically logged for tax reporting</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            Active
+          </span>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

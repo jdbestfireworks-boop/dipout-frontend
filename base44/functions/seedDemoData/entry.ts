@@ -1,168 +1,112 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
-    try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-
-        if (user?.role !== 'admin') {
-            return Response.json({ error: 'Admin access required' }, { status: 403 });
-        }
-
-        // Sample data
-        const sampleDrivers = [
-            {
-                user_email: 'mike.driver@example.com',
-                vehicle: 'Toyota Camry',
-                plate: 'ABC-1234',
-                phone: '(504) 555-0101',
-                status: 'available',
-                approved: true,
-                lat: 29.9511,
-                lng: -90.0715,
-                rating: 4.8,
-                total_ratings: 342,
-                total_earnings: 4250.50,
-                trips_completed: 187,
-            },
-            {
-                user_email: 'sarah.rides@example.com',
-                vehicle: 'Honda Accord',
-                plate: 'XYZ-5678',
-                phone: '(504) 555-0102',
-                status: 'busy',
-                approved: true,
-                lat: 29.9584,
-                lng: -90.0644,
-                rating: 4.9,
-                total_ratings: 521,
-                total_earnings: 6890.25,
-                trips_completed: 298,
-            },
-            {
-                user_email: 'james.newdriver@example.com',
-                vehicle: 'Nissan Altima',
-                plate: 'DEF-9012',
-                phone: '(504) 555-0103',
-                status: 'offline',
-                approved: false,
-                rating: 5.0,
-                total_ratings: 0,
-                total_earnings: 0,
-                trips_completed: 0,
-            },
-        ];
-
-        const sampleRides = [
-            {
-                rider_email: 'john.rider@example.com',
-                driver_email: 'mike.driver@example.com',
-                pickup_address: '123 Canal St, New Orleans, LA 70112',
-                dropoff_address: 'Louis Armstrong Airport, Kenner, LA 70062',
-                pickup_lat: 29.9511,
-                pickup_lng: -90.0715,
-                dropoff_lat: 29.9934,
-                dropoff_lng: -90.2580,
-                driver_lat: 29.9511,
-                driver_lng: -90.0715,
-                status: 'completed',
-                distance_km: 28.5,
-                base_fare: 38.00,
-                surge_multiplier: 1.2,
-                fare: 45.60,
-                ai_pricing_reason: 'Moderate demand in downtown area',
-                payment_method: 'card',
-                payment_status: 'paid',
-                rider_rating: 5,
-                rider_comment: 'Great service! Mike was very professional.',
-            },
-            {
-                rider_email: 'emma.passenger@example.com',
-                driver_email: 'sarah.rides@example.com',
-                pickup_address: 'French Quarter, New Orleans, LA 70116',
-                dropoff_address: 'Garden District, New Orleans, LA 70130',
-                pickup_lat: 29.9584,
-                pickup_lng: -90.0644,
-                dropoff_lat: 29.9287,
-                dropoff_lng: -90.0878,
-                driver_lat: 29.9584,
-                driver_lng: -90.0644,
-                status: 'completed',
-                distance_km: 5.2,
-                base_fare: 12.50,
-                surge_multiplier: 1.5,
-                fare: 18.75,
-                ai_pricing_reason: 'High demand in French Quarter - surge pricing active',
-                payment_method: 'cash',
-                payment_status: 'paid',
-                rider_rating: 4,
-                rider_comment: 'Quick ride, thanks!',
-            },
-            {
-                rider_email: 'alex.traveler@example.com',
-                driver_email: 'mike.driver@example.com',
-                pickup_address: 'Superdome, New Orleans, LA 70112',
-                dropoff_address: 'Bourbon Street, New Orleans, LA 70116',
-                pickup_lat: 29.9511,
-                pickup_lng: -90.0812,
-                dropoff_lat: 29.9584,
-                dropoff_lng: -90.0644,
-                driver_lat: 29.9511,
-                driver_lng: -90.0812,
-                status: 'in_progress',
-                distance_km: 2.8,
-                base_fare: 8.00,
-                surge_multiplier: 1.0,
-                fare: 8.00,
-                ai_pricing_reason: 'Normal demand, short distance',
-                payment_method: 'card',
-                payment_status: 'unpaid',
-            },
-            {
-                rider_email: 'lisa.visitor@example.com',
-                driver_email: null,
-                pickup_address: 'Convention Center, New Orleans, LA 70130',
-                dropoff_address: 'City Park, New Orleans, LA 70124',
-                pickup_lat: 29.9436,
-                pickup_lng: -90.0604,
-                dropoff_lat: 29.9987,
-                dropoff_lng: -90.0958,
-                status: 'requested',
-                distance_km: 8.5,
-                base_fare: 18.00,
-                surge_multiplier: 1.3,
-                fare: 23.40,
-                ai_pricing_reason: 'Moderate demand, medium distance',
-                payment_method: 'card',
-                payment_status: 'unpaid',
-            },
-        ];
-
-        // Create drivers
-        const createdDrivers = [];
-        for (const driver of sampleDrivers) {
-            const existing = await base44.entities.DriverProfile.filter({ user_email: driver.user_email });
-            if (existing.length === 0) {
-                const created = await base44.entities.DriverProfile.create(driver);
-                createdDrivers.push(created);
-            }
-        }
-
-        // Create rides
-        const createdRides = [];
-        for (const ride of sampleRides) {
-            const created = await base44.entities.Ride.create(ride);
-            createdRides.push(created);
-        }
-
-        return Response.json({
-            success: true,
-            message: 'Demo data seeded successfully',
-            drivers: createdDrivers.length,
-            rides: createdRides.length,
-        });
-    } catch (error) {
-        console.error('Seed error:', error);
-        return Response.json({ error: error.message }, { status: 500 });
+  try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    
+    if (!user || user.role !== 'admin') {
+      return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
+
+    // Create realistic demo data for a fully working app
+
+    // 1. Create 8 driver profiles
+    const drivers = [
+      { email: 'driver1@dipout.com', phone: '+1-337-555-0201', vehicle: 'Toyota Camry', plate: 'LA-ABC-123', lat: 30.2241, lng: -92.0198, status: 'available', approved: true, rating: 4.9, total_earnings: 1250.50, trips_completed: 87 },
+      { email: 'driver2@dipout.com', phone: '+1-337-555-0202', vehicle: 'Honda Accord', plate: 'LA-XYZ-789', lat: 30.2350, lng: -92.0250, status: 'available', approved: true, rating: 4.8, total_earnings: 980.25, trips_completed: 65 },
+      { email: 'driver3@dipout.com', phone: '+1-337-555-0203', vehicle: 'Tesla Model 3', plate: 'LA-EV-456', lat: 30.2180, lng: -92.0150, status: 'busy', approved: true, rating: 5.0, total_earnings: 2100.00, trips_completed: 142 },
+      { email: 'driver4@dipout.com', phone: '+1-337-555-0204', vehicle: 'Nissan Altima', plate: 'LA-DEF-321', lat: 30.2300, lng: -92.0300, status: 'available', approved: true, rating: 4.7, total_earnings: 750.75, trips_completed: 52 },
+      { email: 'driver5@dipout.com', phone: '+1-337-555-0205', vehicle: 'Ford Fusion', plate: 'LA-GHI-654', lat: 30.2150, lng: -92.0100, status: 'offline', approved: true, rating: 4.6, total_earnings: 540.00, trips_completed: 38 },
+      { email: 'driver6@dipout.com', phone: '+1-337-555-0206', vehicle: 'Hyundai Sonata', plate: 'LA-JKL-987', lat: 30.2400, lng: -92.0280, status: 'available', approved: true, rating: 4.9, total_earnings: 1450.30, trips_completed: 98 },
+      { email: 'driver7@dipout.com', phone: '+1-337-555-0207', vehicle: 'Chevrolet Malibu', plate: 'LA-MNO-147', lat: 30.2280, lng: -92.0220, status: 'busy', approved: true, rating: 4.8, total_earnings: 890.60, trips_completed: 61 },
+      { email: 'driver8@dipout.com', phone: '+1-337-555-0208', vehicle: 'Kia Optima', plate: 'LA-PQR-258', lat: 30.2320, lng: -92.0180, status: 'available', approved: true, rating: 4.7, total_earnings: 670.40, trips_completed: 45 },
+    ];
+
+    for (const driver of drivers) {
+      const existing = await base44.asServiceRole.entities.DriverProfile.filter({ user_email: driver.email });
+      if (existing.length === 0) {
+        await base44.asServiceRole.entities.DriverProfile.create(driver);
+      }
+    }
+
+    // 2. Create 5-8 initial active ride requests
+    const AI_RIDERS = [
+      { email: 'sarah.johnson@example.com', phone: '+1-337-555-0101' },
+      { email: 'mike.chen@example.com', phone: '+1-337-555-0102' },
+      { email: 'emma.williams@example.com', phone: '+1-337-555-0103' },
+      { email: 'james.brown@example.com', phone: '+1-337-555-0104' },
+      { email: 'lisa.garcia@example.com', phone: '+1-337-555-0105' },
+      { email: 'robert.miller@example.com', phone: '+1-337-555-0106' },
+      { email: 'jennifer.davis@example.com', phone: '+1-337-555-0107' },
+      { email: 'william.rodriguez@example.com', phone: '+1-337-555-0108' },
+    ];
+
+    const ADDRESSES = [
+      '301 Canal St, Lafayette, LA 70501',
+      '400 Bourbon St, Lafayette, LA 70506',
+      '800 Johnston St, Lafayette, LA 70503',
+      '1201 Ambassador Caffery Pkwy, Lafayette, LA 70506',
+      '500 Seeley Ln, Lafayette, LA 70503',
+      '2000 NW Evangeline Thwy, Lafayette, LA 70507',
+      '900 E Pinhook Rd, Lafayette, LA 70503',
+      '1500 Kaliste Saloom Rd, Lafayette, LA 70508',
+      '600 University Ave, Lafayette, LA 70503',
+      '3000 Veterans Memorial Dr, Lafayette, LA 70506',
+    ];
+
+    const randomCoords = () => ({
+      lat: 30.2241 + (Math.random() - 0.5) * 0.15,
+      lng: -92.0198 + (Math.random() - 0.5) * 0.15,
+    });
+
+    const initialRides = 5 + Math.floor(Math.random() * 4);
+    const createdRides = [];
+
+    for (let i = 0; i < initialRides; i++) {
+      const rider = AI_RIDERS[Math.floor(Math.random() * AI_RIDERS.length)];
+      const pickup = ADDRESSES[Math.floor(Math.random() * ADDRESSES.length)];
+      const dropoff = ADDRESSES[Math.floor(Math.random() * ADDRESSES.length)];
+      const coords1 = randomCoords();
+      const coords2 = randomCoords();
+      const distance = Math.round((1.5 + Math.random() * 8) * 10) / 10;
+      const fare = Math.round((7 + distance * 2.3) * 100) / 100;
+      const surgeMultiplier = Math.random() > 0.8 ? Math.round((1.2 + Math.random() * 0.6) * 10) / 10 : 1.0;
+
+      const ride = await base44.asServiceRole.entities.Ride.create({
+        rider_email: rider.email,
+        rider_phone: rider.phone,
+        pickup_address: pickup,
+        dropoff_address: dropoff,
+        pickup_lat: coords1.lat,
+        pickup_lng: coords1.lng,
+        dropoff_lat: coords2.lat,
+        dropoff_lng: coords2.lng,
+        status: 'requested',
+        distance_km: distance,
+        base_fare: Math.round((4.5 + distance * 2.3) * 100) / 100,
+        surge_multiplier: surgeMultiplier,
+        fare: Math.round(fare * surgeMultiplier * 100) / 100,
+        ai_pricing_reason: surgeMultiplier > 1.0 ? 'High demand - surge pricing' : 'Standard pricing',
+        payment_method: Math.random() > 0.4 ? 'card' : 'cash',
+        payment_status: 'unpaid',
+        declined_by: [],
+      });
+      createdRides.push(ride);
+    }
+
+    return Response.json({
+      success: true,
+      message: 'Demo data seeded successfully',
+      stats: {
+        drivers: drivers.length,
+        initial_rides: createdRides.length,
+        location: 'Lafayette, LA',
+      },
+    });
+
+  } catch (error) {
+    console.error('Seed demo data error:', error);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 });

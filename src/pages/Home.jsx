@@ -6,21 +6,39 @@ import { toast } from 'sonner';
 
 export default function Home() {
   const [simulating, setSimulating] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
-  const startSimulation = async () => {
+  const toggleSimulation = async () => {
     setSimulating(true);
     try {
-      const result = await base44.functions.invoke('startContinuousAiRides', { action: 'start' });
+      const action = simulating ? 'stop' : 'start';
+      const result = await base44.functions.invoke('toggleSimulation', { action });
       toast.success(result.data.message);
       
-      // Manually trigger the automation to start immediately
-      // The automation will run 6 times over 30 minutes (every 5 minutes)
-      toast.info('AI rides will be created every 5 minutes for 30 minutes');
+      if (action === 'start') {
+        toast.info('AI rides created every 5 minutes - watch them appear in real-time!');
+      } else {
+        toast.info('Simulation stopped');
+      }
+      setSimulating(!simulating);
     } catch (error) {
-      console.error('Simulation error:', error);
-      toast.error('Failed to start simulation');
+      console.error('Simulation toggle error:', error);
+      toast.error('Failed to toggle simulation');
     } finally {
       setSimulating(false);
+    }
+  };
+
+  const seedDemoData = async () => {
+    setSeeding(true);
+    try {
+      const result = await base44.functions.invoke('seedDemoData', {});
+      toast.success(`Demo data loaded: ${result.data.stats.initial_rides} rides & ${result.data.stats.drivers} drivers`);
+    } catch (error) {
+      console.error('Seed data error:', error);
+      toast.error('Failed to load demo data');
+    } finally {
+      setSeeding(false);
     }
   };
 
@@ -60,17 +78,35 @@ export default function Home() {
           <Shield className="w-6 h-6" /> Admin Login
         </Link>
         
-        <button
-          onClick={startSimulation}
-          disabled={simulating}
-          className="mt-4 flex items-center justify-center gap-2 w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {simulating ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Starting...</>
-          ) : (
-            <><Zap className="w-4 h-4" /> Test: AI Riders (30 min)</>
-          )}
-        </button>
+        <div className="mt-4 space-y-3">
+          <button
+            onClick={toggleSimulation}
+            disabled={simulating}
+            className={`flex items-center justify-center gap-2 w-full px-6 py-4 rounded-2xl font-bold text-sm transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${
+              simulating
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white'
+            }`}
+          >
+            {simulating ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Stop Simulation</>
+            ) : (
+              <><Zap className="w-4 h-4" /> Start AI Simulation</>
+            )}
+          </button>
+
+          <button
+            onClick={seedDemoData}
+            disabled={seeding}
+            className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl border-2 border-primary/30 bg-primary/5 text-primary font-semibold text-sm hover:bg-primary/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {seeding ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Loading...</>
+            ) : (
+              <><Play className="w-4 h-4" /> Load Demo Data (5+ rides)</>
+            )}
+          </button>
+        </div>
 
         <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <Link to="/rides" className="hover:text-primary transition-colors font-medium">Ride History</Link>

@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import AddressInput from '@/components/rider/AddressInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -168,27 +168,19 @@ export default function RiderApp() {
 
               {/* Addresses */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
-                  <Input
-                    placeholder="Pickup address"
-                    value={pickupAddress}
-                    onChange={(e) => { setPickupAddress(e.target.value); setQuote(null); }}
-                    className="pl-10 h-11 rounded-xl"
-                  />
-                </div>
-                <div className="relative">
-                  <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Destination"
-                    value={dropoffAddress}
-                    onChange={(e) => { setDropoffAddress(e.target.value); setQuote(null); }}
-                    className="pl-10 h-11 rounded-xl"
-                  />
-                </div>
+                <AddressInput
+                  placeholder="Pickup address"
+                  value={pickupAddress}
+                  onChange={(val) => { setPickupAddress(val); setQuote(null); }}
+                  icon={<MapPin className="w-4 h-4 text-primary" />}
+                />
+                <AddressInput
+                  placeholder="Destination"
+                  value={dropoffAddress}
+                  onChange={(val) => { setDropoffAddress(val); setQuote(null); }}
+                  icon={<Navigation className="w-4 h-4 text-muted-foreground" />}
+                />
               </div>
-
-
 
               {/* Get quote */}
               {!quote && (
@@ -346,8 +338,6 @@ export default function RiderApp() {
                   <CheckCircle2 className="w-5 h-5" /> Paid — thanks for riding with Dip Out!
                 </div>
               )}
-
-
 
               {['requested', 'accepted'].includes(ride.status) && (
                 <Button variant="ghost" onClick={cancelRide} className="w-full text-destructive">

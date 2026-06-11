@@ -20,7 +20,7 @@ export default function Home() {
       {/* Main CTAs */}
       <div className="w-full max-w-sm space-y-3">
         <Link
-          to="/"
+          to="/rider"
           className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
         >
           <MapPin className="w-6 h-6" /> Book a Ride

@@ -30,7 +30,9 @@ function mapsLink(address) {
 
 export default function RiderApp() {
   const [pickupAddress, setPickupAddress] = useState('');
+  const [pickupCoords, setPickupCoords] = useState(null);
   const [dropoffAddress, setDropoffAddress] = useState('');
+  const [dropoffCoords, setDropoffCoords] = useState(null);
   const [distanceKm, setDistanceKm] = useState(0);
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
@@ -72,8 +74,13 @@ export default function RiderApp() {
       return;
     }
     setQuoting(true);
-    // Estimate ~5 km default if we can't geocode — AI pricing still works off addresses
-    const km = distanceKm > 0 ? distanceKm : 5;
+    // Calculate real distance if both coords known, otherwise fall back to 5 km
+    let km = distanceKm > 0 ? distanceKm : 5;
+    if (pickupCoords && dropoffCoords) {
+      km = haversineKm(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
+      km = Math.max(km, 0.5);
+      setDistanceKm(km);
+    }
     const q = await getDynamicFare({
       distanceKm: km,
       pickupAddress,
@@ -91,10 +98,10 @@ export default function RiderApp() {
       rider_email: user.email,
       pickup_address: pickupAddress,
       dropoff_address: dropoffAddress,
-      pickup_lat: 0,
-      pickup_lng: 0,
-      dropoff_lat: 0,
-      dropoff_lng: 0,
+      pickup_lat: pickupCoords?.lat || 0,
+      pickup_lng: pickupCoords?.lng || 0,
+      dropoff_lat: dropoffCoords?.lat || 0,
+      dropoff_lng: dropoffCoords?.lng || 0,
       status: 'requested',
       distance_km: Math.round(distanceKm * 10) / 10,
       base_fare: quote.baseFare,
@@ -138,7 +145,9 @@ export default function RiderApp() {
   const resetAll = () => {
     setRide(null);
     setPickupAddress('');
+    setPickupCoords(null);
     setDropoffAddress('');
+    setDropoffCoords(null);
     setQuote(null);
     setDistanceKm(0);
     setPayMethod(null);
@@ -186,7 +195,7 @@ export default function RiderApp() {
                 <AddressInput
                   placeholder="Pickup address"
                   value={pickupAddress}
-                  onChange={(val) => { setPickupAddress(val); setQuote(null); }}
+                  onChange={(val, coords) => { setPickupAddress(val); setPickupCoords(coords); setQuote(null); }}
                   icon={
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
                       <MapPin className="w-4 h-4 text-primary-foreground" />
@@ -197,7 +206,7 @@ export default function RiderApp() {
                 <AddressInput
                   placeholder="Destination address"
                   value={dropoffAddress}
-                  onChange={(val) => { setDropoffAddress(val); setQuote(null); }}
+                  onChange={(val, coords) => { setDropoffAddress(val); setDropoffCoords(coords); setQuote(null); }}
                   icon={
                     <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0">
                       <Navigation className="w-4 h-4 text-muted-foreground" />

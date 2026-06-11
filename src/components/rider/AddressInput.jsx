@@ -22,25 +22,29 @@ export default function AddressInput({ placeholder, value, onChange, icon }) {
   const fetchSuggestions = async (query) => {
     if (!query || query.length < 3) { setSuggestions([]); setOpen(false); return; }
     setLoading(true);
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`,
-      { headers: { 'Accept-Language': 'en' } }
-    );
-    const data = await res.json();
-    setSuggestions(data);
-    setOpen(data.length > 0);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=5&q=${encodeURIComponent(query)}`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      setSuggestions(data);
+      setOpen(data.length > 0);
+    } catch (e) {
+      // silently ignore network errors on suggestions
+    }
     setLoading(false);
   };
 
   const handleChange = (e) => {
     const val = e.target.value;
-    onChange(val);
+    onChange(val, null); // text changed, no coords yet
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => fetchSuggestions(val), 350);
   };
 
   const handleSelect = (item) => {
-    onChange(item.display_name);
+    onChange(item.display_name, { lat: parseFloat(item.lat), lng: parseFloat(item.lon) });
     setSuggestions([]);
     setOpen(false);
   };
@@ -69,7 +73,7 @@ export default function AddressInput({ placeholder, value, onChange, icon }) {
               className="w-full text-left px-4 py-2.5 text-sm hover:bg-accent transition-colors flex items-start gap-2"
             >
               <MapPin className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
-              <span className="truncate">{s.display_name}</span>
+              <span className="line-clamp-2">{s.display_name}</span>
             </button>
           ))}
         </div>

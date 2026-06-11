@@ -22,9 +22,9 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Ride not found' }, { status: 404 });
         }
         
-        // Only sync completed rides
-        if (ride.status !== 'completed') {
-            return Response.json({ success: true, message: 'Ride not yet completed, skipping sync' });
+        // Only sync completed rides with payment
+        if (ride.status !== 'completed' || ride.payment_status !== 'paid') {
+            return Response.json({ success: true, message: 'Ride not yet completed/paid, skipping sync' });
         }
 
         // Get or create spreadsheet ID from app settings (or create new one)
@@ -67,22 +67,21 @@ Deno.serve(async (req) => {
             }
         }
 
-        // Prepare row data
+        // Prepare row data with headers on first run
         const rowData = [
-            ride.created_date,
-            ride.rider_email,
+            ride.created_date || '',
+            ride.rider_email || '',
             ride.driver_email || 'N/A',
-            ride.pickup_address,
-            ride.dropoff_address,
-            `${ride.distance_km?.toFixed(2) || '0'} km`,
-            `$${ride.base_fare?.toFixed(2) || '0'}`,
-            `${ride.surge_multiplier}x`,
-            `$${ride.fare?.toFixed(2) || '0'}`,
+            ride.pickup_address || '',
+            ride.dropoff_address || '',
+            `${(ride.distance_km || 0).toFixed(2)} mi`,
+            `$${(ride.base_fare || 0).toFixed(2)}`,
+            `${ride.surge_multiplier || 1}x`,
+            `$${(ride.fare || 0).toFixed(2)}`,
             ride.payment_method || 'N/A',
             ride.payment_status || 'unpaid',
             ride.rider_rating ? `${ride.rider_rating}/5` : 'N/A',
             ride.rider_comment || '',
-            ride.ai_pricing_reason || '',
         ];
 
         // Append row to the first sheet

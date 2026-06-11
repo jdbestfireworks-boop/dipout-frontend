@@ -20,34 +20,71 @@ export default function PostRideScreen({ ride, onDone }) {
 
   const confirm = async () => {
     if (tip === null) { toast.error('Please select a tip amount (or $0)'); return; }
-    setSubmitting(true);
-
+    
     const finalFare = (ride.fare || 0) + tip;
 
-    // Save rating + comment + payment to the Ride record
-    await base44.entities.Ride.update(ride.id, {
-      payment_status: 'paid',
-      fare: finalFare,
-      ...(rating > 0 ? { rider_rating: rating } : {}),
-      ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
-    });
+    // For cash payments, complete immediately
+    if (ride.payment_method === 'cash') {
+      setSubmitting(true);
+      await base44.entities.Ride.update(ride.id, {
+        payment_status: 'paid',
+        fare: finalFare,
+        ...(rating > 0 ? { rider_rating: rating } : {}),
+        ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
+      });
 
-    // Update the driver's aggregate rating on their profile
-    if (rating > 0 && ride.driver_email) {
-      const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
-      if (profiles.length) {
-        const dp = profiles[0];
-        const totalRatings = (dp.total_ratings || 0) + 1;
-        const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
-        await base44.entities.DriverProfile.update(dp.id, {
-          rating: Math.round(newRating * 10) / 10,
-          total_ratings: totalRatings,
-        });
+      // Update driver rating
+      if (rating > 0 && ride.driver_email) {
+        const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
+        if (profiles.length) {
+          const dp = profiles[0];
+          const totalRatings = (dp.total_ratings || 0) + 1;
+          const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
+          await base44.entities.DriverProfile.update(dp.id, {
+            rating: Math.round(newRating * 10) / 10,
+            total_ratings: totalRatings,
+          });
+        }
       }
+
+      toast.success('Thanks for riding with Dip Out!');
+      onDone();
+      return;
     }
 
-    toast.success('Thanks for riding with Dip Out!');
-    onDone();
+    // For card payments, initiate Stripe checkout
+    setSubmitting(true);
+    try {
+      // First save the ride data with pending payment
+      await base44.entities.Ride.update(ride.id, {
+        fare: finalFare,
+        ...(rating > 0 ? { rider_rating: rating } : {}),
+        ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
+      });
+
+      // Create Stripe checkout session
+      const response = await base44.functions.invoke('createStripeCheckout', {
+        ride_id: ride.id,
+        fare: finalFare,
+      });
+
+      if (response.data.success && response.data.url) {
+        // Check if running in iframe (preview mode)
+        if (window.self !== window.top) {
+          toast.error('Payment requires published app - please open in a new tab');
+          setSubmitting(false);
+          return;
+        }
+        // Redirect to Stripe checkout
+        window.location.href = response.data.url;
+      } else {
+        throw new Error('Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Payment failed - please try again');
+      setSubmitting(false);
+    }
   };
 
   return (

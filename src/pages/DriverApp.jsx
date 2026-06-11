@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
+import RideRequestModal from '@/components/driver/RideRequestModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -126,7 +127,7 @@ export default function DriverApp() {
     toast.success('Ride accepted — open Maps to navigate');
   };
 
-  const declineRide = async (ride) => {
+  const declineRide = () => {
     setSelectedRequest(null);
     toast.info('Ride declined');
   };
@@ -348,6 +349,16 @@ export default function DriverApp() {
         )}
       </AnimatePresence>
 
+      {/* Ride request popup modal with sound */}
+      <AnimatePresence>
+        {selectedRequest && (
+          <RideRequestModal
+            ride={selectedRequest}
+            onAccept={() => acceptRide(selectedRequest)}
+            onDecline={declineRide}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

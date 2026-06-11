@@ -2,50 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles, ArrowLeft } from 'lucide-react';
-import AddressInput from '@/components/rider/AddressInput';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import FareCard from '@/components/rider/FareCard';
-import SafetyButton from '@/components/rider/SafetyButton';
+
 
 import PostRideScreen from '@/components/rider/PostRideScreen';
-import SavedAddresses from '@/components/rider/SavedAddresses';
-import SchedulePicker from '@/components/rider/SchedulePicker';
-import RideChat from '@/components/ride/RideChat';
 import { haversineKm } from '@/lib/geo';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
-import RidePreview from '@/components/rider/RidePreview';
 import EmptyState from '@/components/ui/empty-state';
 
-function DriverContactCard({ ride, myEmail }) {
-  const [driverProfile, setDriverProfile] = React.useState(null);
-
-  React.useEffect(() => {
-    if (!ride.driver_email) return;
-    base44.entities.DriverProfile.filter({ user_email: ride.driver_email }).then((profiles) => {
-      if (profiles.length) setDriverProfile(profiles[0]);
-    });
-  }, [ride.driver_email]);
-
+function DriverContactCard({ ride }) {
   return (
-    <div className="space-y-2">
-      <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-2">
-        <p className="text-muted-foreground text-xs">Your driver</p>
-        <p className="font-medium">{ride.driver_email}</p>
-        {driverProfile && (
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{driverProfile.vehicle} · {driverProfile.plate}</span>
-            {driverProfile.phone && (
-              <a href={`tel:${driverProfile.phone}`} className="text-primary font-semibold hover:underline">
-                📞 {driverProfile.phone}
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-      <RideChat ride={ride} myEmail={myEmail} myRole="rider" otherEmail={ride.driver_email} />
+    <div className="rounded-2xl border border-border bg-card p-4 text-sm">
+      <p className="text-muted-foreground text-xs mb-1">Your driver</p>
+      <p className="font-medium">{ride.driver_email}</p>
     </div>
   );
 }
@@ -77,8 +50,6 @@ export default function RiderApp() {
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
 
-  const [scheduledFor, setScheduledFor] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
 
   // Resume an active ride
@@ -152,14 +123,11 @@ export default function RiderApp() {
         ai_pricing_reason: quote.reason,
         payment_status: 'unpaid',
         payment_method: payMethod,
-        ...(scheduledFor ? { scheduled_for: scheduledFor } : {}),
       });
       setRide(created);
-      setShowPreview(false);
-      toast.success('Ride requested — finding your driver');
+      toast.success('Ride requested!');
     } catch (error) {
-      toast.error('Failed to request ride. Please try again.');
-      console.error('Ride request error:', error);
+      toast.error('Failed to request ride');
     } finally {
       setIsRequesting(false);
     }
@@ -179,31 +147,13 @@ export default function RiderApp() {
     setQuote(null);
     setDistanceKm(0);
     setPayMethod(null);
-    setScheduledFor(null);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
-        {/* Tabs */}
-        <div className="flex items-center gap-3 mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div className="flex gap-1 p-1 rounded-xl bg-secondary">
-            <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
-              Book
-            </span>
-            <Link
-              to="/rides"
-              className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
-            >
-              History
-            </Link>
-          </div>
-        </div>
 
-        <>
+
         {/* Header */}
         {!ride && (
           <div>
@@ -218,46 +168,27 @@ export default function RiderApp() {
 
               {/* Addresses */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                <AddressInput
-                  placeholder="Pickup address"
-                  value={pickupAddress}
-                  onChange={(val, coords) => { setPickupAddress(val); setPickupCoords(coords); setQuote(null); }}
-                  icon={
-                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                      <MapPin className="w-4 h-4 text-primary-foreground" />
-                    </div>
-                  }
-                />
-                <div className="border-t border-border ml-4" />
-                <AddressInput
-                  placeholder="Destination address"
-                  value={dropoffAddress}
-                  onChange={(val, coords) => { setDropoffAddress(val); setDropoffCoords(coords); setQuote(null); }}
-                  icon={
-                    <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0">
-                      <Navigation className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  }
-                />
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                  <Input
+                    placeholder="Pickup address"
+                    value={pickupAddress}
+                    onChange={(e) => { setPickupAddress(e.target.value); setQuote(null); }}
+                    className="pl-10 h-11 rounded-xl"
+                  />
+                </div>
+                <div className="relative">
+                  <Navigation className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Destination"
+                    value={dropoffAddress}
+                    onChange={(e) => { setDropoffAddress(e.target.value); setQuote(null); }}
+                    className="pl-10 h-11 rounded-xl"
+                  />
+                </div>
               </div>
 
-              {/* Saved addresses */}
-              <div className="rounded-2xl border border-border bg-card px-3 py-2">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-1 pb-1">Saved places</p>
-                <SavedAddresses
-                  onSelect={(address, coords) => {
-                    if (!pickupAddress) {
-                      setPickupAddress(address); setPickupCoords(coords);
-                    } else {
-                      setDropoffAddress(address); setDropoffCoords(coords);
-                    }
-                    setQuote(null);
-                  }}
-                />
-              </div>
 
-              {/* Schedule picker */}
-              <SchedulePicker scheduledFor={scheduledFor} onChange={setScheduledFor} />
 
               {/* Get quote */}
               {!quote && (
@@ -267,15 +198,31 @@ export default function RiderApp() {
                   className="w-full h-12 rounded-xl font-semibold"
                 >
                   {quoting ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing traffic & demand…</>
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Getting fare…</>
                   ) : (
-                    <><Sparkles className="w-4 h-4 mr-2" /> Get AI fare quote</>
+                    'Get Fare'
                   )}
                 </Button>
               )}
 
               {/* Fare card */}
-              <FareCard quote={quote} distanceKm={distanceKm} />
+              {quote && (
+                <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Distance</span>
+                    <span className="font-medium">{distanceKm.toFixed(1)} km</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Fare</span>
+                    <span className="text-2xl font-bold text-primary">${quote.fare.toFixed(2)}</span>
+                  </div>
+                  {quote.surgeMultiplier > 1 && (
+                    <div className="text-xs text-muted-foreground pt-2 border-t border-border">
+                      Surge pricing active ({quote.surgeMultiplier}x) due to high demand
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Payment method */}
               {quote && (
@@ -310,31 +257,12 @@ export default function RiderApp() {
 
               {quote && payMethod && (
                 <Button 
-                  onClick={() => setShowPreview(true)} 
+                  onClick={requestRide} 
                   disabled={isRequesting}
                   className="w-full h-12 rounded-xl font-semibold"
                 >
-                  {isRequesting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Requesting…</> : `Request ride · $${quote.fare.toFixed(2)} · ${payMethod === 'card' ? 'Card' : 'Cash'}`}
+                  {isRequesting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Requesting…</> : `Request Ride ($${quote.fare.toFixed(2)})`}
                 </Button>
-              )}
-
-              {quote && (
-                <Button variant="ghost" onClick={resetAll} className="w-full text-muted-foreground">
-                  <X className="w-4 h-4 mr-1" /> Clear
-                </Button>
-              )}
-
-              {/* Preview Modal */}
-              {showPreview && quote && (
-                <RidePreview
-                  quote={quote}
-                  pickupAddress={pickupAddress}
-                  dropoffAddress={dropoffAddress}
-                  paymentMethod={payMethod}
-                  scheduledFor={scheduledFor}
-                  onConfirm={requestRide}
-                  onCancel={() => setShowPreview(false)}
-                />
               )}
             </motion.div>
           ) : (
@@ -347,9 +275,7 @@ export default function RiderApp() {
               {ride.status === 'requested' && (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  {ride.scheduled_for
-                    ? `Scheduled for ${new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(ride.scheduled_for))}`
-                    : 'Matching you with a nearby driver…'}
+                  Matching you with a driver…
                 </div>
               )}
 
@@ -396,20 +322,18 @@ export default function RiderApp() {
                 </div>
               </div>
 
-              {/* Fare + payment method */}
-              <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Fare</span>
-                <div className="flex items-center gap-2">
+              {/* Fare */}
+              <div className="rounded-2xl border border-border bg-card p-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Fare</span>
                   <span className="font-bold text-lg">${ride.fare?.toFixed(2)}</span>
-                  <Badge variant="outline" className="capitalize">
-                    {ride.payment_method === 'cash' ? <><Banknote className="w-3 h-3 mr-1" />Cash</> : <><CreditCard className="w-3 h-3 mr-1" />Card</>}
-                  </Badge>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1 capitalize">Payment: {ride.payment_method}</p>
               </div>
 
-              {/* Driver info + chat/call */}
+              {/* Driver info */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <DriverContactCard ride={ride} myEmail={user?.email} />
+                <DriverContactCard ride={ride} />
               )}
 
               {/* Post-ride rating + payment */}
@@ -423,9 +347,7 @@ export default function RiderApp() {
                 </div>
               )}
 
-              {['requested', 'accepted', 'in_progress'].includes(ride.status) && (
-                <SafetyButton ride={ride} />
-              )}
+
 
               {['requested', 'accepted'].includes(ride.status) && (
                 <Button variant="ghost" onClick={cancelRide} className="w-full text-destructive">
@@ -447,7 +369,6 @@ export default function RiderApp() {
             </motion.div>
           )}
         </AnimatePresence>
-        </>
       </div>
     </div>
   );

@@ -7,12 +7,7 @@ import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, C
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import EarningsChart from '@/components/driver/EarningsChart';
-import RideChat from '@/components/ride/RideChat';
-import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
-import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
-import WeeklyStats from '@/components/driver/WeeklyStats';
-import RideRequestModal from '@/components/driver/RideRequestModal';
+
 import { useNavigate } from 'react-router-dom';
 
 function mapsLink(address) {
@@ -149,15 +144,6 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
-      {/* Ride request modal */}
-      {selectedRequest && (
-        <RideRequestModal
-          ride={selectedRequest}
-          onAccept={() => { acceptRide(selectedRequest); setSelectedRequest(null); }}
-          onDecline={() => { setSelectedRequest(null); }}
-        />
-      )}
-
       {/* Header with back button + online toggle */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
@@ -175,10 +161,7 @@ export default function DriverApp() {
         </div>
       </div>
 
-      <SurgeAlertBanner driverEmail={user.email} />
 
-      {!activeRide && <WeeklyStats profile={profile} driverEmail={user.email} />}
-      {activeRide && <DriverSummaryPanel profile={profile} driverEmail={user.email} />}
 
       <AnimatePresence mode="wait">
         {activeRide ? (
@@ -207,14 +190,7 @@ export default function DriverApp() {
                   }
                 </Badge>
               </div>
-              {activeRide.scheduled_for && (
-                <div className="flex items-center justify-between border-t border-border pt-2">
-                  <span className="text-muted-foreground flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Scheduled</span>
-                  <span className="font-medium text-primary">
-                    {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(activeRide.scheduled_for))}
-                  </span>
-                </div>
-              )}
+
             </div>
 
             {/* Pickup card with Maps link */}
@@ -261,7 +237,7 @@ export default function DriverApp() {
               </a>
             </div>
 
-            <RideChat ride={activeRide} myEmail={user.email} myRole="driver" otherEmail={activeRide.rider_email} />
+
 
             {activeRide.status === 'accepted' && (
               <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold" variant="outline">
@@ -291,7 +267,7 @@ export default function DriverApp() {
                   <div
                     key={r.id}
                     onClick={() => setSelectedRequest(r)}
-                    className="rounded-2xl border border-border bg-card p-4 space-y-3 cursor-pointer hover:border-primary/50 transition-colors"
+                    className="rounded-2xl border border-border bg-card p-4 space-y-2 cursor-pointer hover:border-primary/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
@@ -305,12 +281,7 @@ export default function DriverApp() {
                         </Badge>
                       </div>
                     </div>
-                    {r.scheduled_for && (
-                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-                        <Clock className="w-3.5 h-3.5" />
-                        Scheduled: {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(r.scheduled_for))}
-                      </div>
-                    )}
+
                     <div className="text-sm space-y-1">
                       <p className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />

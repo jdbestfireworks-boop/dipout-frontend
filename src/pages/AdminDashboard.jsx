@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
+import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
 
 const statusColors = {
   requested: 'bg-accent text-accent-foreground',
@@ -72,6 +73,8 @@ export default function AdminDashboard() {
         <StatCard icon={Users} label="Drivers" value={drivers.length} sub={`${online} online`} />
         <StatCard icon={TrendingUp} label="Avg surge" value={`${avgSurge.toFixed(2)}x`} sub="AI dynamic pricing" />
       </div>
+
+      <DailyRevenueChart rides={rides} />
 
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="p-4 border-b border-border font-semibold">Recent rides</div>

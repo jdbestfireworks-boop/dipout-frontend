@@ -129,11 +129,50 @@ export default function AdminDashboard() {
             ))}
             {drivers.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">No drivers yet</TableCell>
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">No drivers yet</TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Leaderboard */}
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center gap-2">
+          <Star className="w-4 h-4 text-primary fill-primary" />
+          <span className="font-semibold">Driver Leaderboard</span>
+          <span className="text-xs text-muted-foreground ml-1">ranked by rating · trips</span>
+        </div>
+        <div className="divide-y divide-border">
+          {[...drivers]
+            .sort((a, b) => {
+              const ratingDiff = (b.rating || 5) - (a.rating || 5);
+              if (ratingDiff !== 0) return ratingDiff;
+              return (b.trips_completed || 0) - (a.trips_completed || 0);
+            })
+            .map((d, i) => {
+              const medal = ['🥇', '🥈', '🥉'][i] || `#${i + 1}`;
+              return (
+                <div key={d.id} className="flex items-center gap-4 px-4 py-3">
+                  <span className="text-xl w-8 text-center">{medal}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{d.user_email}</p>
+                    <p className="text-xs text-muted-foreground">{d.vehicle}</p>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm shrink-0">
+                    <span className="flex items-center gap-1 font-bold">
+                      <Star className="w-3.5 h-3.5 text-primary fill-primary" />
+                      {(d.rating || 5).toFixed(1)}
+                    </span>
+                    <span className="text-muted-foreground">{d.trips_completed || 0} trips</span>
+                  </div>
+                </div>
+              );
+            })}
+          {drivers.length === 0 && (
+            <p className="text-center text-muted-foreground py-8 text-sm">No drivers yet</p>
+          )}
+        </div>
       </div>
     </div>
   );

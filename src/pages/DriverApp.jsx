@@ -240,6 +240,8 @@ export default function DriverApp() {
     } catch (error) {
       console.error('Accept ride error:', error);
       toast.error('Failed to accept ride. Please try again.');
+      // Reload requests to ensure consistency
+      loadRequests();
     }
   };
 
@@ -248,7 +250,7 @@ export default function DriverApp() {
       const result = await base44.functions.invoke('declineRide', { ride_id: selectedRequest.id });
       setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
       setSelectedRequest(null);
-      if (result.data.notified_driver) {
+      if (result.data?.notified_driver) {
         toast.info(`Ride declined - offered to driver ${result.data.distance}mi away`);
       } else {
         toast.info('Ride declined - no other drivers nearby');
@@ -262,34 +264,50 @@ export default function DriverApp() {
   };
 
   const startTrip = async () => {
-    await base44.entities.Ride.update(activeRide.id, { status: 'in_progress' });
-    setActiveRide({ ...activeRide, status: 'in_progress' });
+    try {
+      await base44.entities.Ride.update(activeRide.id, { status: 'in_progress' });
+      setActiveRide({ ...activeRide, status: 'in_progress' });
+      toast.success('Trip started - head to drop-off location');
+    } catch (error) {
+      console.error('Start trip error:', error);
+      toast.error('Failed to start trip');
+    }
   };
 
   const completeTrip = async () => {
-    await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
-    const earned = (activeRide.fare || 0) * 0.8;
-    await base44.entities.DriverProfile.update(profile.id, {
-      status: 'available',
-      total_earnings: (profile.total_earnings || 0) + earned,
-      trips_completed: (profile.trips_completed || 0) + 1,
-    });
-    setProfile({
-      ...profile,
-      status: 'available',
-      total_earnings: (profile.total_earnings || 0) + earned,
-      trips_completed: (profile.trips_completed || 0) + 1,
-    });
-    toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
-    setActiveRide(null);
+    try {
+      await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
+      const earned = (activeRide.fare || 0) * 0.8;
+      await base44.entities.DriverProfile.update(profile.id, {
+        status: 'available',
+        total_earnings: (profile.total_earnings || 0) + earned,
+        trips_completed: (profile.trips_completed || 0) + 1,
+      });
+      setProfile({
+        ...profile,
+        status: 'available',
+        total_earnings: (profile.total_earnings || 0) + earned,
+        trips_completed: (profile.trips_completed || 0) + 1,
+      });
+      toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
+      setActiveRide(null);
+    } catch (error) {
+      console.error('Complete trip error:', error);
+      toast.error('Failed to complete trip');
+    }
   };
 
   // Allow rider to mark trip as complete (for cash payments or if driver unavailable)
   const riderCompleteTrip = async () => {
     if (!activeRide) return;
-    await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
-    toast.success('Trip marked as complete');
-    setActiveRide(null);
+    try {
+      await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
+      toast.success('Trip marked as complete');
+      setActiveRide(null);
+    } catch (error) {
+      console.error('Complete trip error:', error);
+      toast.error('Failed to complete trip');
+    }
   };
 
   if (!user) {

@@ -64,18 +64,22 @@ export default function RiderApp() {
   // Resume an active ride
   useEffect(() => {
     (async () => {
-      const me = await base44.auth.me();
-      setUser(me);
-      const active = await base44.entities.Ride.filter(
-        { rider_email: me.email },
-        '-created_date',
-        5
-      );
-      const current = active.find((r) =>
-        ['requested', 'accepted', 'in_progress'].includes(r.status) ||
-        (r.status === 'completed' && r.payment_status === 'unpaid')
-      );
-      if (current) setRide(current);
+      try {
+        const me = await base44.auth.me();
+        setUser(me);
+        const active = await base44.entities.Ride.filter(
+          { rider_email: me.email },
+          '-created_date',
+          5
+        );
+        const current = active.find((r) =>
+          ['requested', 'accepted', 'in_progress'].includes(r.status) ||
+          (r.status === 'completed' && r.payment_status === 'unpaid')
+        );
+        if (current) setRide(current);
+      } catch (error) {
+        console.error('Error loading ride:', error);
+      }
     })();
   }, []);
 
@@ -137,9 +141,10 @@ export default function RiderApp() {
       const me = user || await base44.auth.me();
       
       // Validate phone number exists
-      if (!me.phone_number || !me.phone_number.trim()) {
+      if (!me?.phone_number || !me.phone_number.trim()) {
         toast.error('Please add your phone number in Notification Settings first');
         navigate('/notifications');
+        setIsRequesting(false);
         return;
       }
       

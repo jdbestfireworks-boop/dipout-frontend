@@ -18,10 +18,10 @@ export default function RideHistoryPage() {
     if (paymentStatus === 'success' && rideId) {
       toast.success('Payment successful! Thank you for your ride.');
       // Clean URL
-      window.history.replaceState({}, document.title, '/rides');
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else if (paymentStatus === 'cancelled' && rideId) {
       toast.error('Payment was cancelled. Please contact support if you were charged.');
-      window.history.replaceState({}, document.title, '/rides');
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [paymentStatus, rideId]);
   const [rides, setRides] = useState([]);

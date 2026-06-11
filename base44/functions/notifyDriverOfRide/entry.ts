@@ -10,7 +10,14 @@ function buildMimeEmail({ to, subject, body }) {
     body,
   ];
   const message = messageParts.join('\n');
-  return btoa(unescape(encodeURIComponent(message)))
+  // Use TextEncoder for proper UTF-8 encoding
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(message);
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');

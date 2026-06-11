@@ -23,38 +23,39 @@ export default function PostRideScreen({ ride, onDone }) {
     
     const finalFare = (ride.fare || 0) + tip;
 
-    // For cash payments, complete immediately
-    if (ride.payment_method === 'cash') {
-      setSubmitting(true);
-      await base44.entities.Ride.update(ride.id, {
-        payment_status: 'paid',
-        fare: finalFare,
-        ...(rating > 0 ? { rider_rating: rating } : {}),
-        ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
-      });
+    try {
+      // For cash payments, complete immediately
+      if (ride.payment_method === 'cash') {
+        setSubmitting(true);
+        await base44.entities.Ride.update(ride.id, {
+          payment_status: 'paid',
+          fare: finalFare,
+          ...(rating > 0 ? { rider_rating: rating } : {}),
+          ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
+        });
 
-      // Update driver rating
-      if (rating > 0 && ride.driver_email) {
-        const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
-        if (profiles.length) {
-          const dp = profiles[0];
-          const totalRatings = (dp.total_ratings || 0) + 1;
-          const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
-          await base44.entities.DriverProfile.update(dp.id, {
-            rating: Math.round(newRating * 10) / 10,
-            total_ratings: totalRatings,
-          });
+        // Update driver rating
+        if (rating > 0 && ride.driver_email) {
+          const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
+          if (profiles.length) {
+            const dp = profiles[0];
+            const totalRatings = (dp.total_ratings || 0) + 1;
+            const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
+            await base44.entities.DriverProfile.update(dp.id, {
+              rating: Math.round(newRating * 10) / 10,
+              total_ratings: totalRatings,
+            });
+          }
         }
+
+        toast.success('Thanks for riding with Dip Out!');
+        onDone();
+        return;
       }
 
-      toast.success('Thanks for riding with Dip Out!');
-      onDone();
-      return;
-    }
-
-    // For card payments, initiate Stripe checkout
-    setSubmitting(true);
-    try {
+      // For card payments, initiate Stripe checkout
+      setSubmitting(true);
+      
       // First save the ride data with pending payment
       await base44.entities.Ride.update(ride.id, {
         fare: finalFare,
@@ -68,10 +69,13 @@ export default function PostRideScreen({ ride, onDone }) {
         fare: finalFare,
       });
 
-      if (response.data.success && response.data.url) {
+      if (response.data?.success && response.data.url) {
         // Check if running in iframe (preview mode)
         if (window.self !== window.top) {
-          toast.error('Payment requires published app - please open in a new tab');
+          // Store URL for later use
+          window.localStorage.setItem('pending_stripe_url', response.data.url);
+          toast.error('Payment requires published app - opening in new tab');
+          window.open(response.data.url, '_blank');
           setSubmitting(false);
           return;
         }

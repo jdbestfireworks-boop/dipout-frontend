@@ -32,11 +32,15 @@ export default function Home() {
           <Car className="w-6 h-6" /> Drive
         </Link>
         
+        <Link
+          to="/admin"
+          className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl border-2 border-border bg-card text-foreground font-bold text-lg hover:border-primary/50 transition-all"
+        >
+          <Shield className="w-6 h-6" /> Admin Login
+        </Link>
+        
         <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <Link to="/rides" className="hover:text-primary transition-colors font-medium">Ride History</Link>
-          <Link to="/admin" className="flex items-center gap-1 hover:text-primary transition-colors">
-            <Shield className="w-3 h-3" /> Admin
-          </Link>
         </div>
       </div>
     </div>

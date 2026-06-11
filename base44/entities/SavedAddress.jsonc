@@ -1,0 +1,31 @@
+{
+  "name": "SavedAddress",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string",
+      "enum": [
+        "home",
+        "work",
+        "other"
+      ]
+    },
+    "address": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "user_email",
+    "label",
+    "address"
+  ]
+}

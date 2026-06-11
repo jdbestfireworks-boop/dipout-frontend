@@ -12,6 +12,7 @@ import RideHistory from '@/components/rider/RideHistory';
 import TipSelector from '@/components/rider/TipSelector';
 import DriverRating from '@/components/rider/DriverRating';
 import SafetyButton from '@/components/rider/SafetyButton';
+import SavedAddresses from '@/components/rider/SavedAddresses';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -213,6 +214,21 @@ export default function RiderApp() {
                       <Navigation className="w-4 h-4 text-muted-foreground" />
                     </div>
                   }
+                />
+              </div>
+
+              {/* Saved addresses */}
+              <div className="rounded-2xl border border-border bg-card px-3 py-2">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-1 pb-1">Saved places</p>
+                <SavedAddresses
+                  onSelect={(address, coords) => {
+                    if (!pickupAddress) {
+                      setPickupAddress(address); setPickupCoords(coords);
+                    } else {
+                      setDropoffAddress(address); setDropoffCoords(coords);
+                    }
+                    setQuote(null);
+                  }}
                 />
               </div>
 

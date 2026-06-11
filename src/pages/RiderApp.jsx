@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles } from 'lucide-react';
+import AddressInput from '@/components/rider/AddressInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
@@ -182,29 +183,27 @@ export default function RiderApp() {
 
               {/* Addresses */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                    <MapPin className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                  <Input
-                    placeholder="Pickup address"
-                    value={pickupAddress}
-                    onChange={(e) => { setPickupAddress(e.target.value); setQuote(null); }}
-                    className="border-0 bg-transparent p-0 h-auto text-base focus-visible:ring-0 shadow-none"
-                  />
-                </div>
+                <AddressInput
+                  placeholder="Pickup address"
+                  value={pickupAddress}
+                  onChange={(val) => { setPickupAddress(val); setQuote(null); }}
+                  icon={
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                      <MapPin className="w-4 h-4 text-primary-foreground" />
+                    </div>
+                  }
+                />
                 <div className="border-t border-border ml-4" />
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0">
-                    <Navigation className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <Input
-                    placeholder="Destination address"
-                    value={dropoffAddress}
-                    onChange={(e) => { setDropoffAddress(e.target.value); setQuote(null); }}
-                    className="border-0 bg-transparent p-0 h-auto text-base focus-visible:ring-0 shadow-none"
-                  />
-                </div>
+                <AddressInput
+                  placeholder="Destination address"
+                  value={dropoffAddress}
+                  onChange={(val) => { setDropoffAddress(val); setQuote(null); }}
+                  icon={
+                    <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0">
+                      <Navigation className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  }
+                />
               </div>
 
               {/* Get quote */}

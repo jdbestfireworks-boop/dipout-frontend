@@ -13,6 +13,7 @@ import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
 import PricingControls from '@/components/admin/PricingControls';
+import AdminContact from '@/components/admin/AdminContact';
 import { Sheet } from 'lucide-react';
 
 const statusColors = {
@@ -261,6 +262,7 @@ export default function AdminDashboard() {
         </Table>
       </div>
 
+      <AdminContact />
       <SurgeZoneManager />
       <DriverDocViewer drivers={drivers} />
 

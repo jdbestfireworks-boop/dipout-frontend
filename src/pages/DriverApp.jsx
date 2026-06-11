@@ -3,9 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell, Phone } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import RideRequestModal from '@/components/driver/RideRequestModal';
+import RideChat from '@/components/ride/RideChat';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { isInLouisiana, haversineMiles } from '@/lib/geo';
@@ -343,10 +344,10 @@ export default function DriverApp() {
             </div>
 
             {/* Rider + payment info */}
-            <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Rider</span>
-                <span className="font-medium">{activeRide.rider_email}</span>
+            <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-3">
+              <div>
+                <p className="text-muted-foreground text-xs mb-1">Rider</p>
+                <p className="font-medium">{activeRide.rider_email}</p>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Fare</span>
@@ -361,7 +362,12 @@ export default function DriverApp() {
                   }
                 </Badge>
               </div>
-
+              <RideChat
+                ride={activeRide}
+                myEmail={user.email}
+                myRole="driver"
+                otherEmail={activeRide.rider_email}
+              />
             </div>
 
             {/* Pickup card with Maps link */}

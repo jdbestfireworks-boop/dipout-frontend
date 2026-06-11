@@ -8,6 +8,14 @@
     "driver_email": {
       "type": "string"
     },
+    "rider_phone": {
+      "type": "string",
+      "description": "Rider's phone number for contact"
+    },
+    "driver_phone": {
+      "type": "string",
+      "description": "Driver's phone number for contact"
+    },
     "pickup_address": {
       "type": "string"
     },

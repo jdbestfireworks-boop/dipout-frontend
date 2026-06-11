@@ -2,23 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Phone } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 
 import PostRideScreen from '@/components/rider/PostRideScreen';
+import RideChat from '@/components/ride/RideChat';
 import { haversineMiles, isInLouisiana, checkLouisianaAddress } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 import EmptyState from '@/components/ui/empty-state';
 
-function DriverContactCard({ ride }) {
+function DriverContactCard({ ride, myEmail }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 text-sm">
-      <p className="text-muted-foreground text-xs mb-1">Your driver</p>
-      <p className="font-medium">{ride.driver_email}</p>
+    <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+      <div>
+        <p className="text-muted-foreground text-xs mb-1">Your driver</p>
+        <p className="font-medium">{ride.driver_email}</p>
+      </div>
+      <RideChat
+        ride={ride}
+        myEmail={myEmail}
+        myRole="rider"
+        otherEmail={ride.driver_email}
+      />
     </div>
   );
 }
@@ -121,6 +130,7 @@ export default function RiderApp() {
       const me = user || await base44.auth.me();
       const created = await base44.entities.Ride.create({
         rider_email: me.email,
+        rider_phone: me.phone_number || '',
         pickup_address: pickupAddress,
         dropoff_address: dropoffAddress,
         pickup_lat: pickupCoords?.lat || 0,
@@ -344,7 +354,7 @@ export default function RiderApp() {
 
               {/* Driver info */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <DriverContactCard ride={ride} />
+                <DriverContactCard ride={ride} myEmail={user?.email} />
               )}
 
               {/* Post-ride rating + payment */}

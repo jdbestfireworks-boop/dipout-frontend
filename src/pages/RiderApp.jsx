@@ -16,6 +16,8 @@ import RideChat from '@/components/ride/RideChat';
 import { haversineKm } from '@/lib/geo';
 import { Link } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
+import RidePreview from '@/components/rider/RidePreview';
+import EmptyState from '@/components/ui/empty-state';
 
 function DriverContactCard({ ride, myEmail }) {
   const [driverProfile, setDriverProfile] = React.useState(null);
@@ -75,6 +77,8 @@ export default function RiderApp() {
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
 
   const [scheduledFor, setScheduledFor] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
 
   // Resume an active ride
   useEffect(() => {
@@ -128,27 +132,36 @@ export default function RiderApp() {
 
   const requestRide = async () => {
     if (!payMethod) { toast.error('Choose a payment method'); return; }
-    const me = user || await base44.auth.me();
-    const created = await base44.entities.Ride.create({
-      rider_email: me.email,
-      pickup_address: pickupAddress,
-      dropoff_address: dropoffAddress,
-      pickup_lat: pickupCoords?.lat || 0,
-      pickup_lng: pickupCoords?.lng || 0,
-      dropoff_lat: dropoffCoords?.lat || 0,
-      dropoff_lng: dropoffCoords?.lng || 0,
-      status: 'requested',
-      distance_km: Math.round(distanceKm * 10) / 10,
-      base_fare: quote.baseFare,
-      surge_multiplier: quote.surgeMultiplier,
-      fare: quote.fare,
-      ai_pricing_reason: quote.reason,
-      payment_status: 'unpaid',
-      payment_method: payMethod,
-      ...(scheduledFor ? { scheduled_for: scheduledFor } : {}),
-    });
-    setRide(created);
-    toast.success('Ride requested — finding your driver');
+    setIsRequesting(true);
+    try {
+      const me = user || await base44.auth.me();
+      const created = await base44.entities.Ride.create({
+        rider_email: me.email,
+        pickup_address: pickupAddress,
+        dropoff_address: dropoffAddress,
+        pickup_lat: pickupCoords?.lat || 0,
+        pickup_lng: pickupCoords?.lng || 0,
+        dropoff_lat: dropoffCoords?.lat || 0,
+        dropoff_lng: dropoffCoords?.lng || 0,
+        status: 'requested',
+        distance_km: Math.round(distanceKm * 10) / 10,
+        base_fare: quote.baseFare,
+        surge_multiplier: quote.surgeMultiplier,
+        fare: quote.fare,
+        ai_pricing_reason: quote.reason,
+        payment_status: 'unpaid',
+        payment_method: payMethod,
+        ...(scheduledFor ? { scheduled_for: scheduledFor } : {}),
+      });
+      setRide(created);
+      setShowPreview(false);
+      toast.success('Ride requested — finding your driver');
+    } catch (error) {
+      toast.error('Failed to request ride. Please try again.');
+      console.error('Ride request error:', error);
+    } finally {
+      setIsRequesting(false);
+    }
   };
 
   const cancelRide = async () => {
@@ -290,8 +303,12 @@ export default function RiderApp() {
               )}
 
               {quote && payMethod && (
-                <Button onClick={requestRide} className="w-full h-12 rounded-xl font-semibold">
-                  Request ride · ${quote.fare.toFixed(2)} · {payMethod === 'card' ? 'Card' : 'Cash'}
+                <Button 
+                  onClick={() => setShowPreview(true)} 
+                  disabled={isRequesting}
+                  className="w-full h-12 rounded-xl font-semibold"
+                >
+                  {isRequesting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Requesting…</> : `Request ride · $${quote.fare.toFixed(2)} · ${payMethod === 'card' ? 'Card' : 'Cash'}`}
                 </Button>
               )}
 
@@ -299,6 +316,19 @@ export default function RiderApp() {
                 <Button variant="ghost" onClick={resetAll} className="w-full text-muted-foreground">
                   <X className="w-4 h-4 mr-1" /> Clear
                 </Button>
+              )}
+
+              {/* Preview Modal */}
+              {showPreview && quote && (
+                <RidePreview
+                  quote={quote}
+                  pickupAddress={pickupAddress}
+                  dropoffAddress={dropoffAddress}
+                  paymentMethod={payMethod}
+                  scheduledFor={scheduledFor}
+                  onConfirm={requestRide}
+                  onCancel={() => setShowPreview(false)}
+                />
               )}
             </motion.div>
           ) : (
@@ -315,6 +345,14 @@ export default function RiderApp() {
                     ? `Scheduled for ${new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(ride.scheduled_for))}`
                     : 'Matching you with a nearby driver…'}
                 </div>
+              )}
+
+              {ride.status === 'cancelled' && (
+                <EmptyState
+                  icon={X}
+                  title="Ride Cancelled"
+                  description="Your ride has been cancelled. Book a new ride whenever you're ready."
+                />
               )}
 
               {/* Trip details */}

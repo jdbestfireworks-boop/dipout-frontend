@@ -260,11 +260,17 @@ export default function DriverApp() {
     } catch (error) {
       console.error('Accept ride error:', error);
       toast.error('Failed to accept ride. Another driver may have taken it.');
+      setSelectedRequest(null);
       loadRequests();
     }
   };
 
   const declineRide = async () => {
+    if (!selectedRequest?.id) {
+      toast.error('No ride selected');
+      setSelectedRequest(null);
+      return;
+    }
     try {
       const result = await base44.functions.invoke('declineRide', { ride_id: selectedRequest.id });
       setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
@@ -272,7 +278,7 @@ export default function DriverApp() {
       if (result.data?.notified_driver) {
         toast.info(`Ride declined - offered to driver ${result.data.distance}mi away`);
       } else {
-        toast.info('Ride declined - no other drivers nearby');
+        toast.info('Ride declined');
       }
     } catch (error) {
       console.error('Decline error:', error);

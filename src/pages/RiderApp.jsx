@@ -169,6 +169,7 @@ export default function RiderApp() {
       });
       setQuote(q);
       setDistanceKm(miles);
+      toast.success('Fare calculated!');
     } catch (error) {
       console.error('Fare calculation error:', error);
       toast.error('Failed to calculate fare. Please try again.');
@@ -219,7 +220,6 @@ export default function RiderApp() {
     } catch (error) {
       console.error('Ride request error:', error);
       toast.error('Failed to request ride. Please try again.');
-    } finally {
       setIsRequesting(false);
     }
   };

@@ -20,13 +20,15 @@ export default function PostRideScreen({ ride, onDone }) {
 
   const confirm = async () => {
     if (tip === null) { toast.error('Please select a tip amount (or $0)'); return; }
+    if (rating === 0) { toast.error('Please rate your driver'); return; }
     
     const finalFare = (ride.fare || 0) + tip;
 
     try {
+      setSubmitting(true);
+      
       // For cash payments, complete immediately
       if (ride.payment_method === 'cash') {
-        setSubmitting(true);
         await base44.entities.Ride.update(ride.id, {
           payment_status: 'paid',
           fare: finalFare,
@@ -36,15 +38,20 @@ export default function PostRideScreen({ ride, onDone }) {
 
         // Update driver rating
         if (rating > 0 && ride.driver_email) {
-          const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
-          if (profiles.length) {
-            const dp = profiles[0];
-            const totalRatings = (dp.total_ratings || 0) + 1;
-            const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
-            await base44.entities.DriverProfile.update(dp.id, {
-              rating: Math.round(newRating * 10) / 10,
-              total_ratings: totalRatings,
-            });
+          try {
+            const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
+            if (profiles.length) {
+              const dp = profiles[0];
+              const totalRatings = (dp.total_ratings || 0) + 1;
+              const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
+              await base44.entities.DriverProfile.update(dp.id, {
+                rating: Math.round(newRating * 10) / 10,
+                total_ratings: totalRatings,
+              });
+            }
+          } catch (err) {
+            console.error('Driver rating update error:', err);
+            // Continue even if driver rating fails
           }
         }
 
@@ -54,8 +61,6 @@ export default function PostRideScreen({ ride, onDone }) {
       }
 
       // For card payments, initiate Stripe checkout
-      setSubmitting(true);
-      
       // First save the ride data with pending payment
       await base44.entities.Ride.update(ride.id, {
         fare: finalFare,
@@ -76,17 +81,17 @@ export default function PostRideScreen({ ride, onDone }) {
           window.localStorage.setItem('pending_stripe_url', response.data.url);
           toast.error('Payment requires published app - opening in new tab');
           window.open(response.data.url, '_blank');
-          setSubmitting(false);
-          return;
+        } else {
+          // Redirect to Stripe checkout
+          window.location.href = response.data.url;
         }
-        // Redirect to Stripe checkout
-        window.location.href = response.data.url;
       } else {
         throw new Error('Failed to create checkout session');
       }
     } catch (error) {
       console.error('Payment error:', error);
       toast.error('Payment failed - please try again');
+    } finally {
       setSubmitting(false);
     }
   };
@@ -235,20 +240,20 @@ export default function PostRideScreen({ ride, onDone }) {
         >
           <Button
             onClick={confirm}
-            disabled={submitting}
-            className="w-full h-14 rounded-2xl font-bold text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
+            disabled={submitting || rating === 0}
+            className="w-full h-14 rounded-2xl font-bold text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? (
-              <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Submitting...</>
+              <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Processing...</>
             ) : ride.payment_method === 'cash' ? (
-              <><Banknote className="w-5 h-5 mr-2" /> Confirm Cash Payment · ${((ride.fare || 0) + tip).toFixed(2)}</>
+              <><Banknote className="w-5 h-5 mr-2" /> Confirm Payment · ${((ride.fare || 0) + tip).toFixed(2)}</>
             ) : (
-              <><CreditCard className="w-5 h-5 mr-2" /> Charge Card · ${((ride.fare || 0) + tip).toFixed(2)}</>
+              <><CreditCard className="w-5 h-5 mr-2" /> Pay ${((ride.fare || 0) + tip).toFixed(2)}</>
             )}
             {tip > 0 && <span className="ml-2 text-xs opacity-80">(+${tip.toFixed(2)} tip)</span>}
           </Button>
           <p className="text-xs text-center text-muted-foreground mt-3">
-            Your feedback helps maintain quality standards on Dip Out
+            {rating === 0 ? 'Please rate your driver to continue' : 'Your feedback helps maintain quality standards'}
           </p>
         </motion.div>
       )}

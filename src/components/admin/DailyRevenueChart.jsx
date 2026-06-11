@@ -1,6 +1,6 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign } from 'lucide-react';
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { DollarSign, Car } from 'lucide-react';
 
 export default function DailyRevenueChart({ rides }) {
   // Get last 7 days of data
@@ -41,13 +41,21 @@ export default function DailyRevenueChart({ rides }) {
       const data = payload[0].payload;
       return (
         <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-semibold text-sm mb-1">{data.display}</p>
-          <p className="text-primary font-bold text-lg">
-            ${data.revenue.toFixed(2)}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {data.rides} {data.rides === 1 ? 'ride' : 'rides'}
-          </p>
+          <p className="font-semibold text-sm mb-2">{data.display}</p>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <DollarSign className="w-3 h-3" /> Revenue
+              </span>
+              <span className="font-bold text-primary">${data.revenue.toFixed(2)}</span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Car className="w-3 h-3" /> Rides
+              </span>
+              <span className="font-bold text-green-500">{data.rides}</span>
+            </div>
+          </div>
         </div>
       );
     }
@@ -70,19 +78,31 @@ export default function DailyRevenueChart({ rides }) {
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
-      <div className="mb-6">
-        <h3 className="text-lg font-bold flex items-center gap-2">
-          <DollarSign className="w-5 h-5 text-primary fill-primary" />
-          Daily Revenue (Last 7 Days)
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          Total: <span className="font-bold text-primary">${totalRevenue.toFixed(2)}</span>
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-primary fill-primary" />
+            Daily Performance
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Total: <span className="font-bold text-primary">${totalRevenue.toFixed(2)}</span>
+          </p>
+        </div>
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-primary"></div>
+            <span className="text-muted-foreground">Revenue</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-0.5 bg-green-500"></div>
+            <span className="text-muted-foreground">Ride Volume</span>
+          </div>
+        </div>
       </div>
       
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
             <XAxis 
               dataKey="display" 
@@ -92,19 +112,39 @@ export default function DailyRevenueChart({ rides }) {
               dy={5}
             />
             <YAxis 
+              yAxisId="left"
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `$${value}`}
             />
+            <YAxis 
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              axisLine={false}
+              tickLine={false}
+              allowDecimals={false}
+            />
             <Tooltip content={<CustomTooltip />} />
             <Bar 
+              yAxisId="left"
               dataKey="revenue" 
               fill="hsl(var(--primary))" 
               radius={[6, 6, 0, 0]}
               animationDuration={1000}
             />
-          </BarChart>
+            <Line 
+              yAxisId="right"
+              type="monotone" 
+              dataKey="rides" 
+              stroke="hsl(142, 76%, 36%)" 
+              strokeWidth={3}
+              dot={{ fill: 'hsl(142, 76%, 36%)', r: 4, strokeWidth: 0 }}
+              activeDot={{ r: 6 }}
+              animationDuration={1000}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </div>

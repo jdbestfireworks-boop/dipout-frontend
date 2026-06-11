@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
+import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowLeft, Download } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,43 @@ export default function AdminDashboard() {
     queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
   };
 
+  const downloadCSV = async () => {
+    // Fetch all rides (not just 100)
+    const allRides = await base44.entities.Ride.list('-created_date', 1000);
+    
+    const headers = [
+      'Date', 'Time', 'Rider Email', 'Driver Email', 'Pickup Address', 
+      'Dropoff Address', 'Distance (mi)', 'Base Fare', 'Surge Multiplier', 
+      'Total Fare', 'Payment Method', 'Payment Status', 'Status', 
+      'Rider Rating', 'Rider Comment'
+    ];
+    
+    const rows = allRides.map(r => [
+      r.created_date ? format(new Date(r.created_date), 'yyyy-MM-dd') : '',
+      r.created_date ? format(new Date(r.created_date), 'HH:mm:ss') : '',
+      r.rider_email || '',
+      r.driver_email || '',
+      r.pickup_address || '',
+      r.dropoff_address || '',
+      (r.distance_km || 0).toFixed(1),
+      (r.base_fare || 0).toFixed(2),
+      (r.surge_multiplier || 1).toFixed(2),
+      (r.fare || 0).toFixed(2),
+      r.payment_method || '',
+      r.payment_status || '',
+      r.status || '',
+      r.rider_rating || '',
+      r.rider_comment || ''
+    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(','));
+    
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dip_out_rides_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+  };
+
   const { data: rides = [] } = useQuery({
     queryKey: ['admin-rides'],
     queryFn: () => base44.entities.Ride.list('-created_date', 100),
@@ -59,14 +96,19 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto p-5 md:p-8 space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-display font-bold">Operations</h1>
-          <p className="text-sm text-muted-foreground">Live fleet, rides and dynamic pricing analytics.</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-display font-bold">Operations</h1>
+            <p className="text-sm text-muted-foreground">Live fleet, rides and dynamic pricing analytics.</p>
+          </div>
         </div>
+        <Button onClick={downloadCSV} variant="outline" className="gap-2">
+          <Download className="w-4 h-4" /> Export CSV
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

@@ -8,8 +8,9 @@ import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, C
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import EarningsChart from '@/components/driver/EarningsChart';
-import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
 import RideChat from '@/components/ride/RideChat';
+import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
+import DriverSummaryPanel from '@/components/driver/DriverSummaryPanel';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -25,7 +26,6 @@ export default function DriverApp() {
   const [profile, setProfile] = useState(null);
   const [vehicle, setVehicle] = useState('');
   const [plate, setPlate] = useState('');
-  const [phone, setPhone] = useState('');
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
 
@@ -71,7 +71,6 @@ export default function DriverApp() {
       user_email: user.email,
       vehicle,
       plate,
-      phone: phone || '',
       status: 'offline',
       rating: 5,
       total_earnings: 0,
@@ -139,7 +138,6 @@ export default function DriverApp() {
         <p className="text-sm text-muted-foreground">Set up your vehicle to start receiving ride requests.</p>
         <Input placeholder="Vehicle (e.g. Toyota Prius 2022)" value={vehicle} onChange={(e) => setVehicle(e.target.value)} />
         <Input placeholder="License plate" value={plate} onChange={(e) => setPlate(e.target.value)} />
-        <Input placeholder="Phone number (for riders to call)" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" />
         <Button onClick={createProfile} disabled={!vehicle || !plate} className="w-full h-12 rounded-xl font-semibold">
           Start driving
         </Button>
@@ -160,6 +158,8 @@ export default function DriverApp() {
           <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
         </div>
       </div>
+
+      <SurgeAlertBanner driverEmail={user.email} />
 
       <DriverSummaryPanel profile={profile} driverEmail={user.email} />
 
@@ -246,7 +246,7 @@ export default function DriverApp() {
               </a>
             </div>
 
-            <RideChat ride={activeRide} senderRole="driver" otherPartyEmail={activeRide.rider_email} />
+            <RideChat ride={activeRide} myEmail={user.email} myRole="driver" otherEmail={activeRide.rider_email} />
 
             {activeRide.status === 'accepted' && (
               <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold" variant="outline">

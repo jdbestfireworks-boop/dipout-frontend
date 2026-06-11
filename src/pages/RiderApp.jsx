@@ -3,10 +3,9 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, CheckCircle2, X } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import RideMap from '@/components/RideMap';
 import FareCard from '@/components/rider/FareCard';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
@@ -19,14 +18,20 @@ const statusLabels = {
   cancelled: 'Trip cancelled',
 };
 
+function mapsLink(address) {
+  const encoded = encodeURIComponent(address);
+  // Universal link — opens Apple Maps on iOS, Google Maps on Android
+  return `https://maps.google.com/?q=${encoded}`;
+}
+
 export default function RiderApp() {
-  const [pickup, setPickup] = useState(null);
-  const [dropoff, setDropoff] = useState(null);
   const [pickupAddress, setPickupAddress] = useState('');
   const [dropoffAddress, setDropoffAddress] = useState('');
+  const [distanceKm, setDistanceKm] = useState(0);
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
+  const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
 
   // Resume an active ride
   useEffect(() => {
@@ -54,40 +59,35 @@ export default function RiderApp() {
     return unsubscribe;
   }, [ride?.id]);
 
-  const distanceKm =
-    pickup && dropoff ? haversineKm(pickup.lat, pickup.lng, dropoff.lat, dropoff.lng) : 0;
-
-  const handleMapClick = (latlng) => {
-    if (ride) return;
-    if (!pickup) {
-      setPickup(latlng);
-    } else if (!dropoff) {
-      setDropoff(latlng);
-    }
-    setQuote(null);
-  };
-
   const getQuote = async () => {
+    if (!pickupAddress.trim() || !dropoffAddress.trim()) {
+      toast.error('Enter both pickup and destination addresses');
+      return;
+    }
     setQuoting(true);
+    // Estimate ~5 km default if we can't geocode — AI pricing still works off addresses
+    const km = distanceKm > 0 ? distanceKm : 5;
     const q = await getDynamicFare({
-      distanceKm,
-      pickupAddress: pickupAddress || `${pickup.lat.toFixed(4)}, ${pickup.lng.toFixed(4)}`,
-      dropoffAddress: dropoffAddress || `${dropoff.lat.toFixed(4)}, ${dropoff.lng.toFixed(4)}`,
+      distanceKm: km,
+      pickupAddress,
+      dropoffAddress,
     });
     setQuote(q);
+    setDistanceKm(km);
     setQuoting(false);
   };
 
   const requestRide = async () => {
+    if (!payMethod) { toast.error('Choose a payment method'); return; }
     const user = await base44.auth.me();
     const created = await base44.entities.Ride.create({
       rider_email: user.email,
-      pickup_address: pickupAddress || 'Pinned location',
-      dropoff_address: dropoffAddress || 'Pinned location',
-      pickup_lat: pickup.lat,
-      pickup_lng: pickup.lng,
-      dropoff_lat: dropoff.lat,
-      dropoff_lng: dropoff.lng,
+      pickup_address: pickupAddress,
+      dropoff_address: dropoffAddress,
+      pickup_lat: 0,
+      pickup_lng: 0,
+      dropoff_lat: 0,
+      dropoff_lng: 0,
       status: 'requested',
       distance_km: Math.round(distanceKm * 10) / 10,
       base_fare: quote.baseFare,
@@ -95,9 +95,10 @@ export default function RiderApp() {
       fare: quote.fare,
       ai_pricing_reason: quote.reason,
       payment_status: 'unpaid',
+      payment_method: payMethod,
     });
     setRide(created);
-    toast.success('Ride requested');
+    toast.success('Ride requested — finding your driver');
   };
 
   const cancelRide = async () => {
@@ -105,94 +106,126 @@ export default function RiderApp() {
     resetAll();
   };
 
-  const payRide = async () => {
+  const confirmPayment = async () => {
     await base44.entities.Ride.update(ride.id, { payment_status: 'paid' });
-    toast.success(`Payment of $${ride.fare.toFixed(2)} confirmed`);
+    toast.success(`Payment confirmed — thanks for riding with Dip Out!`);
     resetAll();
   };
 
   const resetAll = () => {
     setRide(null);
-    setPickup(null);
-    setDropoff(null);
-    setQuote(null);
     setPickupAddress('');
     setDropoffAddress('');
+    setQuote(null);
+    setDistanceKm(0);
+    setPayMethod(null);
   };
 
-  const driverPos =
-    ride && ride.driver_lat != null ? { lat: ride.driver_lat, lng: ride.driver_lng } : null;
-
   return (
-    <div className="absolute inset-0 flex flex-col md:flex-row">
-      <div className="flex-1 min-h-[45vh] relative z-0">
-        <RideMap
-          pickup={ride ? { lat: ride.pickup_lat, lng: ride.pickup_lng } : pickup}
-          dropoff={ride ? { lat: ride.dropoff_lat, lng: ride.dropoff_lng } : dropoff}
-          driver={driverPos}
-          onMapClick={handleMapClick}
-        />
-        {!ride && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-card/90 backdrop-blur px-4 py-1.5 rounded-full text-xs text-muted-foreground border border-border">
-            {!pickup ? 'Tap the map to set your pickup' : !dropoff ? 'Tap to set your destination' : 'Route set'}
-          </div>
-        )}
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-display font-bold">Where to?</h1>
+          <p className="text-sm text-muted-foreground mt-1">Enter your pickup and drop-off to get an AI fare estimate.</p>
+        </div>
 
-      <div className="w-full md:w-[400px] border-t md:border-t-0 md:border-l border-border bg-card p-5 space-y-4 overflow-y-auto">
         <AnimatePresence mode="wait">
           {!ride ? (
-            <motion.div key="book" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              <h1 className="text-2xl font-display font-bold">Where to?</h1>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+            <motion.div key="book" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+
+              {/* Addresses */}
+              <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                    <MapPin className="w-4 h-4 text-primary-foreground" />
+                  </div>
                   <Input
-                    placeholder="Pickup label (optional)"
+                    placeholder="Pickup address"
                     value={pickupAddress}
-                    onChange={(e) => setPickupAddress(e.target.value)}
-                    disabled={!pickup}
+                    onChange={(e) => { setPickupAddress(e.target.value); setQuote(null); }}
+                    className="border-0 bg-transparent p-0 h-auto text-base focus-visible:ring-0 shadow-none"
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Navigation className="w-4 h-4 text-muted-foreground shrink-0" />
+                <div className="border-t border-border ml-4" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0">
+                    <Navigation className="w-4 h-4 text-muted-foreground" />
+                  </div>
                   <Input
-                    placeholder="Destination label (optional)"
+                    placeholder="Destination address"
                     value={dropoffAddress}
-                    onChange={(e) => setDropoffAddress(e.target.value)}
-                    disabled={!dropoff}
+                    onChange={(e) => { setDropoffAddress(e.target.value); setQuote(null); }}
+                    className="border-0 bg-transparent p-0 h-auto text-base focus-visible:ring-0 shadow-none"
                   />
                 </div>
               </div>
 
-              {pickup && dropoff && !quote && (
-                <Button onClick={getQuote} disabled={quoting} className="w-full h-12 rounded-xl font-semibold">
+              {/* Get quote */}
+              {!quote && (
+                <Button
+                  onClick={getQuote}
+                  disabled={quoting || !pickupAddress || !dropoffAddress}
+                  className="w-full h-12 rounded-xl font-semibold"
+                >
                   {quoting ? (
                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing traffic & demand…</>
                   ) : (
-                    'Get AI fare quote'
+                    <><Sparkles className="w-4 h-4 mr-2" /> Get AI fare quote</>
                   )}
                 </Button>
               )}
 
+              {/* Fare card */}
               <FareCard quote={quote} distanceKm={distanceKm} />
 
+              {/* Payment method */}
               {quote && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Payment method</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setPayMethod('card')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                        payMethod === 'card'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-card hover:border-primary/50'
+                      }`}
+                    >
+                      <CreditCard className={`w-6 h-6 ${payMethod === 'card' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className={`font-semibold text-sm ${payMethod === 'card' ? 'text-primary' : ''}`}>Card</span>
+                    </button>
+                    <button
+                      onClick={() => setPayMethod('cash')}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                        payMethod === 'cash'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-card hover:border-primary/50'
+                      }`}
+                    >
+                      <Banknote className={`w-6 h-6 ${payMethod === 'cash' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className={`font-semibold text-sm ${payMethod === 'cash' ? 'text-primary' : ''}`}>Cash</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {quote && payMethod && (
                 <Button onClick={requestRide} className="w-full h-12 rounded-xl font-semibold">
-                  Request ride · ${quote.fare.toFixed(2)}
+                  Request ride · ${quote.fare.toFixed(2)} · {payMethod === 'card' ? 'Card' : 'Cash'}
                 </Button>
               )}
 
-              {(pickup || dropoff) && (
+              {quote && (
                 <Button variant="ghost" onClick={resetAll} className="w-full text-muted-foreground">
-                  <X className="w-4 h-4 mr-1" /> Clear route
+                  <X className="w-4 h-4 mr-1" /> Clear
                 </Button>
               )}
             </motion.div>
           ) : (
-            <motion.div key="trip" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <motion.div key="trip" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl font-display font-bold">{statusLabels[ride.status]}</h1>
+                <h2 className="text-xl font-display font-bold">{statusLabels[ride.status]}</h2>
                 <Badge variant="outline" className="capitalize">{ride.status.replace('_', ' ')}</Badge>
               </div>
 
@@ -203,28 +236,76 @@ export default function RiderApp() {
                 </div>
               )}
 
+              {/* Trip details */}
+              <div className="rounded-2xl border border-border bg-card p-4 space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-muted-foreground text-xs">Pickup</p>
+                    <p className="font-medium">{ride.pickup_address}</p>
+                    <a
+                      href={mapsLink(ride.pickup_address)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline"
+                    >
+                      Open in Maps <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+                <div className="border-t border-border" />
+                <div className="flex items-start gap-3">
+                  <Navigation className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-muted-foreground text-xs">Drop-off</p>
+                    <p className="font-medium">{ride.dropoff_address}</p>
+                    <a
+                      href={mapsLink(ride.dropoff_address)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline"
+                    >
+                      Open in Maps <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fare + payment method */}
+              <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Fare</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-lg">${ride.fare?.toFixed(2)}</span>
+                  <Badge variant="outline" className="capitalize">
+                    {ride.payment_method === 'cash' ? <><Banknote className="w-3 h-3 mr-1" />Cash</> : <><CreditCard className="w-3 h-3 mr-1" />Card</>}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Driver info */}
               {ride.driver_email && ride.status !== 'completed' && (
-                <div className="rounded-xl border border-border p-3 text-sm">
-                  <p className="text-muted-foreground">Your driver</p>
+                <div className="rounded-2xl border border-border bg-card p-4 text-sm">
+                  <p className="text-muted-foreground text-xs mb-1">Your driver</p>
                   <p className="font-medium">{ride.driver_email}</p>
                 </div>
               )}
 
-              <div className="rounded-xl border border-border p-3 text-sm space-y-1">
-                <p><span className="text-muted-foreground">From:</span> {ride.pickup_address}</p>
-                <p><span className="text-muted-foreground">To:</span> {ride.dropoff_address}</p>
-                <p><span className="text-muted-foreground">Fare:</span> <span className="font-semibold">${ride.fare?.toFixed(2)}</span> ({ride.surge_multiplier}x)</p>
-              </div>
-
+              {/* Payment confirmation on completion */}
               {ride.status === 'completed' && ride.payment_status === 'unpaid' && (
-                <Button onClick={payRide} className="w-full h-12 rounded-xl font-semibold">
-                  <CreditCard className="w-4 h-4 mr-2" /> Pay ${ride.fare?.toFixed(2)}
-                </Button>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Confirm payment below.</p>
+                  <Button onClick={confirmPayment} className="w-full h-12 rounded-xl font-semibold">
+                    {ride.payment_method === 'cash'
+                      ? <><Banknote className="w-4 h-4 mr-2" /> Confirm cash payment · ${ride.fare?.toFixed(2)}</>
+                      : <><CreditCard className="w-4 h-4 mr-2" /> Confirm card payment · ${ride.fare?.toFixed(2)}</>
+                    }
+                  </Button>
+                </div>
               )}
 
               {ride.status === 'completed' && ride.payment_status === 'paid' && (
-                <div className="flex items-center gap-2 text-primary font-medium">
-                  <CheckCircle2 className="w-5 h-5" /> Paid — thanks for riding!
+                <div className="flex items-center gap-2 text-primary font-medium justify-center py-2">
+                  <CheckCircle2 className="w-5 h-5" /> Paid — thanks for riding with Dip Out!
                 </div>
               )}
 
@@ -234,9 +315,15 @@ export default function RiderApp() {
                 </Button>
               )}
 
-              {['cancelled'].includes(ride.status) && (
+              {ride.status === 'cancelled' && (
                 <Button variant="outline" onClick={resetAll} className="w-full">
                   Book a new ride
+                </Button>
+              )}
+
+              {ride.status === 'completed' && ride.payment_status === 'paid' && (
+                <Button variant="outline" onClick={resetAll} className="w-full mt-2">
+                  Book another ride
                 </Button>
               )}
             </motion.div>

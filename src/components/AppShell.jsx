@@ -19,7 +19,7 @@ export default function AppShell() {
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <Car className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="font-display font-700 font-bold tracking-tight text-lg">Velo</span>
+          <span className="font-display font-700 font-bold tracking-tight text-lg">Dip Out</span>
         </div>
         <nav className="flex items-center gap-1">
           {navItems.map(({ path, label, icon: Icon }) => (

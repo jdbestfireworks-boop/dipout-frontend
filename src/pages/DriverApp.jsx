@@ -1,14 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Loader2, DollarSign, MapPin, Navigation, Star, Car } from 'lucide-react';
+import { Loader2, DollarSign, Navigation, Star, Car, MapPin, ExternalLink, Banknote, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import RideMap from '@/components/RideMap';
-import { haversineKm, stepToward } from '@/lib/geo';
+
+function mapsLink(address) {
+  const encoded = encodeURIComponent(address);
+  return `https://maps.google.com/?q=${encoded}`;
+}
+
+function dirLink(from, to) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}`;
+}
 
 export default function DriverApp() {
   const [user, setUser] = useState(null);
@@ -17,7 +24,6 @@ export default function DriverApp() {
   const [plate, setPlate] = useState('');
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
-  const intervalRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -56,26 +62,6 @@ export default function DriverApp() {
     setRequests(reqs);
   };
 
-  // GPS simulation: move driver toward pickup (accepted) or dropoff (in_progress)
-  useEffect(() => {
-    clearInterval(intervalRef.current);
-    if (!activeRide || !['accepted', 'in_progress'].includes(activeRide.status)) return;
-    intervalRef.current = setInterval(async () => {
-      const target =
-        activeRide.status === 'accepted'
-          ? { lat: activeRide.pickup_lat, lng: activeRide.pickup_lng }
-          : { lat: activeRide.dropoff_lat, lng: activeRide.dropoff_lng };
-      const cur = {
-        lat: activeRide.driver_lat ?? activeRide.pickup_lat + 0.02,
-        lng: activeRide.driver_lng ?? activeRide.pickup_lng + 0.02,
-      };
-      if (haversineKm(cur.lat, cur.lng, target.lat, target.lng) < 0.05) return;
-      const next = stepToward(cur.lat, cur.lng, target.lat, target.lng, 0.2);
-      await base44.entities.Ride.update(activeRide.id, { driver_lat: next.lat, driver_lng: next.lng });
-    }, 3000);
-    return () => clearInterval(intervalRef.current);
-  }, [activeRide?.id, activeRide?.status, activeRide?.driver_lat]);
-
   const createProfile = async () => {
     const p = await base44.entities.DriverProfile.create({
       user_email: user.email,
@@ -99,14 +85,12 @@ export default function DriverApp() {
     await base44.entities.Ride.update(ride.id, {
       status: 'accepted',
       driver_email: user.email,
-      driver_lat: ride.pickup_lat + 0.02,
-      driver_lng: ride.pickup_lng + 0.02,
     });
     await base44.entities.DriverProfile.update(profile.id, { status: 'busy' });
     setProfile({ ...profile, status: 'busy' });
     setActiveRide({ ...ride, status: 'accepted', driver_email: user.email });
     setRequests((prev) => prev.filter((r) => r.id !== ride.id));
-    toast.success('Ride accepted');
+    toast.success('Ride accepted — open Maps to navigate');
   };
 
   const startTrip = async () => {
@@ -115,23 +99,20 @@ export default function DriverApp() {
   };
 
   const completeTrip = async () => {
-    await base44.entities.Ride.update(activeRide.id, {
-      status: 'completed',
-      driver_lat: activeRide.dropoff_lat,
-      driver_lng: activeRide.dropoff_lng,
-    });
+    await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
+    const earned = (activeRide.fare || 0) * 0.8;
     await base44.entities.DriverProfile.update(profile.id, {
       status: 'available',
-      total_earnings: (profile.total_earnings || 0) + (activeRide.fare || 0) * 0.8,
+      total_earnings: (profile.total_earnings || 0) + earned,
       trips_completed: (profile.trips_completed || 0) + 1,
     });
     setProfile({
       ...profile,
       status: 'available',
-      total_earnings: (profile.total_earnings || 0) + (activeRide.fare || 0) * 0.8,
+      total_earnings: (profile.total_earnings || 0) + earned,
       trips_completed: (profile.trips_completed || 0) + 1,
     });
-    toast.success(`Trip complete — you earned $${((activeRide.fare || 0) * 0.8).toFixed(2)}`);
+    toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
     setActiveRide(null);
   };
 
@@ -145,11 +126,11 @@ export default function DriverApp() {
 
   if (!profile) {
     return (
-      <div className="max-w-md mx-auto p-6 pt-16 space-y-4">
+      <div className="max-w-md mx-auto p-6 pt-10 space-y-4">
         <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
           <Car className="w-6 h-6 text-primary-foreground" />
         </div>
-        <h1 className="text-2xl font-display font-bold">Become a Velo driver</h1>
+        <h1 className="text-2xl font-display font-bold">Become a Dip Out driver</h1>
         <p className="text-sm text-muted-foreground">Set up your vehicle to start receiving ride requests.</p>
         <Input placeholder="Vehicle (e.g. Toyota Prius 2022)" value={vehicle} onChange={(e) => setVehicle(e.target.value)} />
         <Input placeholder="License plate" value={plate} onChange={(e) => setPlate(e.target.value)} />
@@ -161,92 +142,167 @@ export default function DriverApp() {
   }
 
   return (
-    <div className="absolute inset-0 flex flex-col md:flex-row">
-      <div className="flex-1 min-h-[40vh] relative z-0">
-        <RideMap
-          pickup={activeRide ? { lat: activeRide.pickup_lat, lng: activeRide.pickup_lng } : null}
-          dropoff={activeRide ? { lat: activeRide.dropoff_lat, lng: activeRide.dropoff_lng } : null}
-          driver={activeRide && activeRide.driver_lat != null ? { lat: activeRide.driver_lat, lng: activeRide.driver_lng } : null}
-          center={activeRide ? { lat: activeRide.pickup_lat, lng: activeRide.pickup_lng } : undefined}
-        />
+    <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
+      {/* Header + online toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold">Driver hub</h1>
+          <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
+          <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
+        </div>
       </div>
 
-      <div className="w-full md:w-[400px] border-t md:border-t-0 md:border-l border-border bg-card p-5 space-y-4 overflow-y-auto">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-display font-bold">Driver hub</h1>
-            <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
-            <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
-          </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <DollarSign className="w-4 h-4 mx-auto text-primary mb-1" />
+          <p className="font-display font-bold text-lg">${(profile.total_earnings || 0).toFixed(0)}</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Earnings</p>
         </div>
-
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-xl border border-border p-3">
-            <DollarSign className="w-4 h-4 mx-auto text-primary mb-1" />
-            <p className="font-display font-bold">${(profile.total_earnings || 0).toFixed(0)}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Earnings</p>
-          </div>
-          <div className="rounded-xl border border-border p-3">
-            <Navigation className="w-4 h-4 mx-auto text-primary mb-1" />
-            <p className="font-display font-bold">{profile.trips_completed || 0}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Trips</p>
-          </div>
-          <div className="rounded-xl border border-border p-3">
-            <Star className="w-4 h-4 mx-auto text-primary mb-1" />
-            <p className="font-display font-bold">{(profile.rating || 5).toFixed(1)}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rating</p>
-          </div>
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <Navigation className="w-4 h-4 mx-auto text-primary mb-1" />
+          <p className="font-display font-bold text-lg">{profile.trips_completed || 0}</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Trips</p>
         </div>
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <Star className="w-4 h-4 mx-auto text-primary mb-1" />
+          <p className="font-display font-bold text-lg">{(profile.rating || 5).toFixed(1)}</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rating</p>
+        </div>
+      </div>
 
-        <AnimatePresence mode="wait">
-          {activeRide ? (
-            <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+      <AnimatePresence mode="wait">
+        {activeRide ? (
+          <motion.div key="active" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-lg">Current trip</h2>
+              <Badge className="capitalize">{activeRide.status.replace('_', ' ')}</Badge>
+            </div>
+
+            {/* Rider + payment info */}
+            <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold">Current trip</h2>
-                <Badge className="capitalize">{activeRide.status.replace('_', ' ')}</Badge>
+                <span className="text-muted-foreground">Rider</span>
+                <span className="font-medium">{activeRide.rider_email}</span>
               </div>
-              <div className="rounded-xl border border-border p-3 text-sm space-y-1">
-                <p className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-primary" /> {activeRide.pickup_address}</p>
-                <p className="flex items-center gap-2"><Navigation className="w-3.5 h-3.5 text-muted-foreground" /> {activeRide.dropoff_address}</p>
-                <p className="text-muted-foreground">{activeRide.distance_km} km · ${activeRide.fare?.toFixed(2)} · rider: {activeRide.rider_email}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Fare</span>
+                <span className="font-bold text-base">${activeRide.fare?.toFixed(2)}</span>
               </div>
-              {activeRide.status === 'accepted' && (
-                <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold">Rider picked up — start trip</Button>
-              )}
-              {activeRide.status === 'in_progress' && (
-                <Button onClick={completeTrip} className="w-full h-12 rounded-xl font-semibold">Complete trip</Button>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div key="requests" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-              <h2 className="font-semibold">Ride requests</h2>
-              {profile.status === 'offline' ? (
-                <p className="text-sm text-muted-foreground">Go online to receive ride requests.</p>
-              ) : requests.length === 0 ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Waiting for requests…
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Payment</span>
+                <Badge variant="outline" className="capitalize flex items-center gap-1">
+                  {activeRide.payment_method === 'cash'
+                    ? <><Banknote className="w-3 h-3" /> Cash</>
+                    : <><CreditCard className="w-3 h-3" /> Card</>
+                  }
+                </Badge>
+              </div>
+            </div>
+
+            {/* Pickup card with Maps link */}
+            <div className="rounded-2xl border border-border bg-card p-4 space-y-3 text-sm">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-0.5">Pickup</p>
+                  <p className="font-medium">{activeRide.pickup_address}</p>
+                  <a
+                    href={mapsLink(activeRide.pickup_address)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-semibold"
+                  >
+                    <ExternalLink className="w-3 h-3" /> Open in Maps
+                  </a>
                 </div>
-              ) : (
-                requests.map((r) => (
-                  <div key={r.id} className="rounded-xl border border-border p-3 text-sm space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-primary">${r.fare?.toFixed(2)}</span>
-                      <span className="text-muted-foreground">{r.distance_km} km</span>
+              </div>
+              <div className="border-t border-border" />
+              <div className="flex items-start gap-3">
+                <Navigation className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground mb-0.5">Drop-off</p>
+                  <p className="font-medium">{activeRide.dropoff_address}</p>
+                  <a
+                    href={mapsLink(activeRide.dropoff_address)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-semibold"
+                  >
+                    <ExternalLink className="w-3 h-3" /> Open in Maps
+                  </a>
+                </div>
+              </div>
+              {/* Full directions link */}
+              <a
+                href={dirLink(activeRide.pickup_address, activeRide.dropoff_address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full mt-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity"
+              >
+                <Navigation className="w-4 h-4" /> Get full directions
+              </a>
+            </div>
+
+            {activeRide.status === 'accepted' && (
+              <Button onClick={startTrip} className="w-full h-12 rounded-xl font-semibold" variant="outline">
+                Rider picked up — start trip
+              </Button>
+            )}
+            {activeRide.status === 'in_progress' && (
+              <Button onClick={completeTrip} className="w-full h-12 rounded-xl font-semibold">
+                Complete trip
+              </Button>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div key="requests" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+            <h2 className="font-semibold text-lg">Ride requests</h2>
+            {profile.status === 'offline' ? (
+              <div className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+                Go online to start receiving ride requests.
+              </div>
+            ) : requests.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-card p-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Waiting for requests…
+              </div>
+            ) : (
+              requests.map((r) => (
+                <div key={r.id} className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-primary text-lg">${r.fare?.toFixed(2)}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{r.distance_km} km</span>
+                      <Badge variant="outline" className="text-xs flex items-center gap-1">
+                        {r.payment_method === 'cash'
+                          ? <><Banknote className="w-3 h-3" /> Cash</>
+                          : <><CreditCard className="w-3 h-3" /> Card</>
+                        }
+                      </Badge>
                     </div>
-                    <p className="text-muted-foreground truncate">{r.pickup_address} → {r.dropoff_address}</p>
-                    <Button size="sm" onClick={() => acceptRide(r)} className="w-full rounded-lg font-semibold">
-                      Accept
-                    </Button>
                   </div>
-                ))
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                  <div className="text-sm space-y-1">
+                    <p className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate">{r.pickup_address}</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-muted-foreground">
+                      <Navigation className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{r.dropoff_address}</span>
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => acceptRide(r)} className="w-full rounded-xl font-semibold h-10">
+                    Accept ride
+                  </Button>
+                </div>
+              ))
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

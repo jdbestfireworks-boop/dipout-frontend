@@ -58,6 +58,14 @@
     "ai_pricing_reason": {
       "type": "string"
     },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "card",
+        "cash"
+      ],
+      "default": "cash"
+    },
     "payment_status": {
       "type": "string",
       "enum": [
@@ -68,9 +76,7 @@
     }
   },
   "required": [
-    "pickup_lat",
-    "pickup_lng",
-    "dropoff_lat",
-    "dropoff_lng"
+    "pickup_address",
+    "dropoff_address"
   ]
 }

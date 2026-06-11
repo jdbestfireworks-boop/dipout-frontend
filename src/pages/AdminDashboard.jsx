@@ -61,6 +61,7 @@ export default function AdminDashboard() {
                 <TableHead>Fare</TableHead>
                 <TableHead>Surge</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Method</TableHead>
                 <TableHead>Payment</TableHead>
               </TableRow>
             </TableHeader>
@@ -80,6 +81,7 @@ export default function AdminDashboard() {
                   <TableCell>
                     <Badge className={`${statusColors[r.status]} capitalize border-0`}>{r.status.replace('_', ' ')}</Badge>
                   </TableCell>
+                  <TableCell className="capitalize text-muted-foreground">{r.payment_method || '—'}</TableCell>
                   <TableCell className="capitalize text-muted-foreground">{r.payment_status}</TableCell>
                 </TableRow>
               ))}

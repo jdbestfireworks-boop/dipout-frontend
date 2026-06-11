@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +29,21 @@ export default function DriverApp() {
   const [activeRide, setActiveRide] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [locationPermission, setLocationPermission] = useState('prompt');
+  const [notificationPermission, setNotificationPermission] = useState('default');
+
+  // Request browser notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        setNotificationPermission(permission);
+        if (permission === 'granted') {
+          toast.success('Notifications enabled - you\'ll get alerts for new rides!');
+        }
+      });
+    } else if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+    }
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -116,6 +131,14 @@ export default function DriverApp() {
         // Auto-show modal for new requests when online
         if (profile.status !== 'offline' && !activeRide) {
           setSelectedRequest(event.data);
+          // Show browser notification
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('🔔 New Ride Request!', {
+              body: `$${((event.data.fare || 0) * 0.8).toFixed(2)} earnings - ${event.data.distance_km || 0} mi`,
+              icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
+              tag: `ride-${event.id}`,
+            });
+          }
         }
       }
       if (event.type === 'update') {
@@ -246,6 +269,14 @@ export default function DriverApp() {
           {profile.status !== 'offline' && locationPermission === 'denied' && (
             <span className="text-xs text-destructive flex items-center gap-1">
               GPS denied
+            </span>
+          )}
+          {profile.status !== 'offline' && notificationPermission === 'granted' && (
+            <Bell className="w-4 h-4 text-green-500" />
+          )}
+          {profile.status !== 'offline' && notificationPermission === 'denied' && (
+            <span className="text-xs text-destructive flex items-center gap-1">
+              Notifications blocked
             </span>
           )}
           <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>

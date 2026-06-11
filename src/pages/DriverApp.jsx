@@ -321,7 +321,7 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
-      {/* Header with back button + online toggle */}
+      {/* Header with back button + online toggle + test button */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 shrink-0">
@@ -332,6 +332,21 @@ export default function DriverApp() {
             <p className="text-xs text-muted-foreground">{profile.vehicle} · {profile.plate}</p>
           </div>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={async () => {
+            try {
+              const result = await base44.functions.invoke('simulateRideRequest', {});
+              toast.success(`Test ride created: $${result.data.ride.fare} - ${result.data.ride.distance}mi`);
+            } catch (error) {
+              toast.error('Failed to simulate ride');
+            }
+          }}
+          className="text-xs h-8"
+        >
+          🧪 Test Ride
+        </Button>
         <div className="flex items-center gap-2 shrink-0">
           {profile.status !== 'offline' && locationPermission === 'granted' && (
             <span className="text-xs text-green-500 flex items-center gap-1">

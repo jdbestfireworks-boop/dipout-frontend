@@ -18,6 +18,7 @@ import RiderApp from '@/pages/RiderApp';
 import DriverApp from '@/pages/DriverApp';
 import AdminDashboard from '@/pages/AdminDashboard';
 import RideHistoryPage from '@/pages/RideHistoryPage';
+import DemoMode from '@/pages/DemoMode';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
           <Route path="/driver" element={<DriverApp />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/rides" element={<RideHistoryPage />} />
+          <Route path="/demo" element={<DemoMode />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

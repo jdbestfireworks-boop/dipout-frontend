@@ -4,8 +4,9 @@ Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         
-        // Verify this is called by automation (service role)
-        const { ride_id } = await req.json();
+        // Handle both automation event and direct call
+        const body = await req.json();
+        const ride_id = body.ride_id || body.event?.entity_id;
         
         if (!ride_id) {
             return Response.json({ error: 'Ride ID required' }, { status: 400 });
@@ -17,35 +18,53 @@ Deno.serve(async (req) => {
         // Fetch the ride data
         const ride = await base44.asServiceRole.entities.Ride.get(ride_id);
         
-        if (!ride || ride.status !== 'completed') {
-            return Response.json({ error: 'Ride not found or not completed' }, { status: 400 });
+        if (!ride) {
+            return Response.json({ error: 'Ride not found' }, { status: 404 });
+        }
+        
+        // Only sync completed rides
+        if (ride.status !== 'completed') {
+            return Response.json({ success: true, message: 'Ride not yet completed, skipping sync' });
         }
 
         // Get or create spreadsheet ID from app settings (or create new one)
-        // For first time, we'll create a new spreadsheet
         let spreadsheetId = Deno.env.get('GOOGLE_SHEETS_SPREADSHEET_ID');
         
         if (!spreadsheetId) {
-            // Create new spreadsheet
-            const createResponse = await fetch('https://sheets.googleapis.com/spreadsheets', {
-                method: 'POST',
+            // Try to get existing spreadsheet by name first
+            const searchResponse = await fetch('https://sheets.googleapis.com/drive/v3/files?q=name=%27Dip%20Out%20-%20Ride%20Records%27%20and%20mimeType=%27application/vnd.google-apps.spreadsheet%27%20and%20trashed=false', {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    properties: {
-                        title: 'Dip Out - Ride Records'
-                    }
-                })
+                }
             });
             
-            const spreadsheet = await createResponse.json();
-            spreadsheetId = spreadsheet.spreadsheetId;
+            if (searchResponse.ok) {
+                const searchResult = await searchResponse.json();
+                if (searchResult.files && searchResult.files.length > 0) {
+                    spreadsheetId = searchResult.files[0].id;
+                    console.log('Found existing spreadsheet:', spreadsheetId);
+                }
+            }
             
-            // Store the spreadsheet ID for future use
-            // Note: In production, you'd want to store this in app settings
-            console.log('Created new spreadsheet:', spreadsheetId);
+            // If still no spreadsheet, create new one
+            if (!spreadsheetId) {
+                const createResponse = await fetch('https://sheets.googleapis.com/spreadsheets', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        properties: {
+                            title: 'Dip Out - Ride Records'
+                        }
+                    })
+                });
+                
+                const spreadsheet = await createResponse.json();
+                spreadsheetId = spreadsheet.spreadsheetId;
+                console.log('Created new spreadsheet:', spreadsheetId);
+            }
         }
 
         // Prepare row data

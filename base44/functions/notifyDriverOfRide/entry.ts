@@ -19,15 +19,22 @@ function buildMimeEmail({ to, subject, body }) {
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        const { ride_id } = await req.json();
+        const body = await req.json();
+        // Handle both automation event and direct call
+        const ride_id = body.ride_id || body.event?.entity_id;
 
         if (!ride_id) {
             return Response.json({ error: 'Ride ID required' }, { status: 400 });
         }
 
         const ride = await base44.asServiceRole.entities.Ride.get(ride_id);
-        if (!ride || ride.status !== 'requested') {
-            return Response.json({ error: 'Ride not found or not in requested status' }, { status: 400 });
+        if (!ride) {
+            return Response.json({ error: 'Ride not found' }, { status: 404 });
+        }
+        
+        // Only notify for requested rides
+        if (ride.status !== 'requested') {
+            return Response.json({ success: true, message: 'Ride not in requested status, skipping notification' });
         }
 
         // Fetch all available/online drivers

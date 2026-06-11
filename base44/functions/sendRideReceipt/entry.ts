@@ -20,11 +20,22 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
-    // Called from automation (entity event) or directly with ride_id
+    // Handle both automation event and direct call
     const ride_id = body.ride_id || body.event?.entity_id;
 
+    if (!ride_id) {
+      return Response.json({ error: 'Ride ID required' }, { status: 400 });
+    }
+
     const ride = await base44.asServiceRole.entities.Ride.get(ride_id);
-    if (!ride) return Response.json({ error: 'Ride not found' }, { status: 404 });
+    if (!ride) {
+      return Response.json({ error: 'Ride not found' }, { status: 404 });
+    }
+    
+    // Only send receipt for completed rides
+    if (ride.status !== 'completed') {
+      return Response.json({ success: true, message: 'Ride not yet completed, skipping receipt' });
+    }
 
     const fare = ride.fare || 0;
     // tip = final fare minus original base fare (if fare was updated with tip)

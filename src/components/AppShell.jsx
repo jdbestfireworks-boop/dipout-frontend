@@ -15,12 +15,12 @@ export default function AppShell() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="h-14 flex items-center justify-between px-4 md:px-6 border-b border-border bg-card/70 backdrop-blur-md z-[1100] relative">
-        <div className="flex items-center gap-2">
+        <Link to="/home" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <Car className="w-4 h-4 text-primary-foreground" />
           </div>
           <span className="font-display font-700 font-bold tracking-tight text-lg">Dip Out</span>
-        </div>
+        </Link>
         <nav className="flex items-center gap-1">
           {navItems.map(({ path, label, icon: Icon }) => (
             <Link

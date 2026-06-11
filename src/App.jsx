@@ -13,6 +13,7 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import AppShell from '@/components/AppShell';
+import Home from '@/pages/Home';
 import RiderApp from '@/pages/RiderApp';
 import DriverApp from '@/pages/DriverApp';
 import AdminDashboard from '@/pages/AdminDashboard';
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppShell />}>
+          <Route path="/home" element={<Home />} />
           <Route path="/" element={<RiderApp />} />
           <Route path="/driver" element={<DriverApp />} />
           <Route path="/admin" element={<AdminDashboard />} />

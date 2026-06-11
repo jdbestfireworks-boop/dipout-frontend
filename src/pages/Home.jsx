@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Car, MapPin, Shield, Play, Bell } from 'lucide-react';
+import { Car, MapPin, Shield, Play, Bell, Loader2, Zap } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function Home() {
+  const [simulating, setSimulating] = useState(false);
+
+  const startSimulation = async () => {
+    setSimulating(true);
+    try {
+      const result = await base44.functions.invoke('startContinuousAiRides', { action: 'start' });
+      toast.success(result.data.message);
+      
+      // Manually trigger the automation to start immediately
+      // The automation will run 6 times over 30 minutes (every 5 minutes)
+      toast.info('AI rides will be created every 5 minutes for 30 minutes');
+    } catch (error) {
+      console.error('Simulation error:', error);
+      toast.error('Failed to start simulation');
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-6">
       {/* Logo */}
@@ -39,6 +60,18 @@ export default function Home() {
           <Shield className="w-6 h-6" /> Admin Login
         </Link>
         
+        <button
+          onClick={startSimulation}
+          disabled={simulating}
+          className="mt-4 flex items-center justify-center gap-2 w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {simulating ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Starting...</>
+          ) : (
+            <><Zap className="w-4 h-4" /> Test: AI Riders (30 min)</>
+          )}
+        </button>
+
         <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <Link to="/rides" className="hover:text-primary transition-colors font-medium">Ride History</Link>
           <Link to="/demo" className="hover:text-primary transition-colors font-medium flex items-center gap-1">

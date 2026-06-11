@@ -8,7 +8,7 @@ import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { isInLouisiana } from '@/lib/geo';
+import { isInLouisiana, haversineMiles } from '@/lib/geo';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -56,6 +56,26 @@ export default function DriverApp() {
             // Update driver location in database
             await base44.entities.DriverProfile.update(profile.id, { lat, lng });
             setProfile((prev) => prev ? { ...prev, lat, lng } : null);
+            
+            // Auto-complete based on GPS proximity
+            if (activeRide) {
+              // Check if near pickup (for accepted rides)
+              if (activeRide.status === 'accepted' && activeRide.pickup_lat && activeRide.pickup_lng) {
+                const distToPickup = haversineMiles(lat, lng, activeRide.pickup_lat, activeRide.pickup_lng);
+                if (distToPickup < 0.1) { // Within 0.1 miles (~160m)
+                  await startTrip();
+                  toast.success('Auto-detected: Rider picked up!');
+                }
+              }
+              // Check if near dropoff (for in_progress rides)
+              if (activeRide.status === 'in_progress' && activeRide.dropoff_lat && activeRide.dropoff_lng) {
+                const distToDropoff = haversineMiles(lat, lng, activeRide.dropoff_lat, activeRide.dropoff_lng);
+                if (distToDropoff < 0.1) { // Within 0.1 miles (~160m)
+                  await completeTrip();
+                  toast.success('Auto-detected: Trip completed!');
+                }
+              }
+            }
           },
           (error) => {
             console.error('GPS error:', error);
@@ -78,7 +98,7 @@ export default function DriverApp() {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [profile?.id, profile?.status]);
+  }, [profile?.id, profile?.status, activeRide?.id, activeRide?.status]);
 
   // Subscribe to ride requests + active ride updates
   useEffect(() => {
@@ -159,6 +179,14 @@ export default function DriverApp() {
       trips_completed: (profile.trips_completed || 0) + 1,
     });
     toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
+    setActiveRide(null);
+  };
+
+  // Allow rider to mark trip as complete (for cash payments or if driver unavailable)
+  const riderCompleteTrip = async () => {
+    if (!activeRide) return;
+    await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
+    toast.success('Trip marked as complete');
     setActiveRide(null);
   };
 

@@ -161,6 +161,13 @@ export default function RiderApp() {
     setPayMethod(null);
   };
 
+  const riderCompleteTrip = async () => {
+    if (!ride) return;
+    await base44.entities.Ride.update(ride.id, { status: 'completed' });
+    toast.success('Trip completed');
+    setRide({ ...ride, status: 'completed' });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
@@ -360,6 +367,12 @@ export default function RiderApp() {
               {ride.status === 'cancelled' && (
                 <Button variant="outline" onClick={resetAll} className="w-full">
                   Book a new ride
+                </Button>
+              )}
+
+              {ride.status === 'in_progress' && (
+                <Button variant="outline" onClick={riderCompleteTrip} className="w-full">
+                  Mark as completed
                 </Button>
               )}
 

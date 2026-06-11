@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
 import RideHistory from '@/components/rider/RideHistory';
+import TipSelector from '@/components/rider/TipSelector';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -34,6 +35,7 @@ export default function RiderApp() {
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
   const [tab, setTab] = useState('book'); // 'book' | 'history'
+  const [tip, setTip] = useState(null); // null = not yet chosen
 
   // Resume an active ride
   useEffect(() => {
@@ -109,7 +111,8 @@ export default function RiderApp() {
   };
 
   const confirmPayment = async () => {
-    await base44.entities.Ride.update(ride.id, { payment_status: 'paid' });
+    const finalFare = (ride.fare || 0) + (tip || 0);
+    await base44.entities.Ride.update(ride.id, { payment_status: 'paid', fare: finalFare });
     toast.success(`Payment confirmed — thanks for riding with Dip Out!`);
     resetAll();
   };
@@ -121,6 +124,7 @@ export default function RiderApp() {
     setQuote(null);
     setDistanceKm(0);
     setPayMethod(null);
+    setTip(null);
   };
 
   return (
@@ -316,14 +320,17 @@ export default function RiderApp() {
 
               {/* Payment confirmation on completion */}
               {ride.status === 'completed' && ride.payment_status === 'unpaid' && (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Confirm payment below.</p>
-                  <Button onClick={confirmPayment} className="w-full h-12 rounded-xl font-semibold">
-                    {ride.payment_method === 'cash'
-                      ? <><Banknote className="w-4 h-4 mr-2" /> Confirm cash payment · ${ride.fare?.toFixed(2)}</>
-                      : <><CreditCard className="w-4 h-4 mr-2" /> Confirm card payment · ${ride.fare?.toFixed(2)}</>
-                    }
-                  </Button>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground text-center">Your trip is complete. Add a tip and confirm payment.</p>
+                  <TipSelector fare={ride.fare || 0} onTipChange={setTip} />
+                  {tip !== null && (
+                    <Button onClick={confirmPayment} className="w-full h-12 rounded-xl font-semibold">
+                      {ride.payment_method === 'cash'
+                        ? <><Banknote className="w-4 h-4 mr-2" /> Confirm cash · ${((ride.fare || 0) + tip).toFixed(2)}{tip > 0 ? ` (incl. $${tip.toFixed(2)} tip)` : ''}</>
+                        : <><CreditCard className="w-4 h-4 mr-2" /> Confirm card · ${((ride.fare || 0) + tip).toFixed(2)}{tip > 0 ? ` (incl. $${tip.toFixed(2)} tip)` : ''}</>
+                      }
+                    </Button>
+                  )}
                 </div>
               )}
 

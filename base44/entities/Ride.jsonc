@@ -1,0 +1,76 @@
+{
+  "name": "Ride",
+  "type": "object",
+  "properties": {
+    "rider_email": {
+      "type": "string"
+    },
+    "driver_email": {
+      "type": "string"
+    },
+    "pickup_address": {
+      "type": "string"
+    },
+    "dropoff_address": {
+      "type": "string"
+    },
+    "pickup_lat": {
+      "type": "number"
+    },
+    "pickup_lng": {
+      "type": "number"
+    },
+    "dropoff_lat": {
+      "type": "number"
+    },
+    "dropoff_lng": {
+      "type": "number"
+    },
+    "driver_lat": {
+      "type": "number"
+    },
+    "driver_lng": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "accepted",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "requested"
+    },
+    "distance_km": {
+      "type": "number"
+    },
+    "base_fare": {
+      "type": "number"
+    },
+    "surge_multiplier": {
+      "type": "number"
+    },
+    "fare": {
+      "type": "number"
+    },
+    "ai_pricing_reason": {
+      "type": "string"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "paid"
+      ],
+      "default": "unpaid"
+    }
+  },
+  "required": [
+    "pickup_lat",
+    "pickup_lng",
+    "dropoff_lat",
+    "dropoff_lng"
+  ]
+}

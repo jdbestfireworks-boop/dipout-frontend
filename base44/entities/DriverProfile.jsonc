@@ -1,0 +1,45 @@
+{
+  "name": "DriverProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "vehicle": {
+      "type": "string"
+    },
+    "plate": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "offline",
+        "available",
+        "busy"
+      ],
+      "default": "offline"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "rating": {
+      "type": "number",
+      "default": 5
+    },
+    "total_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "trips_completed": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

@@ -13,6 +13,7 @@ import TipSelector from '@/components/rider/TipSelector';
 import DriverRating from '@/components/rider/DriverRating';
 import SafetyButton from '@/components/rider/SafetyButton';
 import SavedAddresses from '@/components/rider/SavedAddresses';
+import SchedulePicker from '@/components/rider/SchedulePicker';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -43,6 +44,7 @@ export default function RiderApp() {
   const [tab, setTab] = useState('book'); // 'book' | 'history'
   const [tip, setTip] = useState(null); // null = not yet chosen
   const [driverRating, setDriverRating] = useState(0);
+  const [scheduledFor, setScheduledFor] = useState(null);
 
   // Resume an active ride
   useEffect(() => {
@@ -112,6 +114,7 @@ export default function RiderApp() {
       ai_pricing_reason: quote.reason,
       payment_status: 'unpaid',
       payment_method: payMethod,
+      ...(scheduledFor ? { scheduled_for: scheduledFor } : {}),
     });
     setRide(created);
     toast.success('Ride requested — finding your driver');
@@ -155,6 +158,7 @@ export default function RiderApp() {
     setPayMethod(null);
     setTip(null);
     setDriverRating(0);
+    setScheduledFor(null);
   };
 
   return (
@@ -232,6 +236,9 @@ export default function RiderApp() {
                 />
               </div>
 
+              {/* Schedule picker */}
+              <SchedulePicker scheduledFor={scheduledFor} onChange={setScheduledFor} />
+
               {/* Get quote */}
               {!quote && (
                 <Button
@@ -303,7 +310,9 @@ export default function RiderApp() {
               {ride.status === 'requested' && (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  Matching you with a nearby driver…
+                  {ride.scheduled_for
+                    ? `Scheduled for ${new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(ride.scheduled_for))}`
+                    : 'Matching you with a nearby driver…'}
                 </div>
               )}
 

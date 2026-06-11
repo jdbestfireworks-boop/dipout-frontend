@@ -43,6 +43,11 @@
       ],
       "default": "requested"
     },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO datetime for a scheduled pickup. Null means immediate."
+    },
     "distance_km": {
       "type": "number"
     },

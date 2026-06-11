@@ -107,11 +107,11 @@ Deno.serve(async (req) => {
               </div>
 
               <div class="rating-section">
-                <h3 style="margin-top: 0; color: #667eea;">How was your ride?</h3>
-                <p>Your feedback helps us improve and helps our drivers provide better service!</p>
-                <a href="${Deno.env.get('BASE44_APP_URL')}/rides" class="rating-button">
-                  ⭐ Rate Your Experience
-                </a>
+              <h3 style="margin-top: 0; color: #667eea;">How was your ride?</h3>
+              <p>Your feedback helps us improve and helps our drivers provide better service!</p>
+              <a href="https://your-app.base44.app/rides" class="rating-button">
+                ⭐ Rate Your Experience
+              </a>
               </div>
 
               <p>If you have any questions or concerns, please don't hesitate to reach out to our support team.</p>

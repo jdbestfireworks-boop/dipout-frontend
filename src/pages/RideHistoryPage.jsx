@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 export default function RideHistoryPage() {
   const [rides, setRides] = useState([]);
+  const [driverNames, setDriverNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
 
@@ -14,7 +14,24 @@ export default function RideHistoryPage() {
     (async () => {
       const user = await base44.auth.me();
       const all = await base44.entities.Ride.filter({ rider_email: user.email }, '-created_date', 100);
-      setRides(all.filter((r) => r.status === 'completed'));
+      const completed = all.filter((r) => r.status === 'completed');
+      setRides(completed);
+
+      // Fetch driver profiles for all unique driver emails
+      const driverEmails = [...new Set(completed.map((r) => r.driver_email).filter(Boolean))];
+      if (driverEmails.length) {
+        const profiles = await Promise.all(
+          driverEmails.map((email) =>
+            base44.entities.DriverProfile.filter({ user_email: email }, null, 1).then((p) => ({ email, profile: p[0] }))
+          )
+        );
+        const nameMap = {};
+        profiles.forEach(({ email, profile }) => {
+          nameMap[email] = profile?.name || profile?.user_email || email;
+        });
+        setDriverNames(nameMap);
+      }
+
       setLoading(false);
     })();
   }, []);
@@ -26,6 +43,19 @@ export default function RideHistoryPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
+
+        {/* Tabs */}
+        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
+          <Link
+            to="/"
+            className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
+          >
+            Book
+          </Link>
+          <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
+            History
+          </span>
+        </div>
 
         {/* Header */}
         <div>
@@ -76,6 +106,12 @@ export default function RideHistoryPage() {
                           <p className="text-xs text-muted-foreground">{format(new Date(r.created_date), 'EEE, MMM d yyyy · h:mm a')}</p>
                           <p className="text-sm font-medium truncate max-w-[220px]">{r.pickup_address}</p>
                           <p className="text-xs text-muted-foreground truncate max-w-[220px]">→ {r.dropoff_address}</p>
+                          {r.driver_email && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 pt-0.5">
+                              <User className="w-3 h-3" />
+                              {driverNames[r.driver_email] || r.driver_email}
+                            </p>
+                          )}
                         </div>
                         <div className="flex flex-col items-end gap-1.5 shrink-0 ml-3">
                           <span className="font-bold text-base">${r.fare?.toFixed(2)}</span>
@@ -102,6 +138,16 @@ export default function RideHistoryPage() {
                               </div>
                             </div>
                           </div>
+
+                          {r.driver_email && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <User className="w-4 h-4 text-muted-foreground shrink-0" />
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Driver</p>
+                                <p className="font-medium">{driverNames[r.driver_email] || r.driver_email}</p>
+                              </div>
+                            </div>
+                          )}
 
                           <div className="grid grid-cols-3 gap-2 pt-1">
                             <div className="rounded-xl bg-secondary p-2.5 text-center">

@@ -17,6 +17,7 @@ import Home from '@/pages/Home';
 import RiderApp from '@/pages/RiderApp';
 import DriverApp from '@/pages/DriverApp';
 import AdminDashboard from '@/pages/AdminDashboard';
+import RideHistoryPage from '@/pages/RideHistoryPage';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -54,6 +55,7 @@ const AuthenticatedApp = () => {
           <Route path="/" element={<RiderApp />} />
           <Route path="/driver" element={<DriverApp />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/rides" element={<RideHistoryPage />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

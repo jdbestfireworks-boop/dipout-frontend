@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Car, UserPlus, Zap, Shield, Star, DollarSign, Clock, MapPin } from 'lucide-react';
+import { Car, UserPlus, Zap, Shield, Star, DollarSign, MapPin, MessageCircle } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -33,16 +33,16 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-2 mt-auto">
             <Link
-              to="/register"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity text-sm"
+              to="/"
+              className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-base shadow-lg shadow-primary/30"
             >
-              <UserPlus className="w-4 h-4" /> Create rider account
+              <MapPin className="w-5 h-5" /> Book a ride now
             </Link>
             <Link
-              to="/"
+              to="/register"
               className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-border font-semibold hover:bg-accent transition-colors text-sm"
             >
-              Book a ride →
+              <UserPlus className="w-4 h-4" /> Create rider account
             </Link>
           </div>
         </div>
@@ -60,19 +60,35 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-2 mt-auto">
             <Link
+              to="/driver"
+              className="flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity text-base shadow-lg shadow-primary/30"
+            >
+              <Car className="w-5 h-5" /> Go to driver hub
+            </Link>
+            <Link
               to="/register"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity text-sm"
+              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-primary/40 font-semibold hover:bg-primary/10 transition-colors text-sm text-primary"
             >
               <UserPlus className="w-4 h-4" /> Create driver account
             </Link>
-            <Link
-              to="/driver"
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-primary/40 font-semibold hover:bg-primary/10 transition-colors text-sm text-primary"
-            >
-              Go to driver hub →
-            </Link>
           </div>
         </div>
+      </section>
+
+      {/* Chat CTA */}
+      <section className="max-w-2xl mx-auto px-6 pb-8">
+        <Link
+          to="/chat"
+          className="flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:bg-accent/40 transition-colors group"
+        >
+          <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+            <MessageCircle className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-sm">Ride Messages</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Chat with your driver or rider from any trip →</p>
+          </div>
+        </Link>
       </section>
 
       {/* Feature highlights */}

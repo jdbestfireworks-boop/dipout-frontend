@@ -357,9 +357,9 @@ export default function DriverApp() {
                   }
                 });
               }}
-              className="text-xs text-destructive flex items-center gap-1 hover:underline cursor-pointer"
+              className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary hover:underline cursor-pointer"
             >
-              Notifications blocked - click to enable
+              <Bell className="w-3 h-3" /> Notifications blocked - click to enable
             </button>
           )}
           <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>

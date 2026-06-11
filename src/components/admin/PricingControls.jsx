@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, Save, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,7 +11,6 @@ import { motion } from 'framer-motion';
 
 export default function PricingControls() {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState(null);
 
   const { data: configs = [], isLoading } = useQuery({
     queryKey: ['pricing-config'],
@@ -21,10 +19,24 @@ export default function PricingControls() {
 
   const activeConfig = configs.find(c => c.active);
 
+  const defaultConfig = {
+    base_fare: 3.0,
+    per_km_rate: 1.5,
+    driver_commission: 0.8,
+    min_fare: 5.0,
+  };
+
+  const current = activeConfig || defaultConfig;
+  const [formData, setFormData] = useState(current);
+
+  // Update formData when current changes
+  useEffect(() => {
+    setFormData(current);
+  }, [current]);
+
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (activeConfig) {
-        // Deactivate old config first
         await base44.entities.PricingConfig.update(activeConfig.id, { active: false });
       }
       return await base44.entities.PricingConfig.create({ ...data, active: true });
@@ -49,17 +61,6 @@ export default function PricingControls() {
         </div>
       </div>
     );
-  }
-
-  const current = activeConfig || {
-    base_fare: 3.0,
-    per_km_rate: 1.5,
-    driver_commission: 0.8,
-    min_fare: 5.0,
-  };
-
-  if (!formData) {
-    setFormData(current);
   }
 
   return (

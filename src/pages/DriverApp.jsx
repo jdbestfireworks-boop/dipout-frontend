@@ -26,6 +26,7 @@ export default function DriverApp() {
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [locationPermission, setLocationPermission] = useState('prompt');
 
   useEffect(() => {
     (async () => {
@@ -38,6 +39,44 @@ export default function DriverApp() {
       if (current) setActiveRide(current);
     })();
   }, []);
+
+  // GPS Location tracking - works on Android & iPhone
+  useEffect(() => {
+    if (!profile || profile.status === 'offline') return;
+
+    let watchId = null;
+
+    const startTracking = () => {
+      if ('geolocation' in navigator) {
+        watchId = navigator.geolocation.watchPosition(
+          async (position) => {
+            const { latitude: lat, longitude: lng } = position.coords;
+            // Update driver location in database
+            await base44.entities.DriverProfile.update(profile.id, { lat, lng });
+            setProfile((prev) => prev ? { ...prev, lat, lng } : null);
+          },
+          (error) => {
+            console.error('GPS error:', error);
+            setLocationPermission('denied');
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+        setLocationPermission('granted');
+      }
+    };
+
+    startTracking();
+
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, [profile?.id, profile?.status]);
 
   // Subscribe to ride requests + active ride updates
   useEffect(() => {
@@ -156,6 +195,17 @@ export default function DriverApp() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {profile.status !== 'offline' && locationPermission === 'granted' && (
+            <span className="text-xs text-green-500 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              GPS active
+            </span>
+          )}
+          {profile.status !== 'offline' && locationPermission === 'denied' && (
+            <span className="text-xs text-destructive flex items-center gap-1">
+              GPS denied
+            </span>
+          )}
           <span className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Offline' : 'Online'}</span>
           <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
         </div>

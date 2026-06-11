@@ -19,25 +19,22 @@ export default function Home() {
 
       {/* Main CTAs */}
       <div className="w-full max-w-sm space-y-3">
-        <div className="w-full max-w-sm space-y-3">
-          <Link
-            to="/rider"
-            className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
-          >
-            <MapPin className="w-6 h-6" /> Book a Ride
-          </Link>
-          <Link
-            to="/driver"
-            className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl border-2 border-primary/50 bg-primary/5 text-primary font-bold text-lg hover:bg-primary/10 transition-all"
-          >
-            <Car className="w-6 h-6" /> Drive
-          </Link>
-        </div>
+        <Link
+          to="/rider"
+          className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
+        >
+          <MapPin className="w-6 h-6" /> Book a Ride
+        </Link>
+        <Link
+          to="/driver"
+          className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl border-2 border-primary/50 bg-primary/5 text-primary font-bold text-lg hover:bg-primary/10 transition-all"
+        >
+          <Car className="w-6 h-6" /> Drive
+        </Link>
         
-        <div className="mt-8 flex items-center gap-4 text-xs text-muted-foreground">
-          <Link to="/rider" className="text-primary hover:underline font-medium">Go to rides</Link>
-          <span>·</span>
-          <Link to="/admin" className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+        <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
+          <Link to="/rides" className="hover:text-primary transition-colors font-medium">Ride History</Link>
+          <Link to="/admin" className="flex items-center gap-1 hover:text-primary transition-colors">
             <Shield className="w-3 h-3" /> Admin
           </Link>
         </div>

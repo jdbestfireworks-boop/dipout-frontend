@@ -14,7 +14,7 @@ import { LocationStep } from '@/components/simulation/LocationStep';
 import { FareEstimate } from '@/components/simulation/FareEstimate';
 import { DriverAssigned } from '@/components/simulation/DriverAssigned';
 import { PostRidePayment } from '@/components/simulation/PostRidePayment';
-import { DriverRequest, ActiveTrip, TripComplete } from '@/components/simulation/DriverSteps';
+import { RideRequestCard, ActiveTrip, TripComplete } from '@/components/simulation/DriverSteps';
 
 const RIDER_STEPS = [
   {
@@ -98,7 +98,7 @@ const DRIVER_STEPS = [
     title: 'Receive Ride Request',
     description: 'A nearby rider needs a ride! Review the details and decide',
     action: () => toast.info('🔔 New ride request: $18.50 fare, 2.3 miles'),
-    component: <DriverRequest earnings="$14.80" pickup="123 Main St" dropoff="Cajun Field" />
+    component: <RideRequestCard earnings="$14.80" pickup="123 Main St" dropoff="Cajun Field" distance="2.3 mi" />
   },
   {
     id: 9,

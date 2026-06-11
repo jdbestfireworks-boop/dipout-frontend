@@ -24,3 +24,22 @@ export function stepToward(fromLat, fromLng, toLat, toLng, fraction = 0.15) {
     lng: fromLng + (toLng - fromLng) * fraction,
   };
 }
+
+// Louisiana boundaries (approximate)
+const LOUISIANA_BOUNDS = {
+  north: 33.0,
+  south: 28.8,
+  east: -88.8,
+  west: -94.0,
+};
+
+export function isInLouisiana(lat, lng) {
+  return lat >= LOUISIANA_BOUNDS.south && lat <= LOUISIANA_BOUNDS.north && lng >= LOUISIANA_BOUNDS.west && lng <= LOUISIANA_BOUNDS.east;
+}
+
+export function checkLouisianaAddress(address) {
+  // Check if address contains Louisiana indicators
+  const laKeywords = ['louisiana', 'la,', 'new orleans', 'baton rouge', 'shreveport', 'lafayette', 'lake charles'];
+  const lowerAddress = address.toLowerCase();
+  return laKeywords.some(keyword => lowerAddress.includes(keyword));
+}

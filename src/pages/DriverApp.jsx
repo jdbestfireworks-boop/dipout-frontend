@@ -8,6 +8,7 @@ import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { isInLouisiana } from '@/lib/geo';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -109,6 +110,12 @@ export default function DriverApp() {
   };
 
   const toggleOnline = async (online) => {
+    if (online && profile.lat && profile.lng) {
+      if (!isInLouisiana(profile.lat, profile.lng)) {
+        toast.error('Dip Out is only available in Louisiana');
+        return;
+      }
+    }
     const status = online ? 'available' : 'offline';
     await base44.entities.DriverProfile.update(profile.id, { status });
     setProfile({ ...profile, status });

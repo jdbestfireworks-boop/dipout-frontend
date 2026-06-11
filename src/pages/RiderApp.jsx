@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 
 import PostRideScreen from '@/components/rider/PostRideScreen';
-import { haversineMiles } from '@/lib/geo';
+import { haversineMiles, isInLouisiana, checkLouisianaAddress } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 import EmptyState from '@/components/ui/empty-state';
@@ -83,6 +83,18 @@ export default function RiderApp() {
     if (!pickupAddress.trim() || !dropoffAddress.trim()) {
       toast.error('Enter both pickup and destination addresses');
       return;
+    }
+    // Check if addresses are in Louisiana
+    if (!checkLouisianaAddress(pickupAddress) || !checkLouisianaAddress(dropoffAddress)) {
+      toast.error('Dip Out is only available in Louisiana');
+      return;
+    }
+    // If coords available, verify they're in Louisiana bounds
+    if (pickupCoords && dropoffCoords) {
+      if (!isInLouisiana(pickupCoords.lat, pickupCoords.lng) || !isInLouisiana(dropoffCoords.lat, dropoffCoords.lng)) {
+        toast.error('Dip Out is only available in Louisiana');
+        return;
+      }
     }
     setQuoting(true);
     // Calculate real distance if both coords known, otherwise fall back to 5 miles

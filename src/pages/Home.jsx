@@ -14,7 +14,7 @@ export default function Home() {
         Dip Out
       </h1>
       <p className="text-muted-foreground text-center mb-12 max-w-sm">
-        Simple, affordable rides — anytime, anywhere.
+        Simple, affordable rides — Louisiana only.
       </p>
 
       {/* Main CTAs */}

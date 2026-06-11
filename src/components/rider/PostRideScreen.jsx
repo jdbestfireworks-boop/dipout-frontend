@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Star, Banknote, CreditCard } from 'lucide-react';
+import { Star, Banknote, CreditCard, ThumbsUp, MessageSquare, CheckCircle2 } from 'lucide-react';
 import TipSelector from '@/components/rider/TipSelector';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export default function PostRideScreen({ ride, onDone }) {
   const [rating, setRating] = useState(0);
@@ -12,8 +13,10 @@ export default function PostRideScreen({ ride, onDone }) {
   const [comment, setComment] = useState('');
   const [tip, setTip] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showComment, setShowComment] = useState(false);
 
   const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'];
+  const emojis = ['', '😞', '😐', '🙂', '😊', '🌟'];
 
   const confirm = async () => {
     if (tip === null) { toast.error('Please select a tip amount (or $0)'); return; }
@@ -48,83 +51,156 @@ export default function PostRideScreen({ ride, onDone }) {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      {/* Success banner */}
+      <div className="rounded-2xl bg-primary/15 border-2 border-primary/30 p-4 text-center space-y-2">
+        <CheckCircle2 className="w-8 h-8 mx-auto text-primary" />
+        <h2 className="text-xl font-display font-bold text-primary">Trip Complete!</h2>
+        <p className="text-sm text-muted-foreground">Rate your driver to help improve Dip Out</p>
+      </div>
+
       {/* Trip summary */}
-      <div className="rounded-2xl border border-border bg-card p-4 text-sm space-y-2">
-        <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">Trip complete</p>
+      <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Fare</span>
-          <span className="font-bold text-lg">${ride.fare?.toFixed(2)}</span>
+          <span className="text-muted-foreground text-sm">Total Fare</span>
+          <span className="font-bold text-2xl text-primary">${ride.fare?.toFixed(2)}</span>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Payment</span>
-          <span className="flex items-center gap-1.5 font-medium capitalize">
+        <div className="flex items-center justify-between pt-3 border-t border-border">
+          <span className="text-muted-foreground text-sm">Payment Method</span>
+          <span className="flex items-center gap-2 font-semibold capitalize">
             {ride.payment_method === 'cash'
-              ? <><Banknote className="w-3.5 h-3.5" /> Cash</>
-              : <><CreditCard className="w-3.5 h-3.5" /> Card</>}
+              ? <><Banknote className="w-4 h-4 text-primary" /> Cash</>
+              : <><CreditCard className="w-4 h-4 text-primary" /> Card</>}
           </span>
         </div>
       </div>
 
-      {/* Star rating */}
-      <div className="space-y-3">
-        <p className="text-sm font-semibold text-center">How was your driver?</p>
-        <div className="flex items-center justify-center gap-2">
+      {/* Star rating - PROMINENT */}
+      <div className="space-y-4 py-2">
+        <div className="text-center space-y-1">
+          <p className="text-lg font-bold">How was your ride?</p>
+          <p className="text-sm text-muted-foreground">Tap to rate your driver</p>
+        </div>
+        <div className="flex items-center justify-center gap-3">
           {[1, 2, 3, 4, 5].map((star) => (
-            <button
+            <motion.button
               key={star}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
-              onClick={() => setRating(star)}
-              className="transition-transform hover:scale-110 active:scale-95"
+              onClick={() => {
+                setRating(star);
+                if (star >= 3 && !showComment) setShowComment(true);
+              }}
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.95 }}
+              className="transition-colors"
             >
-              <Star
-                className={`w-10 h-10 transition-colors ${
-                  star <= (hovered || rating)
-                    ? 'fill-primary text-primary'
-                    : 'text-muted-foreground'
-                }`}
-              />
-            </button>
+              <div className="relative">
+                <Star
+                  className={`w-14 h-14 transition-all ${
+                    star <= (hovered || rating)
+                      ? 'fill-primary text-primary drop-shadow-lg'
+                      : 'text-muted-foreground opacity-50'
+                  }`}
+                  strokeWidth={1.5}
+                />
+                {star <= (hovered || rating) && (
+                  <span className="absolute -top-1 -right-1 text-2xl">
+                    {emojis[star]}
+                  </span>
+                )}
+              </div>
+            </motion.button>
           ))}
         </div>
         {rating > 0 && (
-          <p className="text-center text-sm font-medium text-primary">{labels[rating]}</p>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center text-lg font-bold text-primary"
+          >
+            {emojis[rating]} {labels[rating]}
+          </motion.p>
         )}
       </div>
 
-      {/* Comment */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">Leave a comment <span className="text-muted-foreground font-normal">(optional)</span></p>
-        <Textarea
-          placeholder="e.g. Great driver, very friendly and on time!"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          maxLength={200}
-          rows={3}
-          className="resize-none"
-        />
-        {comment.length > 0 && (
-          <p className="text-xs text-muted-foreground text-right">{comment.length}/200</p>
-        )}
-      </div>
+      {/* Comment section - expands after rating */}
+      {rating > 0 && (
+        <motion.div 
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="space-y-3"
+        >
+          <button
+            onClick={() => setShowComment(!showComment)}
+            className="flex items-center gap-2 text-sm font-medium text-primary hover:underline mx-auto"
+          >
+            <MessageSquare className="w-4 h-4" />
+            {showComment ? 'Hide comment' : 'Leave a comment (optional)'}
+          </button>
+          
+          {showComment && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-2"
+            >
+              <Textarea
+                placeholder="Share details about your experience... (clean car, friendly service, safe driving, etc.)"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                maxLength={200}
+                rows={4}
+                className="resize-none text-base"
+              />
+              {comment.length > 0 && (
+                <p className="text-xs text-muted-foreground text-right">{comment.length}/200 characters</p>
+              )}
+            </motion.div>
+          )}
+        </motion.div>
+      )}
 
       {/* Tip */}
-      <TipSelector fare={ride.fare || 0} onTipChange={setTip} />
+      {rating > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-center justify-center">
+            <ThumbsUp className="w-4 h-4 text-primary" />
+            <p className="text-sm font-medium">Show appreciation with a tip</p>
+          </div>
+          <TipSelector fare={ride.fare || 0} onTipChange={setTip} />
+        </div>
+      )}
 
       {/* Confirm button */}
       {tip !== null && (
-        <Button
-          onClick={confirm}
-          disabled={submitting}
-          className="w-full h-12 rounded-xl font-semibold"
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          {ride.payment_method === 'cash'
-            ? <><Banknote className="w-4 h-4 mr-2" /> Confirm cash · ${((ride.fare || 0) + tip).toFixed(2)}</>
-            : <><CreditCard className="w-4 h-4 mr-2" /> Confirm card · ${((ride.fare || 0) + tip).toFixed(2)}</>}
-          {tip > 0 && <span className="ml-1 opacity-70 text-xs">(+${tip.toFixed(2)} tip)</span>}
-        </Button>
+          <Button
+            onClick={confirm}
+            disabled={submitting}
+            className="w-full h-14 rounded-2xl font-bold text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30"
+          >
+            {submitting ? (
+              <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Submitting...</>
+            ) : ride.payment_method === 'cash' ? (
+              <><Banknote className="w-5 h-5 mr-2" /> Confirm Cash Payment · ${((ride.fare || 0) + tip).toFixed(2)}</>
+            ) : (
+              <><CreditCard className="w-5 h-5 mr-2" /> Charge Card · ${((ride.fare || 0) + tip).toFixed(2)}</>
+            )}
+            {tip > 0 && <span className="ml-2 text-xs opacity-80">(+${tip.toFixed(2)} tip)</span>}
+          </Button>
+          <p className="text-xs text-center text-muted-foreground mt-3">
+            Your feedback helps maintain quality standards on Dip Out
+          </p>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -11,6 +11,7 @@ import FareCard from '@/components/rider/FareCard';
 import RideHistory from '@/components/rider/RideHistory';
 import TipSelector from '@/components/rider/TipSelector';
 import DriverRating from '@/components/rider/DriverRating';
+import SafetyButton from '@/components/rider/SafetyButton';
 import { haversineKm } from '@/lib/geo';
 import { getDynamicFare } from '@/lib/pricing';
 
@@ -365,6 +366,10 @@ export default function RiderApp() {
                 <div className="flex items-center gap-2 text-primary font-medium justify-center py-2">
                   <CheckCircle2 className="w-5 h-5" /> Paid — thanks for riding with Dip Out!
                 </div>
+              )}
+
+              {['requested', 'accepted', 'in_progress'].includes(ride.status) && (
+                <SafetyButton ride={ride} />
               )}
 
               {['requested', 'accepted'].includes(ride.status) && (

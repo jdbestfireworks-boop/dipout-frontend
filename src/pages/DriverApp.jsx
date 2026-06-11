@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, DollarSign, Navigation, Star, Car, MapPin, ExternalLink, Banknote, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import EarningsChart from '@/components/driver/EarningsChart';
 
 function mapsLink(address) {
   const encoded = encodeURIComponent(address);
@@ -173,6 +174,8 @@ export default function DriverApp() {
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Rating</p>
         </div>
       </div>
+
+      {!activeRide && <EarningsChart driverEmail={user.email} />}
 
       <AnimatePresence mode="wait">
         {activeRide ? (

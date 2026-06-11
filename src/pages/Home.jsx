@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Car, MapPin } from 'lucide-react';
+import { Car, MapPin, Shield } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -34,9 +34,12 @@ export default function Home() {
           </Link>
         </div>
         
-        <div className="mt-8 text-xs text-muted-foreground">
-          Already have an account?{' '}
+        <div className="mt-8 flex items-center gap-4 text-xs text-muted-foreground">
           <Link to="/rider" className="text-primary hover:underline font-medium">Go to rides</Link>
+          <span>·</span>
+          <Link to="/admin" className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+            <Shield className="w-3 h-3" /> Admin
+          </Link>
         </div>
       </div>
     </div>

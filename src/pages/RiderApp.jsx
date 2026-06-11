@@ -3,19 +3,18 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles, History } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Sparkles } from 'lucide-react';
 import AddressInput from '@/components/rider/AddressInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import FareCard from '@/components/rider/FareCard';
-import RideHistory from '@/components/rider/RideHistory';
 import TipSelector from '@/components/rider/TipSelector';
 import DriverRating from '@/components/rider/DriverRating';
 import SafetyButton from '@/components/rider/SafetyButton';
 import SavedAddresses from '@/components/rider/SavedAddresses';
 import SchedulePicker from '@/components/rider/SchedulePicker';
 import { haversineKm } from '@/lib/geo';
+import { Link } from 'react-router-dom';
 import { getDynamicFare } from '@/lib/pricing';
 
 const statusLabels = {
@@ -42,7 +41,7 @@ export default function RiderApp() {
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
   const [payMethod, setPayMethod] = useState(null); // 'card' | 'cash'
-  const [tab, setTab] = useState('book'); // 'book' | 'history'
+
   const [tip, setTip] = useState(null); // null = not yet chosen
   const [driverRating, setDriverRating] = useState(0);
   const [scheduledFor, setScheduledFor] = useState(null);
@@ -165,18 +164,16 @@ export default function RiderApp() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-6">
-        {/* Header row with history link */}
-        <div className="flex items-center justify-between">
-          <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
-            <button
-              onClick={() => setTab('book')}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${tab === 'book' ? 'bg-card shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              Book
-            </button>
-          </div>
-          <Link to="/rides" className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
-            <History className="w-4 h-4" /> Trip History
+        {/* Tabs */}
+        <div className="flex gap-1 p-1 rounded-xl bg-secondary w-fit">
+          <span className="px-5 py-2 rounded-lg text-sm font-semibold bg-card shadow text-foreground">
+            Book
+          </span>
+          <Link
+            to="/rides"
+            className="px-5 py-2 rounded-lg text-sm font-semibold transition-all text-muted-foreground hover:text-foreground"
+          >
+            History
           </Link>
         </div>
 

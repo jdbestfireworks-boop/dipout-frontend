@@ -30,10 +30,9 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
     if (val.trim().length >= 3) {
       setLoading(true);
       try {
-        const response = await base44.functions.invoke('googlePlacesAutocomplete', { query: val });
+        const response = await base44.functions.invoke('autocompleteAddress', { query: val });
         if (response.data.error) {
           console.error('Autocomplete API error:', response.data.error);
-          toast.error('Google Maps API key not configured');
           setSuggestions([]);
         } else {
           setSuggestions(response.data.suggestions || []);
@@ -51,26 +50,9 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
   };
 
   const handleSelect = async (suggestion) => {
-    setLoading(true);
-    try {
-      const response = await base44.functions.invoke('googlePlaceDetails', { 
-        place_id: suggestion.place_id 
-      });
-      if (response.data.error) {
-        console.error('Place details API error:', response.data.error);
-        onChange(suggestion.description, null);
-      } else {
-        const { formatted_address, lat, lng } = response.data;
-        onChange(formatted_address, { lat, lng });
-      }
-      setIsOpen(false);
-      setSuggestions([]);
-    } catch (error) {
-      console.error('Place details error:', error);
-      onChange(suggestion.description, null);
-    } finally {
-      setLoading(false);
-    }
+    onChange(suggestion.description, { lat: suggestion.lat, lng: suggestion.lng });
+    setIsOpen(false);
+    setSuggestions([]);
   };
 
   return (

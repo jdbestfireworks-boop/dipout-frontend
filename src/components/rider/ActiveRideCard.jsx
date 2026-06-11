@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { MapPin, Navigation, ExternalLink, Car, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { toast } from 'sonner';
 import RideChat from '@/components/ride/RideChat';
 
 function mapsLink(address) {
@@ -34,17 +33,15 @@ export default function ActiveRideCard({
 
   return (
     <>
-      <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+      <div className="bg-card rounded-2xl border border-border p-5 space-y-4 shadow-sm">
         {/* Status Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Car className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Your Driver</p>
-              <p className="font-semibold">{ride.driver_email}</p>
-            </div>
+        <div className="flex items-center gap-3 pb-3 border-b border-border">
+          <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <Car className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Your Driver</p>
+            <p className="font-semibold text-base">{ride.driver_email || 'Finding driver...'}</p>
           </div>
         </div>
 
@@ -59,13 +56,13 @@ export default function ActiveRideCard({
         />
 
         {/* GPS Toggle */}
-        <div className="rounded-xl border border-border p-3 flex items-center justify-between bg-muted/30">
+        <div className="rounded-xl border border-border p-3.5 flex items-center justify-between bg-muted/30">
           <div className="flex items-center gap-3">
             <div className={`w-2.5 h-2.5 rounded-full ${gpsEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
             <div>
-              <p className="text-sm font-medium">GPS Tracking</p>
-              <p className="text-xs text-muted-foreground">
-                {gpsEnabled ? 'Driver can see your location' : 'Location sharing off'}
+              <p className="text-sm font-medium">GPS Location Sharing</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {gpsEnabled ? 'Your driver can see your real-time location' : 'Location is hidden from driver'}
               </p>
             </div>
           </div>
@@ -84,14 +81,14 @@ export default function ActiveRideCard({
         </div>
 
         {/* Route Info */}
-        <div className="space-y-4">
+        <div className="space-y-4 pt-1">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
               <MapPin className="w-4 h-4 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Pickup</p>
-              <p className="text-sm font-medium">{ride.pickup_address}</p>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Pickup Location</p>
+              <p className="text-sm font-medium leading-snug">{ride.pickup_address}</p>
               <a
                 href={mapsLink(ride.pickup_address)}
                 target="_blank"
@@ -108,8 +105,8 @@ export default function ActiveRideCard({
               <Navigation className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Drop-off</p>
-              <p className="text-sm font-medium">{ride.dropoff_address}</p>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Destination</p>
+              <p className="text-sm font-medium leading-snug">{ride.dropoff_address}</p>
               <a
                 href={mapsLink(ride.dropoff_address)}
                 target="_blank"
@@ -122,11 +119,11 @@ export default function ActiveRideCard({
           </div>
         </div>
 
-        {/* Fare Info */}
+        {/* Fare Summary */}
         <div className="pt-3 border-t border-border flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Fare</p>
-            <p className="text-xl font-bold text-primary">${ride.fare?.toFixed(2)}</p>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Fare</p>
+            <p className="text-2xl font-bold text-primary">${ride.fare?.toFixed(2)}</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Payment</p>
@@ -139,7 +136,7 @@ export default function ActiveRideCard({
           <Button 
             variant="ghost" 
             onClick={handleCancel}
-            className="w-full text-destructive hover:bg-destructive/10"
+            className="w-full text-destructive hover:bg-destructive/10 h-11"
           >
             <AlertTriangle className="w-4 h-4 mr-2" />
             Cancel Ride
@@ -150,9 +147,9 @@ export default function ActiveRideCard({
           <Button 
             variant="outline" 
             onClick={onCompleteTrip}
-            className="w-full"
+            className="w-full h-11"
           >
-            Mark as Completed
+            Mark Trip as Completed
           </Button>
         )}
 
@@ -160,14 +157,14 @@ export default function ActiveRideCard({
           <Button 
             variant="outline" 
             onClick={onBookNewRide}
-            className="w-full"
+            className="w-full h-11"
           >
-            Book a New Ride
+            Book Another Ride
           </Button>
         )}
       </div>
 
-      {/* Cancellation Confirmation Dialog */}
+      {/* Cancellation Dialog */}
       {showCancelConfirm && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -176,18 +173,18 @@ export default function ActiveRideCard({
           onClick={() => setShowCancelConfirm(false)}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
             className="rounded-2xl border border-border bg-card p-6 max-w-sm w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-6 h-6 text-destructive" />
               </div>
               <div>
                 <h3 className="text-lg font-bold">Cancel Ride?</h3>
-                <p className="text-xs text-muted-foreground">This action cannot be undone</p>
+                <p className="text-xs text-muted-foreground">This cannot be undone</p>
               </div>
             </div>
             
@@ -197,7 +194,7 @@ export default function ActiveRideCard({
                   Cancellation Fee: ${cancellationFee.toFixed(2)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  This fee will be charged because your driver has already accepted the ride.
+                  Charged because your driver has already accepted
                 </p>
               </div>
             )}
@@ -205,23 +202,23 @@ export default function ActiveRideCard({
             <p className="text-sm text-muted-foreground mb-6">
               {ride.status === 'requested' 
                 ? 'Are you sure you want to cancel this ride request?'
-                : 'Are you sure you want to cancel this ride?'}
+                : 'Are you sure you want to cancel your ride?'}
             </p>
             
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className="flex-1"
+                className="flex-1 h-11"
                 onClick={() => setShowCancelConfirm(false)}
               >
                 Keep Ride
               </Button>
               <Button
                 variant="destructive"
-                className="flex-1"
+                className="flex-1 h-11"
                 onClick={confirmCancel}
               >
-                Yes, Cancel
+                Cancel Ride
               </Button>
             </div>
           </motion.div>

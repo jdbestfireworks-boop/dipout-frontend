@@ -133,21 +133,25 @@ export default function DriverApp() {
     loadRequests();
     const unsubscribe = base44.entities.Ride.subscribe((event) => {
       if (event.type === 'create' && event.data.status === 'requested') {
-        setRequests((prev) => [event.data, ...prev.filter((r) => r.id !== event.id)]);
-        // Auto-show modal for new requests when online and no active ride
-        if (profile.status !== 'offline' && !activeRide && !selectedRequest) {
-          // Play notification sound
-          notificationSound.currentTime = 0;
-          notificationSound.play().catch(() => console.log('Audio autoplay blocked'));
-          
-          setSelectedRequest(event.data);
-          // Show browser notification
-          if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('🔔 New Ride Request!', {
-              body: `$${((event.data.fare || 0) * 0.8).toFixed(2)} earnings - ${event.data.distance_km || 0} mi`,
-              icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
-              tag: `ride-${event.id}`,
-            });
+        // Filter out rides this driver already declined
+        const declinedBy = event.data.declined_by || [];
+        if (!declinedBy.includes(user.email)) {
+          setRequests((prev) => [event.data, ...prev.filter((r) => r.id !== event.id)]);
+          // Auto-show modal for new requests when online and no active ride
+          if (profile.status !== 'offline' && !activeRide && !selectedRequest) {
+            // Play notification sound
+            notificationSound.currentTime = 0;
+            notificationSound.play().catch(() => console.log('Audio autoplay blocked'));
+            
+            setSelectedRequest(event.data);
+            // Show browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('🔔 New Ride Request!', {
+                body: `$${((event.data.fare || 0) * 0.8).toFixed(2)} earnings - ${event.data.distance_km || 0} mi`,
+                icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
+                tag: `ride-${event.id}`,
+              });
+            }
           }
         }
       }
@@ -161,11 +165,13 @@ export default function DriverApp() {
       }
     });
     return unsubscribe;
-  }, [profile?.id, profile?.status, activeRide, selectedRequest]);
+  }, [profile?.id, profile?.status, activeRide, selectedRequest, user?.email]);
 
   const loadRequests = async () => {
     const reqs = await base44.entities.Ride.filter({ status: 'requested' }, '-created_date', 20);
-    setRequests(reqs);
+    // Filter out rides this driver already declined
+    const filtered = reqs.filter(r => !(r.declined_by || []).includes(user.email));
+    setRequests(filtered);
   };
 
   const toggleOnline = async (online) => {
@@ -237,10 +243,22 @@ export default function DriverApp() {
     }
   };
 
-  const declineRide = () => {
-    setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
-    setSelectedRequest(null);
-    toast.info('Ride declined');
+  const declineRide = async () => {
+    try {
+      const result = await base44.functions.invoke('declineRide', { ride_id: selectedRequest.id });
+      setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
+      setSelectedRequest(null);
+      if (result.data.notified_driver) {
+        toast.info(`Ride declined - offered to driver ${result.data.distance}mi away`);
+      } else {
+        toast.info('Ride declined - no other drivers nearby');
+      }
+    } catch (error) {
+      console.error('Decline error:', error);
+      toast.error('Failed to decline ride');
+      setRequests((prev) => prev.filter((r) => r.id !== selectedRequest?.id));
+      setSelectedRequest(null);
+    }
   };
 
   const startTrip = async () => {

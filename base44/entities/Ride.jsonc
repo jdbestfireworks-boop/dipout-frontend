@@ -94,6 +94,13 @@
     "rider_comment": {
       "type": "string",
       "description": "Short comment left by rider after the trip"
+    },
+    "declined_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of driver emails who declined this ride"
     }
   },
   "required": [

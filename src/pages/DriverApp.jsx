@@ -47,11 +47,17 @@ export default function DriverApp() {
     if (!profile || profile.status === 'offline') return;
 
     let watchId = null;
+    let lastUpdate = 0;
+    const UPDATE_INTERVAL = 5000; // Only update every 5 seconds to avoid rate limits
 
     const startTracking = () => {
       if ('geolocation' in navigator) {
         watchId = navigator.geolocation.watchPosition(
           async (position) => {
+            const now = Date.now();
+            if (now - lastUpdate < UPDATE_INTERVAL) return; // Throttle updates
+            lastUpdate = now;
+
             const { latitude: lat, longitude: lng } = position.coords;
             // Update driver location in database
             await base44.entities.DriverProfile.update(profile.id, { lat, lng });

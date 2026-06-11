@@ -68,7 +68,7 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
         onChange={handleInputChange}
         onFocus={() => value && value.length >= 3 && setIsOpen(true)}
         className={cn(
-          "h-11 rounded-xl",
+          "h-12 rounded-xl text-base font-medium",
           icon && "pl-11"
         )}
       />
@@ -77,26 +77,21 @@ export default function AddressAutocomplete({ placeholder, value, onChange, icon
       )}
       
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-xl shadow-xl max-h-80 overflow-auto">
           {suggestions.map((suggestion, index) => (
             <button
               key={suggestion.place_id}
               onClick={() => handleSelect(suggestion)}
               className={cn(
-                "w-full px-4 py-3 text-left text-sm hover:bg-accent transition-colors",
+                "w-full px-5 py-4 text-left hover:bg-accent transition-colors",
                 "flex items-start gap-3",
                 index !== suggestions.length - 1 && "border-b border-border"
               )}
             >
-              <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-              <div>
-                {suggestion.structured_formatting?.main_text && (
-                  <div className="font-medium">{suggestion.structured_formatting.main_text}</div>
-                )}
-                {suggestion.structured_formatting?.secondary_text && (
-                  <div className="text-xs text-muted-foreground">
-                    {suggestion.structured_formatting.secondary_text}
-                  </div>
+              <MapPin className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <div className="flex-1">
+                {suggestion.description && (
+                  <div className="font-semibold text-base text-foreground leading-snug">{suggestion.description}</div>
                 )}
               </div>
             </button>

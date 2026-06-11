@@ -18,6 +18,7 @@ import Home from '@/pages/Home';
 import RiderApp from '@/pages/RiderApp';
 import DriverApp from '@/pages/DriverApp';
 import AdminDashboard from '@/pages/AdminDashboard';
+import AdminMonitoring from '@/pages/AdminMonitoring';
 import RideHistoryPage from '@/pages/RideHistoryPage';
 import DemoMode from '@/pages/DemoMode';
 import NotificationSettings from '@/pages/NotificationSettings';
@@ -61,6 +62,7 @@ const AuthenticatedApp = () => {
           <Route path="/rides" element={<RideHistoryPage />} />
           <Route path="/demo" element={<DemoMode />} />
           <Route path="/notifications" element={<NotificationSettings />} />
+          <Route path="/admin/monitoring" element={<AdminMonitoring />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

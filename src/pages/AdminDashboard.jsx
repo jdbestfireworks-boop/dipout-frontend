@@ -7,7 +7,9 @@ import { DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle, ArrowL
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { Activity, BarChart3 } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
@@ -107,9 +109,14 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground">Live fleet, rides and dynamic pricing analytics.</p>
           </div>
         </div>
-        <Button onClick={downloadCSV} variant="outline" className="gap-2">
-          <Download className="w-4 h-4" /> Export CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => navigate('/admin/monitoring')} variant="outline" className="gap-2">
+            <BarChart3 className="w-4 h-4" /> Monitoring
+          </Button>
+          <Button onClick={downloadCSV} variant="outline" className="gap-2">
+            <Download className="w-4 h-4" /> Export CSV
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

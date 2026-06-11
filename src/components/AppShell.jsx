@@ -1,13 +1,12 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Car, Smartphone, LayoutDashboard, LogOut, MessageCircle } from 'lucide-react';
+import { Car, Smartphone, LayoutDashboard, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { path: '/', label: 'Ride', icon: Smartphone },
+  { path: '/rider', label: 'Ride', icon: Smartphone },
   { path: '/driver', label: 'Drive', icon: Car },
-  { path: '/chat', label: 'Chat', icon: MessageCircle },
   { path: '/admin', label: 'Admin', icon: LayoutDashboard },
 ];
 

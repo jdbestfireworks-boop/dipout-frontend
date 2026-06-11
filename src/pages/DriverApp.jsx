@@ -5,7 +5,6 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
-import SurgeAlertBanner from '@/components/driver/SurgeAlertBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -161,8 +160,6 @@ export default function DriverApp() {
           <Switch checked={profile.status !== 'offline'} onCheckedChange={toggleOnline} disabled={!!activeRide} />
         </div>
       </div>
-
-      <SurgeAlertBanner driverEmail={user.email} />
 
       <AnimatePresence mode="wait">
         {activeRide ? (

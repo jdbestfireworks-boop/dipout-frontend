@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Bell, BellOff, Smartphone, Mail, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { Bell, BellOff, Smartphone, Mail, CheckCircle2, Loader2, AlertCircle, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -23,6 +23,10 @@ export default function NotificationSettings() {
     promotional_emails: false,
     receipt_emails: true,
   });
+  
+  // Phone number state
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || '');
+  const [savingPhone, setSavingPhone] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -68,6 +72,21 @@ export default function NotificationSettings() {
     setPreferences(newPrefs);
     updatePreferencesMutation.mutate(newPrefs);
   };
+  
+  const savePhoneNumber = async () => {
+    setSavingPhone(true);
+    try {
+      await base44.auth.updateMe({
+        phone_number: phoneNumber.trim(),
+      });
+      toast.success('Phone number updated');
+      setUser({ ...user, phone_number: phoneNumber.trim() });
+    } catch (error) {
+      toast.error('Failed to update phone number');
+    } finally {
+      setSavingPhone(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -87,6 +106,46 @@ export default function NotificationSettings() {
             Manage your notification preferences for Dip Out
           </p>
         </div>
+
+        {/* Phone Number */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Phone className="w-6 h-6 text-primary" />
+              <CardTitle>Phone Number</CardTitle>
+            </div>
+            <CardDescription>
+              Add your phone number for ride coordination and driver contact
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Phone Number</label>
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="(555) 123-4567"
+                  className="flex-1 h-10 px-3 rounded-md border border-input bg-background text-sm"
+                />
+                <Button
+                  onClick={savePhoneNumber}
+                  disabled={savingPhone || !phoneNumber.trim()}
+                  size="sm"
+                >
+                  {savingPhone ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
+                </Button>
+              </div>
+              {user?.phone_number && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-green-500" />
+                  Current: {user.phone_number}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Mobile Push Notification Banner */}
         <Card className="border-primary/50 bg-primary/5">

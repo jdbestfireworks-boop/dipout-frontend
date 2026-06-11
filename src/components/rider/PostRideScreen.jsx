@@ -103,10 +103,20 @@ export default function PostRideScreen({ ride, onDone }) {
       {/* Trip summary */}
       <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground text-sm">Total Fare</span>
-          <span className="font-bold text-2xl text-primary">${ride.fare?.toFixed(2)}</span>
+          <span className="text-muted-foreground text-sm">Base Fare</span>
+          <span className="font-bold text-2xl text-primary">${(ride.fare || 0).toFixed(2)}</span>
         </div>
+        {tip > 0 && (
+          <div className="flex items-center justify-between pt-2 border-t border-border">
+            <span className="text-muted-foreground text-sm">Tip</span>
+            <span className="font-semibold text-primary">+${tip.toFixed(2)}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between pt-3 border-t border-border">
+          <span className="text-muted-foreground text-sm">Total</span>
+          <span className="font-bold text-2xl text-primary">${((ride.fare || 0) + tip).toFixed(2)}</span>
+        </div>
+        <div className="flex items-center justify-between pt-2 border-t border-border">
           <span className="text-muted-foreground text-sm">Payment Method</span>
           <span className="flex items-center gap-2 font-semibold capitalize">
             {ride.payment_method === 'cash'

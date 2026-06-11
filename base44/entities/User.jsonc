@@ -1,4 +1,6 @@
 {
+  "name": "User",
+  "type": "object",
   "properties": {
     "role": {
       "type": "string",
@@ -7,11 +9,13 @@
         "admin",
         "user"
       ]
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "User's phone number for ride contact"
     }
   },
   "required": [
     "role"
-  ],
-  "name": "User",
-  "type": "object"
+  ]
 }

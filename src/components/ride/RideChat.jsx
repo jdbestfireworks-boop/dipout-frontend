@@ -50,6 +50,7 @@ export default function RideChat({ ride, myEmail, myRole, otherEmail }) {
   };
 
   const phoneNumber = myRole === 'rider' ? ride.driver_phone : ride.rider_phone;
+  const hasPhone = phoneNumber && phoneNumber.trim();
 
   return (
     <div className="space-y-2">
@@ -68,12 +69,17 @@ export default function RideChat({ ride, myEmail, myRole, otherEmail }) {
             </span>
           )}
         </Button>
-        {phoneNumber && (
+        {hasPhone && (
           <a href={`tel:${phoneNumber}`} className="flex-1">
             <Button variant="outline" className="w-full rounded-xl gap-2">
               <Phone className="w-4 h-4" /> Call
             </Button>
           </a>
+        )}
+        {!hasPhone && (
+          <div className="flex-1 text-xs text-muted-foreground text-center py-2">
+            Phone not available
+          </div>
         )}
       </div>
 

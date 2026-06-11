@@ -29,10 +29,14 @@ export default function AdminContact() {
         return;
       }
 
-      // Search for rider (user entity)
-      const users = await base44.entities.User.filter({ email: searchEmail });
-      if (users.length > 0) {
-        setUser(users[0]);
+      // Search for rider (find by email in rides)
+      const rides = await base44.entities.Ride.filter({ rider_email: searchEmail }, '-created_date', 1);
+      if (rides.length > 0) {
+        setUser({ 
+          email: searchEmail,
+          phone: rides[0].rider_phone,
+          rider_email: searchEmail
+        });
         setUserType('rider');
         return;
       }
@@ -101,20 +105,20 @@ export default function AdminContact() {
           <p className="text-sm font-medium">Email</p>
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-muted-foreground" />
-            <a href={`mailto:${user.user_email || user.email}`} className="text-sm text-primary hover:underline flex items-center gap-1">
-              {user.user_email || user.email}
+            <a href={`mailto:${user.user_email || user.email || user.rider_email}`} className="text-sm text-primary hover:underline flex items-center gap-1">
+              {user.user_email || user.email || user.rider_email}
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
         </div>
 
-        {userType === 'driver' && user.phone && (
+        {user.phone && (
           <div className="space-y-2">
             <p className="text-sm font-medium">Phone</p>
             <div className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-muted-foreground" />
               <a href={`tel:${user.phone}`} className="text-sm text-primary hover:underline flex items-center gap-1">
-                {user.phone}
+                {user.phone || 'Not provided'}
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>

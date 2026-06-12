@@ -517,25 +517,38 @@ export default function RiderApp() {
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 sm:mb-6 flex items-center justify-between"
+            className="mb-5 sm:mb-8"
           >
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Where to?</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">Book a ride in Louisiana with instant AI pricing</p>
+            <div className="flex items-center justify-between mb-2">
+              <motion.h1 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-3xl sm:text-4xl font-display font-bold tracking-tight bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent"
+              >
+                Where to?
+              </motion.h1>
+              <motion.button
+                whileHover={{ scale: 1.08, rotate: 8 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-3 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/10 hover:border-primary/40 transition-all shadow-xl hover:shadow-primary/20"
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? (
+                  <Sun className="w-5 h-5 text-primary" />
+                ) : (
+                  <Moon className="w-5 h-5 text-muted-foreground" />
+                )}
+              </motion.button>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2.5 rounded-xl bg-gradient-to-br from-card to-card/80 border border-border/50 hover:border-primary/50 transition-all shadow-lg hover:shadow-primary/20"
-              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-sm text-muted-foreground/80 font-light tracking-wide"
             >
-              {darkMode ? (
-                <Sun className="w-5 h-5 text-primary" />
-              ) : (
-                <Moon className="w-5 h-5 text-muted-foreground" />
-              )}
-            </motion.button>
+              Book a ride in Louisiana with instant AI pricing
+            </motion.p>
           </motion.div>
         )}
 

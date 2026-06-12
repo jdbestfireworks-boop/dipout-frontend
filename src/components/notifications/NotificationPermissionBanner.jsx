@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export default function NotificationPermissionBanner({ permission, onGrant }) {
   const [subscribed, setSubscribed] = useState(false);
@@ -34,37 +35,49 @@ export default function NotificationPermissionBanner({ permission, onGrant }) {
   }
 
   return (
-    <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-4 mb-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            {permission === 'granted' ? (
-              <CheckCircle className="w-5 h-5 text-primary" />
-            ) : (
-              <Bell className="w-5 h-5 text-primary" />
-            )}
+    <motion.div 
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-5"
+    >
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary/8 via-primary/12 to-transparent backdrop-blur-xl rounded-3xl border border-white/10 p-5 shadow-2xl">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <motion.div 
+              animate={permission !== 'granted' ? { scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] } : {}}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shrink-0 shadow-lg"
+            >
+              {permission === 'granted' ? (
+                <CheckCircle className="w-6 h-6 text-primary" />
+              ) : (
+                <Bell className="w-6 h-6 text-primary" />
+              )}
+            </motion.div>
+            <div>
+              <h3 className="font-semibold text-sm text-primary/90 tracking-wide">
+                {permission === 'granted' ? 'Notifications Active' : 'Enable Ride Notifications'}
+              </h3>
+              <p className="text-[10px] text-muted-foreground/70 mt-1 leading-relaxed">
+                {permission === 'granted' 
+                  ? 'You\'ll receive real-time updates about your rides'
+                  : 'Get instant alerts for ride status, driver arrival, and promotions'}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-sm">
-              {permission === 'granted' ? 'Notifications Active' : 'Enable Ride Notifications'}
-            </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {permission === 'granted' 
-                ? 'You\'ll receive real-time updates about your rides'
-                : 'Get instant alerts for ride status, driver arrival, and promotions'}
-            </p>
-          </div>
+          {permission !== 'granted' && (
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button 
+                size="sm" 
+                onClick={requestPermission}
+                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground text-xs px-5 h-9 rounded-xl shadow-lg shadow-primary/25"
+              >
+                Enable
+              </Button>
+            </motion.div>
+          )}
         </div>
-        {permission !== 'granted' && (
-          <Button 
-            size="sm" 
-            onClick={requestPermission}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8"
-          >
-            Enable
-          </Button>
-        )}
       </div>
-    </div>
+    </motion.div>
   );
 }

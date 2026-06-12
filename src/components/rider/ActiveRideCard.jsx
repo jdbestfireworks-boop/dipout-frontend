@@ -1,7 +1,8 @@
 import React from 'react';
-import { MapPin, Navigation, ExternalLink, Car, AlertTriangle } from 'lucide-react';
+import { MapPin, Navigation, ExternalLink, Car, AlertTriangle, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RideChat from '@/components/ride/RideChat';
+import { motion } from 'framer-motion';
 
 function mapsLink(address) {
   return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
@@ -19,18 +20,29 @@ export default function ActiveRideCard({
 }) {
 
   return (
-    <>
-      <div className="bg-card rounded-2xl border border-border p-5 space-y-4 shadow-sm">
+    <div className="relative overflow-hidden bg-gradient-to-br from-card/95 via-card to-card/85 backdrop-blur-2xl rounded-3xl border border-white/10 p-6 shadow-2xl">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-2xl"
+        />
+        
         {/* Status Header */}
-        <div className="flex items-center gap-3 pb-3 border-b border-border">
-          <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center gap-3 pb-4 border-b border-white/5"
+        >
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shrink-0 shadow-lg">
             <Car className="w-6 h-6 text-primary" />
           </div>
           <div className="flex-1">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Your Driver</p>
-            <p className="font-semibold text-base">{ride.driver_email || 'Finding driver...'}</p>
+            <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-[0.12em]">Your Driver</p>
+            <p className="font-semibold text-sm mt-0.5">{ride.driver_email || 'Finding driver...'}</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Chat & Contact */}
         <RideChat
@@ -43,29 +55,38 @@ export default function ActiveRideCard({
         />
 
         {/* GPS Toggle */}
-        <div className="rounded-xl border border-border p-3.5 flex items-center justify-between bg-muted/30">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative overflow-hidden rounded-2xl border border-white/10 p-4 flex items-center justify-between bg-gradient-to-br from-muted/40 to-muted/20 backdrop-blur-sm"
+        >
           <div className="flex items-center gap-3">
-            <div className={`w-2.5 h-2.5 rounded-full ${gpsEnabled ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+            <motion.div 
+              animate={gpsEnabled ? { scale: [1, 1.2, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+              className={`w-3 h-3 rounded-full ${gpsEnabled ? 'bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30' : 'bg-gray-400'}`} 
+            />
             <div>
-              <p className="text-sm font-medium">GPS Location Sharing</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-sm font-medium tracking-wide">GPS Location Sharing</p>
+              <p className="text-[10px] text-muted-foreground/60 mt-0.5">
                 {gpsEnabled ? 'Your driver can see your real-time location' : 'Location is hidden from driver'}
               </p>
             </div>
           </div>
           <button
             onClick={onToggleGps}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              gpsEnabled ? 'bg-primary' : 'bg-gray-400'
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-all ${
+              gpsEnabled ? 'bg-gradient-to-r from-primary to-primary/85 shadow-lg shadow-primary/30' : 'bg-gray-400'
             }`}
           >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                gpsEnabled ? 'translate-x-6' : 'translate-x-1'
-              }`}
+            <motion.span
+              animate={{ x: gpsEnabled ? 22 : 2 }}
+              transition={{ type: "spring", stiffness: 500 }}
+              className="inline-block h-5 w-5 transform rounded-full bg-white shadow-md"
             />
           </button>
-        </div>
+        </motion.div>
 
         {/* Route Info */}
         <div className="space-y-4 pt-1">
@@ -150,6 +171,5 @@ export default function ActiveRideCard({
           </Button>
         )}
       </div>
-    </>
   );
 }

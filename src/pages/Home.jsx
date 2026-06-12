@@ -4,6 +4,7 @@ import { Car, MapPin, Shield, Bell, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import InstallModal from '@/components/InstallModal';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [installModal, setInstallModal] = useState(null); // 'android' | 'ios'
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsLoggedIn);
@@ -181,9 +183,7 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-2">
             {/* Android / Chrome install */}
             <button
-              onClick={installPrompt ? handleInstall : () => {
-                alert('To install on Android:\n1. Open this page in Chrome\n2. Tap the menu (⋮)\n3. Tap "Add to Home screen"');
-              }}
+              onClick={() => setInstallModal('android')}
               className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
               <span className="text-2xl">🤖</span>
@@ -193,7 +193,7 @@ export default function Home() {
 
             {/* iOS install */}
             <button
-              onClick={() => alert('To install on iPhone/iPad:\n1. Open this page in Safari\n2. Tap the Share button (□↑)\n3. Tap "Add to Home Screen"')}
+              onClick={() => setInstallModal('ios')}
               className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
               <span className="text-2xl">🍎</span>
@@ -216,6 +216,11 @@ export default function Home() {
           </Link>
         </motion.div>
       </div>
+      <InstallModal
+        platform={installModal}
+        onClose={() => setInstallModal(null)}
+        onInstall={installPrompt ? handleInstall : null}
+      />
     </div>
   );
 }

@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Car, MapPin, Shield, Play, Bell, Loader2, Zap, Sparkles } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 export default function Home() {
+  const navigate = useNavigate();
   const [simulating, setSimulating] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    base44.auth.isAuthenticated().then(setIsLoggedIn);
+  }, []);
+
+  const handleBookRide = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      toast.info('Please sign in or create an account to book a ride');
+      navigate('/login');
+    }
+  };
+
+  const handleDrive = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      toast.info('Create an account to start driving with Dip Out');
+      navigate('/register?next=/driver');
+    }
+  };
 
   const toggleSimulation = async () => {
     setSimulating(true);
@@ -83,6 +105,7 @@ export default function Home() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Link
             to="/rider"
+            onClick={handleBookRide}
             className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 transition-all shadow-lg shadow-primary/30"
           >
             <MapPin className="w-6 h-6" /> Book a Ride
@@ -91,9 +114,10 @@ export default function Home() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Link
             to="/driver"
+            onClick={handleDrive}
             className="flex items-center justify-center gap-3 w-full px-6 py-5 rounded-2xl border-2 border-primary/50 bg-primary/5 text-primary font-bold text-lg hover:bg-primary/10 transition-all"
           >
-            <Car className="w-6 h-6" /> Drive
+            <Car className="w-6 h-6" /> Drive with Dip Out
           </Link>
         </motion.div>
         

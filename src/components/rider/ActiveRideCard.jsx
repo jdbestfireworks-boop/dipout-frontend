@@ -1,11 +1,17 @@
-import React from 'react';
-import { MapPin, Navigation, ExternalLink, Car, AlertTriangle, Shield } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Navigation, ExternalLink, Car, AlertTriangle, Shield, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import RideChat from '@/components/ride/RideChat';
 import { motion } from 'framer-motion';
+import { haversineMiles } from '@/lib/geo';
 
 function mapsLink(address) {
   return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+}
+
+function dirLink(from, to) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}`;
 }
 
 export default function ActiveRideCard({ 
@@ -18,6 +24,29 @@ export default function ActiveRideCard({
   onBookNewRide,
   onInitiateCancel
 }) {
+  const [distanceToPickup, setDistanceToPickup] = useState(null);
+  const [distanceToDropoff, setDistanceToDropoff] = useState(null);
+
+  useEffect(() => {
+    if (gpsEnabled && user?.lat && user?.lng && ride?.pickup_lat && ride?.pickup_lng) {
+      const dist = haversineMiles(user.lat, user.lng, ride.pickup_lat, ride.pickup_lng);
+      setDistanceToPickup(dist.toFixed(1));
+    } else {
+      setDistanceToPickup(null);
+    }
+
+    if (ride?.dropoff_lat && ride?.dropoff_lng) {
+      if (gpsEnabled && user?.lat && user?.lng) {
+        const dist = haversineMiles(user.lat, user.lng, ride.dropoff_lat, ride.dropoff_lng);
+        setDistanceToDropoff(dist.toFixed(1));
+      } else if (ride?.pickup_lat && ride?.pickup_lng) {
+        const dist = haversineMiles(ride.pickup_lat, ride.pickup_lng, ride.dropoff_lat, ride.dropoff_lng);
+        setDistanceToDropoff(dist.toFixed(1));
+      } else {
+        setDistanceToDropoff(null);
+      }
+    }
+  }, [gpsEnabled, user?.lat, user?.lng, ride?.pickup_lat, ride?.pickup_lng, ride?.dropoff_lat, ride?.dropoff_lng]);
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-card/95 via-card to-card/85 backdrop-blur-2xl rounded-3xl border border-white/10 p-6 shadow-2xl">
@@ -97,14 +126,22 @@ export default function ActiveRideCard({
             <div className="flex-1">
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Pickup Location</p>
               <p className="text-sm font-medium leading-snug">{ride.pickup_address}</p>
-              <a
-                href={mapsLink(ride.pickup_address)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-primary mt-1.5 hover:underline font-medium"
-              >
-                Open in Maps <ExternalLink className="w-3 h-3" />
-              </a>
+              <div className="flex items-center gap-2 mt-1.5">
+                {distanceToPickup && (
+                  <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
+                    <Gauge className="w-3 h-3 mr-1" />
+                    {distanceToPickup} mi away
+                  </Badge>
+                )}
+                <a
+                  href={mapsLink(ride.pickup_address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+                >
+                  Open in Maps <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -115,14 +152,30 @@ export default function ActiveRideCard({
             <div className="flex-1">
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Destination</p>
               <p className="text-sm font-medium leading-snug">{ride.dropoff_address}</p>
-              <a
-                href={mapsLink(ride.dropoff_address)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-primary mt-1.5 hover:underline font-medium"
-              >
-                Open in Maps <ExternalLink className="w-3 h-3" />
-              </a>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                {distanceToDropoff && (
+                  <Badge variant="outline" className="text-[10px] bg-muted/50 text-foreground border-border">
+                    <Navigation className="w-3 h-3 mr-1" />
+                    {distanceToDropoff} mi to destination
+                  </Badge>
+                )}
+                <a
+                  href={mapsLink(ride.dropoff_address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+                >
+                  Open in Maps <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href={dirLink(ride.pickup_address, ride.dropoff_address)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+                >
+                  Get Directions <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

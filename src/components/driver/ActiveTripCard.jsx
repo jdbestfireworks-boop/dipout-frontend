@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { MapPin, Navigation, ExternalLink, CreditCard, Phone, MessageCircle, Clock, Gauge } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import RideChat from '@/components/ride/RideChat';
 import { toast } from 'sonner';
+import { haversineMiles } from '@/lib/geo';
 
 function mapsLink(address) {
   return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
@@ -22,6 +23,41 @@ export default function ActiveTripCard({
   onCancelRide
 }) {
   const [paymentMode, setPaymentMode] = useState(ride.payment_mode || 'mile');
+  const [distanceToPickup, setDistanceToPickup] = useState(null);
+  const [distanceToDropoff, setDistanceToDropoff] = useState(null);
+
+  useEffect(() => {
+    const calculateDistances = async () => {
+      try {
+        const driverProfile = await base44.entities.DriverProfile.filter({ user_email: user.email });
+        const driverLat = driverProfile[0]?.lat;
+        const driverLng = driverProfile[0]?.lng;
+
+        if (driverLat && driverLng && ride?.pickup_lat && ride?.pickup_lng) {
+          const dist = haversineMiles(driverLat, driverLng, ride.pickup_lat, ride.pickup_lng);
+          setDistanceToPickup(dist.toFixed(1));
+        } else {
+          setDistanceToPickup(null);
+        }
+
+        if (ride?.dropoff_lat && ride?.dropoff_lng) {
+          if (driverLat && driverLng) {
+            const dist = haversineMiles(driverLat, driverLng, ride.dropoff_lat, ride.dropoff_lng);
+            setDistanceToDropoff(dist.toFixed(1));
+          } else if (ride?.pickup_lat && ride?.pickup_lng) {
+            const dist = haversineMiles(ride.pickup_lat, ride.pickup_lng, ride.dropoff_lat, ride.dropoff_lng);
+            setDistanceToDropoff(dist.toFixed(1));
+          } else {
+            setDistanceToDropoff(null);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to calculate distances:', error);
+      }
+    };
+
+    calculateDistances();
+  }, [user.email, ride?.pickup_lat, ride?.pickup_lng, ride?.dropoff_lat, ride?.dropoff_lng]);
 
   const handlePaymentModeChange = async (mode) => {
     try {
@@ -141,14 +177,22 @@ export default function ActiveTripCard({
           <div className="flex-1">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Pickup Location</p>
             <p className="text-sm font-medium leading-snug">{ride.pickup_address}</p>
-            <a
-              href={mapsLink(ride.pickup_address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-primary mt-2 hover:underline font-medium"
-            >
-              Open in Maps <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {distanceToPickup && (
+                <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">
+                  <Gauge className="w-3 h-3 mr-1" />
+                  {distanceToPickup} mi to pickup
+                </Badge>
+              )}
+              <a
+                href={mapsLink(ride.pickup_address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
+              >
+                Open in Maps <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -161,14 +205,22 @@ export default function ActiveTripCard({
           <div className="flex-1">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Destination</p>
             <p className="text-sm font-medium leading-snug">{ride.dropoff_address}</p>
-            <a
-              href={mapsLink(ride.dropoff_address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-primary mt-2 hover:underline font-medium"
-            >
-              Open in Maps <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              {distanceToDropoff && (
+                <Badge variant="outline" className="text-[10px] bg-muted/50 text-foreground border-border">
+                  <Navigation className="w-3 h-3 mr-1" />
+                  {distanceToDropoff} mi to destination
+                </Badge>
+              )}
+              <a
+                href={mapsLink(ride.dropoff_address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
+              >
+                Open in Maps <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
 

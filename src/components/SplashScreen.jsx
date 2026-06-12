@@ -80,26 +80,23 @@ export default function SplashScreen({ onComplete }) {
           />
           
           {/* Logo */}
-          <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-primary via-amber-300 to-primary flex items-center justify-center shadow-2xl shadow-primary/50 overflow-hidden ring-4 ring-primary/20">
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent" />
-            <motion.div
-              animate={{ 
-                scale: phase >= 2 ? [1, 1.05, 1] : 1,
-              }}
-              transition={{ 
-                duration: 1.5, 
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="relative z-10"
-            >
-              <img
-                src="https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png"
-                alt="Dip Out"
-                className="w-24 h-24 object-contain"
-              />
-            </motion.div>
-          </div>
+          <motion.div
+            animate={{ 
+              scale: phase >= 2 ? [1, 1.05, 1] : 1,
+            }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="w-48 h-48 rounded-3xl bg-gradient-to-br from-primary via-amber-300 to-primary flex items-center justify-center shadow-2xl shadow-primary/50 overflow-hidden ring-4 ring-primary/20"
+          >
+            <img
+              src="https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/9207258c1_generated_image.png"
+              alt="Dip Out - Cartoon Driver and Rider"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
         </motion.div>
 
         {/* Text content */}

@@ -119,7 +119,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background w-full">
       {/* Desktop sidebar */}
       <AdminSidebar tab={tab} setTab={handleTabChange} pendingCount={pending.length} />
 
@@ -134,9 +134,9 @@ export default function AdminDashboard() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Top bar */}
-        <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between gap-3">
+        <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-border px-3 sm:px-5 py-2 sm:py-3 flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3">
             {/* Mobile menu toggle */}
             <button
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-3 sm:p-5 space-y-4 sm:space-y-6 max-w-5xl w-full mx-auto">
+        <main className="flex-1 p-3 sm:p-5 space-y-4 sm:space-y-6 w-full max-w-full sm:max-w-5xl mx-auto">
 
           {/* ── OVERVIEW ── */}
           {tab === 'overview' && (

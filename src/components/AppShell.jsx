@@ -35,8 +35,8 @@ export default function AppShell() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="h-14 flex items-center justify-between px-3 sm:px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100]">
+    <div className="min-h-screen bg-background text-foreground flex flex-col w-full">
+      <header className="h-14 flex items-center justify-between px-3 sm:px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100] w-full">
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 hover:opacity-80 transition-opacity">
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
             <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
@@ -172,7 +172,7 @@ export default function AppShell() {
         </nav>
       </header>
 
-      <main className="flex-1 relative">
+      <main className="flex-1 relative w-full">
         <Outlet />
       </main>
     </div>

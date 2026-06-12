@@ -105,25 +105,25 @@ export default function Home() {
             <>
               <Link
                 to="/login"
-                className="group relative flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-lg hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
+                className="group relative flex items-center justify-between w-full px-10 py-6 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-xl hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <div className="flex items-center gap-4 relative z-10">
-                  <MapPin className="w-6 h-6" />
+                  <MapPin className="w-7 h-7" />
                   Login
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
+                <ArrowRight className="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
               </Link>
 
               <Link
                 to="/register/rider"
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-primary font-bold text-lg hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-10 py-6 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-primary font-bold text-xl hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <Car className="w-6 h-6" />
+                  <Car className="w-7 h-7" />
                   Sign Up to Ride
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
           ) : (
@@ -131,26 +131,26 @@ export default function Home() {
               <Link
                 to="/rider"
                 onClick={handleBookRideClick}
-                className="group relative flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-lg hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
+                className="group relative flex items-center justify-between w-full px-10 py-6 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-xl hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <div className="flex items-center gap-4 relative z-10">
-                  <MapPin className="w-6 h-6" />
+                  <MapPin className="w-7 h-7" />
                   Book a Ride
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
+                <ArrowRight className="w-6 h-6 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
               </Link>
 
               <Link
                 to="/driver"
                 onClick={handleDrive}
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-foreground font-bold text-lg hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-10 py-6 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-foreground font-bold text-xl hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4">
-                  <Car className="w-6 h-6 text-primary" />
+                  <Car className="w-7 h-7 text-primary" />
                   Drive with Dip Out
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-40 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-6 h-6 opacity-40 group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
           )}
@@ -158,13 +158,13 @@ export default function Home() {
           {isAdmin && (
             <Link
               to="/admin"
-              className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-muted-foreground font-semibold text-sm hover:border-border/80 hover:text-foreground active:scale-[0.98] transition-all"
+              className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-muted-foreground font-semibold text-base hover:border-border/80 hover:text-foreground active:scale-[0.98] transition-all"
             >
               <div className="flex items-center gap-3">
-                <Shield className="w-4 h-4" />
+                <Shield className="w-5 h-5" />
                 Admin Dashboard
               </div>
-              <ArrowRight className="w-4 h-4 opacity-30 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5 opacity-30 group-hover:translate-x-1 transition-transform" />
             </Link>
           )}
 
@@ -191,11 +191,11 @@ export default function Home() {
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={handleInstall}
-                  className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity"
+                  className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity"
                 >
                   Install
                 </button>
-                <button onClick={() => setShowInstallBanner(false)} className="p-1.5 text-muted-foreground hover:text-foreground">
+                <button onClick={() => setShowInstallBanner(false)} className="p-2 text-muted-foreground hover:text-foreground">
                   ✕
                 </button>
               </div>
@@ -211,23 +211,23 @@ export default function Home() {
           className="w-full max-w-xs mt-6 space-y-2"
         >
           <p className="text-center text-xs text-muted-foreground font-medium">Download the App</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setInstallModal('rider')}
-              className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
+              className="flex flex-col items-center gap-2 px-5 py-5 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
-              <MapPin className="w-6 h-6 text-primary" />
-              <span className="text-xs font-semibold">Rider App</span>
-              <span className="text-[10px] text-muted-foreground">Book rides</span>
+              <MapPin className="w-8 h-8 text-primary" />
+              <span className="text-sm font-semibold">Rider App</span>
+              <span className="text-xs text-muted-foreground">Book rides</span>
             </button>
 
             <button
               onClick={() => setInstallModal('driver')}
-              className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
+              className="flex flex-col items-center gap-2 px-5 py-5 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
-              <Car className="w-6 h-6 text-primary" />
-              <span className="text-xs font-semibold">Driver App</span>
-              <span className="text-[10px] text-muted-foreground">Earn money</span>
+              <Car className="w-8 h-8 text-primary" />
+              <span className="text-sm font-semibold">Driver App</span>
+              <span className="text-xs text-muted-foreground">Earn money</span>
             </button>
           </div>
         </motion.div>

@@ -105,7 +105,7 @@ export default function DriverRow({
                 onClick={() => onApprove(driver)}
               >
                 <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                Approve
+                Hire
               </Button>
               <Button
                 size="sm"

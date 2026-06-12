@@ -438,7 +438,8 @@ export default function DriverManagementPanel() {
                     Reject
                   </Button>
                   <Button onClick={() => { handleApprove(selectedDriver); setShowDetailsDialog(false); }}>
-                    Approve
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Hire Driver
                   </Button>
                 </>
               )}

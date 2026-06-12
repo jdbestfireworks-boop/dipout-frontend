@@ -13,19 +13,29 @@ export default function Home() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [installModal, setInstallModal] = useState(null); // 'android' | 'ios'
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage first, then system preference
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dipout-theme');
+      if (saved !== null) return saved === 'dark';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return true;
+  });
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsLoggedIn);
     base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
   }, []);
 
-  // Theme toggle effect
+  // Theme toggle effect with localStorage persistence
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('dipout-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('dipout-theme', 'light');
     }
   }, [darkMode]);
 
@@ -84,14 +94,14 @@ export default function Home() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setDarkMode(!darkMode)}
-          className="absolute top-6 right-6 p-3 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-xl border-2 border-primary/30 hover:border-primary/60 transition-all shadow-lg hover:shadow-primary/30 z-50"
+          className="absolute top-6 right-6 p-3 rounded-full bg-gradient-to-br from-card/90 to-card/60 dark:from-primary/20 dark:to-primary/10 backdrop-blur-xl border-2 border-border/50 dark:border-primary/30 hover:border-primary/60 transition-all shadow-lg hover:shadow-primary/30 z-50"
           title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {darkMode ? (
             <Sun className="w-7 h-7 text-primary" />
           ) : (
-            <Moon className="w-7 h-7 text-primary" />
+            <Moon className="w-7 h-7 text-foreground" />
           )}
         </motion.button>
 

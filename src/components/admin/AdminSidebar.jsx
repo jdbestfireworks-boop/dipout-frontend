@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp, HardDrive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { id: 'map',          label: 'Driver Map',      icon: MapPin },
   { id: 'revenue',      label: 'Revenue',         icon: BarChart3 },
   { id: 'settings',     label: 'Settings',        icon: Settings },
+  { id: 'migrate',      label: 'Migrate Data',    icon: HardDrive, external: true },
   { id: 'test',         label: 'Test Suite',      icon: ShieldCheck, external: true },
 ];
 
@@ -34,10 +35,11 @@ export default function AdminSidebar({ tab, setTab, pendingCount }) {
         {NAV_ITEMS.map(({ id, label, icon: Icon, external }) => {
           const isActive = tab === id;
           if (external) {
+            const href = id === 'test' ? '/admin/test' : id === 'migrate' ? '/admin/migrate' : '/admin/test';
             return (
               <a
                 key={id}
-                href="/admin/test"
+                href={href}
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
                   'text-muted-foreground hover:text-foreground hover:bg-accent'

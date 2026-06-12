@@ -62,15 +62,6 @@ export default function RiderApp() {
     }
   }, [darkMode]);
 
-  // Toggle dark mode class on document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
   // Auto-detect pickup location from GPS on mount
   useEffect(() => {
     if ('geolocation' in navigator && !pickupCoords) {
@@ -111,21 +102,6 @@ export default function RiderApp() {
           maximumAge: 0,
         }
       );
-    }
-  }, []);
-
-  // Request notification permission
-  useEffect(() => {
-    if ('Notification' in window) {
-      setNotificationPermission(Notification.permission);
-      if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          setNotificationPermission(permission);
-          if (permission === 'granted') {
-            toast.success('Notifications enabled - you\'ll get ride status updates!');
-          }
-        });
-      }
     }
   }, []);
 
@@ -507,9 +483,9 @@ export default function RiderApp() {
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? (
-                <Sun className="w-5 h-5 text-amber-400" />
+                <Sun className="w-5 h-5 text-primary" />
               ) : (
-                <Moon className="w-5 h-5 text-slate-600" />
+                <Moon className="w-5 h-5 text-muted-foreground" />
               )}
             </button>
           </div>

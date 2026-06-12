@@ -18,6 +18,7 @@ import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
 import DashboardSummaryCharts from '@/components/admin/DashboardSummaryCharts';
 import PricingControls from '@/components/admin/PricingControls';
+import PickupHeatmap from '@/components/admin/PickupHeatmap';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import RevenueTab from '@/components/admin/RevenueTab';
@@ -211,6 +212,8 @@ export default function AdminDashboard() {
                   </Button>
                 </div>
               </div>
+
+              <PickupHeatmap rides={rides} />
 
               <div className="grid gap-4 xl:grid-cols-2">
                 <DailyRevenueChart rides={rides} />

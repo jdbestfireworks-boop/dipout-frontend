@@ -25,6 +25,7 @@ import DriverTrackingMap from '@/components/admin/DriverTrackingMap.jsx';
 import DriverPerformanceTab from '@/components/admin/DriverPerformanceTab';
 import DriverEarningsTab from '@/components/admin/DriverEarningsTab';
 import AIAssistantPanel from '@/components/admin/AIAssistantPanel';
+import DriverManagementPanel from '@/components/admin/DriverManagementPanel';
 import { cn } from '@/lib/utils';
 
 const statusColors = {
@@ -297,33 +298,7 @@ export default function AdminDashboard() {
 
           {/* ── DRIVERS ── */}
           {tab === 'drivers' && (
-            <div className="space-y-4">
-              {pending.length > 0 && (
-                <div className="rounded-2xl border-2 border-yellow-500/30 bg-yellow-500/5 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-yellow-500/20 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-yellow-500" />
-                    <span className="font-semibold text-sm text-yellow-400">{pending.length} Pending Approval</span>
-                  </div>
-                  <div className="divide-y divide-yellow-500/10">
-                    {pending.map(d => <DriverRow key={d.id} driver={d} onApprove={approveDriver} onFire={fireDriver} />)}
-                  </div>
-                </div>
-              )}
-              <div className="rounded-2xl border border-border bg-card overflow-hidden">
-                <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-                  <span className="font-semibold text-sm">All Drivers</span>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" />{hired.length} hired</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" />{online} online</span>
-                  </div>
-                </div>
-                <div className="divide-y divide-border">
-                  {drivers.map(d => <DriverRow key={d.id} driver={d} onApprove={approveDriver} onFire={fireDriver} />)}
-                  {drivers.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">No drivers yet</p>}
-                </div>
-              </div>
-              <DriverDocViewer drivers={drivers} />
-            </div>
+            <DriverManagementPanel />
           )}
 
           {/* ── DRIVER PERFORMANCE ── */}

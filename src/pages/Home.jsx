@@ -39,6 +39,21 @@ export default function Home() {
     }
   }, [darkMode]);
 
+  // Listen for system theme changes (works on iOS 13+ and Android 10+)
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      const saved = localStorage.getItem('dipout-theme');
+      if (!saved) {
+        setDarkMode(e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -94,9 +109,11 @@ export default function Home() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setDarkMode(!darkMode)}
-          className="absolute top-6 right-6 p-3 rounded-full bg-gradient-to-br from-card/90 to-card/60 dark:from-primary/20 dark:to-primary/10 backdrop-blur-xl border-2 border-border/50 dark:border-primary/30 hover:border-primary/60 transition-all shadow-lg hover:shadow-primary/30 z-50"
+          onTouchStart={() => {}} // Ensures touch events work on iOS
+          className="absolute top-6 right-6 p-3 rounded-full bg-gradient-to-br from-card/90 to-card/60 dark:from-primary/20 dark:to-primary/10 backdrop-blur-xl border-2 border-border/50 dark:border-primary/30 hover:border-primary/60 transition-all shadow-lg hover:shadow-primary/30 z-50 touch-manipulation"
           title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
           {darkMode ? (
             <Sun className="w-7 h-7 text-primary" />

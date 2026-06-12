@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Car, MapPin, Shield, Bell, ArrowRight } from 'lucide-react';
+import { Car, MapPin, Shield, Bell, ArrowRight, Sun, Moon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -13,11 +13,21 @@ export default function Home() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [installModal, setInstallModal] = useState(null); // 'android' | 'ios'
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsLoggedIn);
     base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
   }, []);
+
+  // Theme toggle effect
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -66,6 +76,23 @@ export default function Home() {
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-5 py-16">
+
+        {/* Theme Toggle */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1, rotate: 8 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setDarkMode(!darkMode)}
+          className="absolute top-6 right-6 p-4 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/10 hover:border-primary/40 transition-all shadow-xl hover:shadow-primary/20 z-50"
+          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {darkMode ? (
+            <Sun className="w-6 h-6 text-primary" />
+          ) : (
+            <Moon className="w-6 h-6 text-muted-foreground" />
+          )}
+        </motion.button>
 
         {/* Logo */}
         <motion.div

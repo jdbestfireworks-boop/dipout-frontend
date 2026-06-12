@@ -164,6 +164,28 @@ export default function DriverApp() {
       }
       if (event.type === 'update') {
         setRequests((prev) => prev.filter((r) => r.id !== event.id || event.data.status === 'requested'));
+
+        // 🔔 Toast + sound when THIS driver is assigned a ride
+        if (
+          event.data?.status === 'accepted' &&
+          event.data?.driver_email === user?.email &&
+          !activeRide
+        ) {
+          notificationSound.currentTime = 0;
+          notificationSound.play().catch(() => {});
+          toast.success(
+            `🚗 Ride assigned! Head to ${event.data.pickup_address}`,
+            { duration: 6000, description: `Fare: $${((event.data.fare || 0) * 0.8).toFixed(2)} · ${event.data.distance_km || 0} mi` }
+          );
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('🚗 Ride Assigned!', {
+              body: `Pickup: ${event.data.pickup_address}\nEarnings: $${((event.data.fare || 0) * 0.8).toFixed(2)}`,
+              icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
+              tag: `assigned-${event.id}`,
+            });
+          }
+        }
+
         setActiveRide((prev) =>
           prev && prev.id === event.id
             ? event.data.status === 'cancelled' ? null : event.data

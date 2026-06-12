@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Bell, X, MapPin } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function DriverAlertBanner({ driverEmail }) {
   const [alerts, setAlerts] = useState([]);
@@ -17,6 +18,10 @@ export default function DriverAlertBanner({ driverEmail }) {
     const unsubscribe = base44.entities.DriverAlert.subscribe((event) => {
       if (event.type === 'create' && event.data?.driver_email === driverEmail && !event.data?.read) {
         setAlerts((prev) => [event.data, ...prev]);
+        toast(event.data.message, {
+          icon: '🔔',
+          duration: 5000,
+        });
       }
     });
 

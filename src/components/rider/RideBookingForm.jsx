@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Clock, CreditCard, Banknote, Crosshair, Plus } from 'lucide-react';
+import { MapPin, Navigation, Clock, CreditCard, Crosshair, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddressAutocomplete from './AddressAutocomplete';
 import StopsManager from './StopsManager';
@@ -20,11 +20,10 @@ export default function RideBookingForm({
   onRequestRide,
   isRequesting,
   onSetDropoffGps,
-  gettingLocation
+  gettingLocation,
+  stops,
+  setStops
 }) {
-  const [stops, setStops] = useState([]);
-  const [showStops, setShowStops] = useState(false);
-
   const addStop = (stop) => {
     setStops([...stops, stop]);
   };
@@ -38,6 +37,7 @@ export default function RideBookingForm({
     newStops[index] = stop;
     setStops(newStops);
   };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}

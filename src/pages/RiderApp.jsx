@@ -604,26 +604,26 @@ export default function RiderApp() {
               exit={{ opacity: 0, y: -8 }}
             >
               <RideBookingForm
-              pickupAddress={pickupAddress}
-              setPickupAddress={setPickupAddress}
-              pickupCoords={pickupCoords}
-              setPickupCoords={setPickupCoords}
-              dropoffAddress={dropoffAddress}
-              setDropoffAddress={setDropoffAddress}
-              dropoffCoords={dropoffCoords}
-              setDropoffCoords={setDropoffCoords}
-              quote={quote}
-              setQuote={setQuote}
-              distanceKm={distanceKm}
-              setDistanceKm={setDistanceKm}
-              quoting={quoting}
-              isRequesting={isRequesting}
-              onGetQuote={getQuote}
-              onRequestRide={requestRide}
-              onSetDropoffGps={setDropoffFromGps}
-              gettingLocation={gettingLocation}
-              stops={stops}
-              setStops={setStops}
+                pickupAddress={pickupAddress}
+                setPickupAddress={setPickupAddress}
+                pickupCoords={pickupCoords}
+                setPickupCoords={setPickupCoords}
+                dropoffAddress={dropoffAddress}
+                setDropoffAddress={setDropoffAddress}
+                dropoffCoords={dropoffCoords}
+                setDropoffCoords={setDropoffCoords}
+                quote={quote}
+                setQuote={setQuote}
+                distanceKm={distanceKm}
+                setDistanceKm={setDistanceKm}
+                quoting={quoting}
+                isRequesting={isRequesting}
+                onGetQuote={getQuote}
+                onRequestRide={requestRide}
+                onSetDropoffGps={setDropoffFromGps}
+                gettingLocation={gettingLocation}
+                stops={stops}
+                setStops={setStops}
               />
             </motion.div>
           ) : (

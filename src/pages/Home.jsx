@@ -20,7 +20,7 @@ export default function Home() {
       if (saved !== null) return saved === 'dark';
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
-    return true;
+    return false; // Default to light mode
   });
 
   useEffect(() => {

@@ -144,7 +144,7 @@ export default function AdminDashboard() {
             </button>
             <div>
               <h1 className="font-display font-bold text-base leading-none capitalize">
-                {tab === 'overview' ? 'Overview' : tab === 'rides' ? 'Ride History' : tab === 'drivers' ? 'Drivers' : tab === 'performance' ? 'Driver Performance' : tab === 'earnings' ? 'Driver Earnings' : tab === 'ai' ? 'AI Assistant' : tab === 'revenue' ? 'Revenue' : tab === 'map' ? 'Driver Map' : 'Settings'}
+                {tab === 'overview' ? 'Overview' : tab === 'rides' ? 'Ride History' : tab === 'drivers' ? 'Driver Management' : tab === 'performance' ? 'Driver Performance' : tab === 'earnings' ? 'Driver Earnings' : tab === 'ai' ? 'AI Assistant' : tab === 'revenue' ? 'Revenue' : tab === 'map' ? 'Driver Map' : 'Settings'}
               </h1>
               <p className="text-[11px] text-muted-foreground mt-0.5 hidden sm:block">Dip Out Operations</p>
             </div>
@@ -296,10 +296,10 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* ── DRIVERS ── */}
-          {tab === 'drivers' && (
-            <DriverManagementPanel />
-          )}
+
+
+          {/* ── DRIVER MANAGEMENT ── */}
+          {tab === 'drivers' && <DriverManagementPanel />}
 
           {/* ── DRIVER PERFORMANCE ── */}
           {tab === 'performance' && <DriverPerformanceTab rides={rides} drivers={drivers} />}

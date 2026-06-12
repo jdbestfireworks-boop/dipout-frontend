@@ -3,7 +3,6 @@ import { Star, Car, UserX, UserCheck, Activity, CheckCircle2, XCircle } from 'lu
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 const statusColors = {
@@ -46,7 +45,7 @@ export default function DriverRow({
             <p className="text-xs text-muted-foreground">
               Joined{' '}
               {driver.created_date
-                ? format(new Date(driver.created_date), 'MMM d, yyyy')
+                ? new Date(driver.created_date).toLocaleDateString()
                 : 'N/A'}
             </p>
           </div>

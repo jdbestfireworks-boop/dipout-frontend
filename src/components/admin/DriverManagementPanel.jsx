@@ -35,7 +35,6 @@ import {
   UserCheck,
   Search,
   Filter,
-  MoreHorizontal,
   Shield,
   Clock,
   Activity,
@@ -49,6 +48,8 @@ import {
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import DriverRow from './DriverRow';
+import { StatCard, InfoRow } from './DriverStats';
 
 const statusColors = {
   offline: 'bg-gray-500/15 text-gray-400',
@@ -425,9 +426,37 @@ export default function DriverManagementPanel() {
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDetailsDialog(false)}>
-                Close
-              </Button>
+              {!selectedDriver.approved && !selectedDriver.rejection_reason && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowDetailsDialog(false);
+                      openRejectDialog(selectedDriver);
+                    }}
+                  >
+                    Reject
+                  </Button>
+                  <Button onClick={() => { handleApprove(selectedDriver); setShowDetailsDialog(false); }}>
+                    Approve
+                  </Button>
+                </>
+              )}
+              {selectedDriver.approved && !selectedDriver.suspended && (
+                <Button
+                  variant="destructive"
+                  onClick={() => { handleSuspend(selectedDriver); setShowDetailsDialog(false); }}
+                >
+                  Suspend
+                </Button>
+              )}
+              {selectedDriver.suspended && (
+                <Button
+                  onClick={() => { handleRestore(selectedDriver); setShowDetailsDialog(false); }}
+                >
+                  Restore
+                </Button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -442,32 +471,27 @@ export default function DriverManagementPanel() {
               Reject Driver Application
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to reject {selectedDriver?.user_email}'s
-              application?
+              Provide a reason for rejecting {selectedDriver?.user_email}'s application.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Rejection Reason</label>
+          <div className="py-4">
             <textarea
-              className="w-full min-h-[100px] p-3 border border-border rounded-lg bg-background text-sm"
-              placeholder="Enter reason for rejection..."
+              className="w-full min-h-[120px] p-3 border border-border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Enter rejection reason..."
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowRejectDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowRejectDialog(false)}>
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleReject}
-              disabled={updateDriverMutation.isPending}
+              disabled={!rejectionReason.trim()}
             >
-              {updateDriverMutation.isPending ? 'Rejecting...' : 'Reject Application'}
+              Reject Application
             </Button>
           </DialogFooter>
         </DialogContent>

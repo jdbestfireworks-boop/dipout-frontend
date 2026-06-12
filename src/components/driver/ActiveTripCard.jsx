@@ -24,12 +24,20 @@ export default function ActiveTripCard({
 
   const handlePaymentModeChange = async (mode) => {
     try {
+      // Update the ride's payment mode
       await base44.entities.Ride.update(ride.id, { payment_mode: mode });
       setPaymentMode(mode);
-      toast.success(`Payment mode changed to ${mode === 'mile' ? 'per mile' : 'per hour'}`);
+      
+      // Also update driver's default preference for future rides
+      const driverProfile = await base44.entities.DriverProfile.filter({ user_email: user.email });
+      if (driverProfile && driverProfile.length > 0) {
+        await base44.entities.DriverProfile.update(driverProfile[0].id, { earnings_mode: mode });
+      }
+      
+      toast.success(`Earnings mode set to ${mode === 'mile' ? 'per mile' : 'per hour'}`);
     } catch (error) {
-      console.error('Failed to update payment mode:', error);
-      toast.error('Failed to update payment mode');
+      console.error('Failed to update earnings mode:', error);
+      toast.error('Failed to update earnings mode');
     }
   };
 
@@ -86,7 +94,16 @@ export default function ActiveTripCard({
         {/* Payment Mode Selector - Only visible on active rides */}
         {(ride.status === 'accepted' || ride.status === 'in_progress') && (
           <div className="pt-3 border-t border-border">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-2">Driver Payment Mode</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Earnings Mode</p>
+              <Badge variant="outline" className="text-[10px]">
+                {paymentMode === 'mile' ? (
+                  <><Gauge className="w-3 h-3 mr-1" /> Per Mile</>
+                ) : (
+                  <><Clock className="w-3 h-3 mr-1" /> Per Hour</>
+                )}
+              </Badge>
+            </div>
             <div className="flex gap-2">
               <Button
                 variant={paymentMode === 'mile' ? 'default' : 'outline'}
@@ -107,8 +124,8 @@ export default function ActiveTripCard({
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               {paymentMode === 'mile' 
-                ? 'Earnings calculated based on distance traveled' 
-                : 'Earnings calculated based on time spent'}
+                ? 'Earn based on distance traveled' 
+                : 'Earn based on time spent on trip'}
             </p>
           </div>
         )}

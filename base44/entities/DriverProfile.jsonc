@@ -57,6 +57,15 @@
     "insurance_doc_url": {
       "type": "string",
       "description": "Uploaded insurance card photo URL"
+    },
+    "earnings_mode": {
+      "type": "string",
+      "enum": [
+        "mile",
+        "hour"
+      ],
+      "default": "mile",
+      "description": "Driver's preferred earnings calculation method"
     }
   },
   "required": [

@@ -1,7 +1,10 @@
-import React from 'react';
-import { MapPin, Navigation, ExternalLink, Banknote, CreditCard, Phone, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { MapPin, Navigation, ExternalLink, Banknote, CreditCard, Phone, MessageCircle, Clock, Gauge } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import RideChat from '@/components/ride/RideChat';
+import { toast } from 'sonner';
 
 function mapsLink(address) {
   return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
@@ -17,6 +20,19 @@ export default function ActiveTripCard({
   onStartTrip, 
   onCompleteTrip 
 }) {
+  const [paymentMode, setPaymentMode] = useState(ride.payment_mode || 'mile');
+
+  const handlePaymentModeChange = async (mode) => {
+    try {
+      await base44.entities.Ride.update(ride.id, { payment_mode: mode });
+      setPaymentMode(mode);
+      toast.success(`Payment mode changed to ${mode === 'mile' ? 'per mile' : 'per hour'}`);
+    } catch (error) {
+      console.error('Failed to update payment mode:', error);
+      toast.error('Failed to update payment mode');
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -66,6 +82,36 @@ export default function ActiveTripCard({
             </Badge>
           </div>
         </div>
+
+        {/* Payment Mode Selector - Only visible on active rides */}
+        {(ride.status === 'accepted' || ride.status === 'in_progress') && (
+          <div className="pt-3 border-t border-border">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-2">Driver Payment Mode</p>
+            <div className="flex gap-2">
+              <Button
+                variant={paymentMode === 'mile' ? 'default' : 'outline'}
+                className={`flex-1 ${paymentMode === 'mile' ? '' : 'hover:bg-accent'}`}
+                onClick={() => handlePaymentModeChange('mile')}
+              >
+                <Gauge className="w-4 h-4 mr-1.5" />
+                Per Mile
+              </Button>
+              <Button
+                variant={paymentMode === 'hour' ? 'default' : 'outline'}
+                className={`flex-1 ${paymentMode === 'hour' ? '' : 'hover:bg-accent'}`}
+                onClick={() => handlePaymentModeChange('hour')}
+              >
+                <Clock className="w-4 h-4 mr-1.5" />
+                Per Hour
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {paymentMode === 'mile' 
+                ? 'Earnings calculated based on distance traveled' 
+                : 'Earnings calculated based on time spent'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Route Info Card */}

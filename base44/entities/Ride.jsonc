@@ -95,6 +95,15 @@
       ],
       "default": "unpaid"
     },
+    "payment_mode": {
+      "type": "string",
+      "enum": [
+        "mile",
+        "hour"
+      ],
+      "default": "mile",
+      "description": "Driver payment calculation mode: per mile or per hour"
+    },
     "cancellation_fee": {
       "type": "number",
       "description": "Fee charged if ride is cancelled after driver accepted"

@@ -2,32 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell, Phone } from 'lucide-react';
+import { Loader2, Car, ArrowLeft, Bell } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import DriverAlertBanner from '@/components/driver/DriverAlertBanner';
 import DriverWalkthrough from '@/components/driver/DriverWalkthrough';
 import RideRequestModal from '@/components/driver/RideRequestModal';
-import RideChat from '@/components/ride/RideChat';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
 import RideRequestCard from '@/components/driver/RideRequestCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { isInLouisiana, haversineMiles } from '@/lib/geo';
-
+import { haversineMiles } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
 
 // Preload notification sound
 const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 notificationSound.preload = 'auto';
-
-function mapsLink(address) {
-  const encoded = encodeURIComponent(address);
-  return `https://maps.google.com/?q=${encoded}`;
-}
-
-function dirLink(from, to) {
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(to)}`;
-}
 
 export default function DriverApp() {
   const navigate = useNavigate();
@@ -319,19 +308,6 @@ export default function DriverApp() {
       toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
       setActiveRide(null);
       setRequests([]); // Clear requests after completion
-    } catch (error) {
-      console.error('Complete trip error:', error);
-      toast.error('Failed to complete trip');
-    }
-  };
-
-  // Allow rider to mark trip as complete (for cash payments or if driver unavailable)
-  const riderCompleteTrip = async () => {
-    if (!activeRide) return;
-    try {
-      await base44.entities.Ride.update(activeRide.id, { status: 'completed' });
-      toast.success('Trip marked as complete');
-      setActiveRide(null);
     } catch (error) {
       console.error('Complete trip error:', error);
       toast.error('Failed to complete trip');

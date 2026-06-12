@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Car, Smartphone, LayoutDashboard, LogOut } from 'lucide-react';
+import { Car, Smartphone, LogOut, LayoutDashboard, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/rider', label: 'Ride', icon: Smartphone },
   { path: '/driver', label: 'Drive', icon: Car },
-  { path: '/admin', label: 'Admin', icon: LayoutDashboard },
 ];
 
 export default function AppShell() {
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="h-14 flex items-center justify-between px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100]">
@@ -41,7 +46,28 @@ export default function AppShell() {
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={cn(
+                'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all',
+                location.pathname.startsWith('/admin')
+                  ? 'bg-primary text-primary-foreground shadow shadow-primary/20'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              )}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+          )}
           <div className="w-px h-5 bg-border mx-1" />
+          <Link
+            to="/notifications"
+            title="Notification Settings"
+            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            <Bell className="w-4 h-4" />
+          </Link>
           <button
             onClick={() => base44.auth.logout()}
             className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"

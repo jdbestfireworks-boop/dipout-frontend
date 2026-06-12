@@ -188,15 +188,6 @@ export default function RiderApp() {
     setIsRequesting(true);
     try {
       const me = user || await base44.auth.me();
-      
-      // Validate phone number exists
-      if (!me?.phone_number || !me.phone_number.trim()) {
-        toast.error('Please add your phone number in Notification Settings first');
-        navigate('/notifications');
-        setIsRequesting(false);
-        return;
-      }
-      
       const created = await base44.entities.Ride.create({
         rider_email: me.email,
         rider_phone: me.phone_number,
@@ -216,6 +207,7 @@ export default function RiderApp() {
         payment_method: payMethod,
       });
       setRide(created);
+      setIsRequesting(false);
       toast.success('Ride requested! Waiting for driver acceptance...');
     } catch (error) {
       console.error('Ride request error:', error);

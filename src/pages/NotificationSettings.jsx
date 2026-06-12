@@ -25,7 +25,7 @@ export default function NotificationSettings() {
   });
   
   // Phone number state
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || '');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [savingPhone, setSavingPhone] = useState(false);
 
   useEffect(() => {
@@ -33,6 +33,7 @@ export default function NotificationSettings() {
       try {
         const currentUser = await base44.auth.me();
         setUser(currentUser);
+        if (currentUser.phone_number) setPhoneNumber(currentUser.phone_number);
         // Load existing preferences from user data
         if (currentUser.data?.notification_preferences) {
           setPreferences(currentUser.data.notification_preferences);

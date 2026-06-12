@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Car, MapPin, Shield, Play, Bell, Loader2, Zap, Sparkles, ArrowRight, Star, Clock } from 'lucide-react';
+import { Car, MapPin, Shield, Bell, ArrowRight } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 export default function Home() {
   const navigate = useNavigate();
-  const [simulating, setSimulating] = useState(false);
-  const [seeding, setSeeding] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
@@ -48,34 +47,6 @@ export default function Home() {
       e.preventDefault();
       toast.info('Create an account to start driving');
       navigate('/register?next=/driver');
-    }
-  };
-
-  const toggleSimulation = async () => {
-    setSimulating(true);
-    try {
-      const action = simulating ? 'stop' : 'start';
-      const result = await base44.functions.invoke('toggleSimulation', { action });
-      toast.success(result.data.message);
-      if (action === 'start') toast.info('AI rides created every 5 minutes!');
-      else toast.info('Simulation stopped');
-      setSimulating(!simulating);
-    } catch (error) {
-      toast.error('Failed to toggle simulation');
-    } finally {
-      setSimulating(false);
-    }
-  };
-
-  const seedDemoData = async () => {
-    setSeeding(true);
-    try {
-      const result = await base44.functions.invoke('seedDemoData', {});
-      toast.success(`Demo data loaded: ${result.data.stats.initial_rides} rides & ${result.data.stats.drivers} drivers`);
-    } catch (error) {
-      toast.error('Failed to load demo data');
-    } finally {
-      setSeeding(false);
     }
   };
 
@@ -155,31 +126,7 @@ export default function Home() {
             <ArrowRight className="w-4 h-4 opacity-30 group-hover:translate-x-1 transition-transform" />
           </Link>
 
-          {/* Divider */}
-          <div className="pt-2 pb-1">
-            <div className="h-px bg-border/60" />
-          </div>
 
-          {/* Dev tools */}
-          <button
-            onClick={toggleSimulation}
-            disabled={simulating}
-            className="flex items-center justify-center gap-2 w-full px-5 py-3.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-violet-500/20 disabled:opacity-50"
-          >
-            {simulating
-              ? <><Loader2 className="w-4 h-4 animate-spin" /> Running…</>
-              : <><Zap className="w-4 h-4" /> Start AI Simulation</>}
-          </button>
-
-          <button
-            onClick={seedDemoData}
-            disabled={seeding}
-            className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl border border-border text-muted-foreground font-medium text-sm hover:border-primary/30 hover:text-primary active:scale-[0.98] transition-all disabled:opacity-50"
-          >
-            {seeding
-              ? <><Loader2 className="w-4 h-4 animate-spin" /> Loading…</>
-              : <><Play className="w-4 h-4" /> Load Demo Data</>}
-          </button>
         </motion.div>
 
         {/* Install App banner */}
@@ -222,11 +169,8 @@ export default function Home() {
           className="flex items-center gap-5 mt-10 text-xs text-muted-foreground"
         >
           <Link to="/rides" className="hover:text-primary transition-colors">Ride History</Link>
-          <Link to="/simulation" className="hover:text-primary transition-colors flex items-center gap-1">
-            <Sparkles className="w-3 h-3" /> How It Works
-          </Link>
           <Link to="/notifications" className="hover:text-primary transition-colors flex items-center gap-1">
-            <Bell className="w-3 h-3" /> Notifications
+            <Bell className="w-3 h-3" /> Settings
           </Link>
         </motion.div>
       </div>

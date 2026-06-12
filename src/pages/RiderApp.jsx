@@ -514,14 +514,20 @@ export default function RiderApp() {
 
         {/* Header with Theme Toggle */}
         {!ride && (
-          <div className="mb-4 sm:mb-6 flex items-center justify-between">
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 sm:mb-6 flex items-center justify-between"
+          >
             <div>
-              <h1 className="text-2xl sm:text-3xl font-display font-bold">Where to?</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
+              <h1 className="text-2xl sm:text-3xl font-display font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Where to?</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">Book a ride in Louisiana with instant AI pricing</p>
             </div>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setDarkMode(!darkMode)}
-              className="p-2.5 rounded-xl bg-card border border-border hover:border-primary/50 transition-all shadow-sm"
+              className="p-2.5 rounded-xl bg-gradient-to-br from-card to-card/80 border border-border/50 hover:border-primary/50 transition-all shadow-lg hover:shadow-primary/20"
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? (
@@ -529,41 +535,51 @@ export default function RiderApp() {
               ) : (
                 <Moon className="w-5 h-5 text-muted-foreground" />
               )}
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         )}
 
         {/* Notification Permission Banner */}
         {!ride && notificationPermission !== 'granted' && (
-          <div className="mb-3 sm:mb-4">
-            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-3 sm:mb-4"
+          >
+            <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
               <div className="flex items-start sm:items-center gap-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                <motion.div 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shrink-0"
+                >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="font-semibold text-xs sm:text-sm">Enable Ride Notifications</h3>
+                  <h3 className="font-semibold text-xs sm:text-sm text-primary">Enable Ride Notifications</h3>
                   <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Get instant alerts for driver arrival and trip updates</p>
                 </div>
               </div>
-              <Button 
-                size="sm" 
-                onClick={() => {
-                  if ('Notification' in window) {
-                    window.Notification.requestPermission().then(permission => {
-                      setNotificationPermission(permission);
-                      if (permission === 'granted') {
-                        toast.success('Notifications enabled!');
-                      }
-                    });
-                  }
-                }}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8 w-full sm:w-auto"
-              >
-                Enable
-              </Button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    if ('Notification' in window) {
+                      window.Notification.requestPermission().then(permission => {
+                        setNotificationPermission(permission);
+                        if (permission === 'granted') {
+                          toast.success('Notifications enabled!');
+                        }
+                      });
+                    }
+                  }}
+                  className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground text-xs px-4 h-8 w-full sm:w-auto shadow-md"
+                >
+                  Enable
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         <AnimatePresence mode="wait">

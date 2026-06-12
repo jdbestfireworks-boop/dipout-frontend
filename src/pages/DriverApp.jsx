@@ -42,6 +42,8 @@ export default function DriverApp() {
   const [swipeMode, setSwipeMode] = useState(true);
   const [autoAccept, setAutoAccept] = useState(false);
   const [maxDistance, setMaxDistance] = useState(10);
+  const [showHistory, setShowHistory] = useState(false);
+  const [tripHistory, setTripHistory] = useState([]);
 
   // Load driver settings
   useEffect(() => {
@@ -97,6 +99,10 @@ export default function DriverApp() {
         });
         const todayEarnings = todayRides.reduce((sum, r) => sum + ((r.fare || 0) * 0.8), 0);
         setTodayStats({ trips: todayRides.length, earnings: todayEarnings, activeRide: current });
+
+        // Load trip history (completed and cancelled) - hidden by default
+        const history = allMyRides.filter(r => ['completed', 'cancelled'].includes(r.status));
+        setTripHistory(history);
       } catch (error) {
         console.error('Driver app init error:', error);
         toast.error('Failed to load driver profile');
@@ -527,6 +533,21 @@ export default function DriverApp() {
         </div>
       )}
 
+      {/* View History Button */}
+      {!activeRide && tripHistory.length > 0 && (
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-lg">Ride requests</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowHistory(!showHistory)}
+            className="gap-2 text-xs"
+          >
+            {showHistory ? 'Hide' : 'View'} History ({tripHistory.length})
+          </Button>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         {activeRide ? (
           <motion.div 
@@ -542,6 +563,47 @@ export default function DriverApp() {
               onCompleteTrip={completeTrip}
             />
           </motion.div>
+        ) : showHistory ? (
+          <motion.div 
+            key="history" 
+            initial={{ opacity: 0, y: 8 }} 
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="space-y-3"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-lg">Trip History</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHistory(false)}
+                className="text-xs"
+              >
+                Back to Requests
+              </Button>
+            </div>
+            {tripHistory.length === 0 ? (
+              <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                  <Car className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-bold">No trip history</h3>
+                <p className="text-sm text-muted-foreground mt-2">Your completed and cancelled trips will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {tripHistory.map((r) => (
+                  <RideRequestCard
+                    key={r.id}
+                    ride={r}
+                    user={user}
+                    onSelect={() => {}}
+                    isHistory
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
         ) : (
           <motion.div 
             key="requests" 
@@ -550,34 +612,38 @@ export default function DriverApp() {
             exit={{ opacity: 0, y: -8 }}
             className="space-y-3"
           >
-            <h2 className="font-semibold text-lg">Ride requests</h2>
-            {profile.status === 'offline' ? (
-              <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <Car className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-bold">You're offline</h3>
-                <p className="text-sm text-muted-foreground mt-2">Toggle online above to start receiving ride requests</p>
-              </div>
-            ) : requests.length === 0 ? (
-              <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Car className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold">No rides available</h3>
-                <p className="text-sm text-muted-foreground mt-2">Stay online - you'll see requests here when riders book</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {requests.map((r) => (
-                  <RideRequestCard
-                    key={r.id}
-                    ride={r}
-                    user={user}
-                    onSelect={() => setSelectedRequest(r)}
-                  />
-                ))}
-              </div>
+            {!showHistory && (
+              <>
+                <h2 className="font-semibold text-lg">Ride requests</h2>
+                {profile.status === 'offline' ? (
+                  <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                      <Car className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-bold">You're offline</h3>
+                    <p className="text-sm text-muted-foreground mt-2">Toggle online above to start receiving ride requests</p>
+                  </div>
+                ) : requests.length === 0 ? (
+                  <div className="bg-card rounded-2xl border border-border p-8 text-center">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <Car className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-bold">No rides available</h3>
+                    <p className="text-sm text-muted-foreground mt-2">Stay online - you'll see requests here when riders book</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {requests.map((r) => (
+                      <RideRequestCard
+                        key={r.id}
+                        ride={r}
+                        user={user}
+                        onSelect={() => setSelectedRequest(r)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </motion.div>
         )}

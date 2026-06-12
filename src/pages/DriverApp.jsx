@@ -402,8 +402,12 @@ export default function DriverApp() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-full pt-32">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-background via-background to-accent/5">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full"
+        />
       </div>
     );
   }
@@ -414,15 +418,22 @@ export default function DriverApp() {
 
   if (!profile.approved) {
     return (
-      <div className="flex flex-col items-center justify-center h-full pt-32 px-6 text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-accent flex items-center justify-center">
-          <Loader2 className="w-7 h-7 text-muted-foreground animate-spin" />
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-background via-background to-accent/5 px-6 text-center space-y-6">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-20 h-20 rounded-full bg-gradient-to-br from-accent/50 to-accent/30 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-xl"
+        >
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </motion.div>
+        <div className="space-y-2 max-w-xs">
+          <h2 className="text-xl font-display font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Application under review</h2>
+          <p className="text-sm text-muted-foreground/80">
+            Your driver application has been submitted. An admin needs to approve your account before you can start driving.
+          </p>
+          <p className="text-xs text-muted-foreground/60">We'll notify you once you're approved.</p>
         </div>
-        <h2 className="text-xl font-display font-bold">Application under review</h2>
-        <p className="text-sm text-muted-foreground max-w-xs">
-          Your driver application has been submitted. An admin needs to approve your account before you can start driving.
-        </p>
-        <p className="text-xs text-muted-foreground">We'll update you once you're approved.</p>
       </div>
     );
   }
@@ -519,102 +530,159 @@ export default function DriverApp() {
 
 
 
-        {/* Main Content Area */}
+        {/* Main Content Area - Polished */}
         <AnimatePresence mode="wait">
         {activeRide ? (
-        <motion.div 
-          key="active" 
-          initial={{ opacity: 0, y: 8 }} 
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold">Active Trip</h2>
-            <Badge className="bg-primary/10 text-primary border-primary/20 capitalize">{activeRide.status.replace('_', ' ')}</Badge>
-          </div>
-          <ActiveTripCard
-            ride={activeRide}
-            user={user}
-            onStartTrip={startTrip}
-            onCompleteTrip={completeTrip}
-            onCancelRide={cancelRide}
-          />
-        </motion.div>
-      ) : showHistory ? (
-        <motion.div 
-          key="history" 
-          initial={{ opacity: 0, y: 8 }} 
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold">History</h2>
-            <Button variant="ghost" size="sm" onClick={() => setShowHistory(false)} className="text-xs">Back</Button>
-          </div>
-          {tripHistory.length === 0 ? (
-            <div className="bg-card rounded-2xl border border-border p-12 text-center">
-              <Car className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">No history yet</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {tripHistory.map((r) => (
-                <RideRequestCard key={r.id} ride={r} user={user} onSelect={() => {}} isHistory />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      ) : (
-        <motion.div 
-          key="requests" 
-          initial={{ opacity: 0, y: 8 }} 
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-        >
-          {!showHistory && (
-            <>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold">
-                  {profile.status === 'offline' ? 'Go Online' : requests.length === 0 ? 'No Rides' : 'Available Rides'}
-                </h2>
-                {!activeRide && tripHistory.length > 0 && (
-                  <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} className="text-xs">
-                    History ({tripHistory.length})
-                  </Button>
-                )}
+          <motion.div 
+            key="active" 
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Active Trip</h2>
+                <p className="text-xs text-muted-foreground/80 mt-0.5">Focus on the road ahead</p>
               </div>
-              {profile.status === 'offline' ? (
-                <div className="bg-card rounded-2xl border border-border p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                    <Car className="w-8 h-8 text-muted-foreground" />
+              <Badge className="bg-gradient-to-r from-primary/20 to-primary/10 text-primary border-primary/30 capitalize font-semibold text-xs px-3 py-1.5 rounded-full shadow-lg">{activeRide.status.replace('_', ' ')}</Badge>
+            </div>
+            <ActiveTripCard
+              ride={activeRide}
+              user={user}
+              onStartTrip={startTrip}
+              onCompleteTrip={completeTrip}
+              onCancelRide={cancelRide}
+            />
+          </motion.div>
+        ) : showHistory ? (
+          <motion.div 
+            key="history" 
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Trip History</h2>
+                <p className="text-xs text-muted-foreground/80 mt-0.5">{tripHistory.length} {tripHistory.length === 1 ? 'trip' : 'trips'} recorded</p>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowHistory(false)}
+                className="text-xs font-semibold px-4 py-2 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/10 hover:border-primary/40 transition-all"
+              >
+                Back
+              </motion.button>
+            </div>
+            {tripHistory.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-gradient-to-br from-card/90 via-card to-card/85 backdrop-blur-xl rounded-3xl border border-white/10 p-12 text-center shadow-xl"
+              >
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mx-auto mb-4">
+                  <Car className="w-8 h-8 text-primary" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">No trips yet</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Complete your first ride to see history</p>
+              </motion.div>
+            ) : (
+              <div className="space-y-2.5">
+                {tripHistory.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <RideRequestCard ride={r} user={user} onSelect={() => {}} isHistory />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="requests" 
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            {!showHistory && (
+              <>
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h2 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
+                      {profile.status === 'offline' ? 'Go Online' : requests.length === 0 ? 'No Rides' : 'Available Rides'}
+                    </h2>
+                    <p className="text-xs text-muted-foreground/80 mt-0.5">
+                      {profile.status === 'offline' ? 'Start earning today' : requests.length === 0 ? 'Stay ready' : `${requests.length} ride${requests.length > 1 ? 's' : ''} waiting`}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-bold mb-2">You're Offline</h3>
-                  <p className="text-sm text-muted-foreground">Go online to receive ride requests</p>
+                  {!activeRide && tripHistory.length > 0 && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setShowHistory(true)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/10 hover:border-primary/40 transition-all"
+                    >
+                      History ({tripHistory.length})
+                    </motion.button>
+                  )}
                 </div>
-              ) : requests.length === 0 ? (
-                <div className="bg-card rounded-2xl border border-border p-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Car className="w-8 h-8 text-primary" />
+                {profile.status === 'offline' ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-gradient-to-br from-card/90 via-card to-card/85 backdrop-blur-xl rounded-3xl border border-white/10 p-12 text-center shadow-xl"
+                  >
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-muted/80 to-muted/40 flex items-center justify-center mx-auto mb-5">
+                      <Car className="w-10 h-10 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">You're Offline</h3>
+                    <p className="text-sm text-muted-foreground/80">Go online to start receiving ride requests and earning</p>
+                  </motion.div>
+                ) : requests.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-gradient-to-br from-card/90 via-card to-card/85 backdrop-blur-xl rounded-3xl border border-white/10 p-12 text-center shadow-xl relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mx-auto mb-5 relative">
+                      <Car className="w-10 h-10 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">No Rides Available</h3>
+                    <p className="text-sm text-muted-foreground/80">Stay online - new rides will appear here instantly</p>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {requests.map((r, i) => (
+                      <motion.div
+                        key={r.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <RideRequestCard ride={r} user={user} onSelect={() => setSelectedRequest(r)} />
+                      </motion.div>
+                    ))}
                   </div>
-                  <h3 className="text-lg font-bold mb-2">No Rides Available</h3>
-                  <p className="text-sm text-muted-foreground">Stay online - rides will appear here</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {requests.map((r) => (
-                    <RideRequestCard key={r.id} ride={r} user={user} onSelect={() => setSelectedRequest(r)} />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </motion.div>
-      )}
-      </AnimatePresence>
+                )}
+              </>
+            )}
+          </motion.div>
+        )}
+        </AnimatePresence>
 
       </div>
 
-      {/* Modals */}
+      {/* Modals - Enhanced */}
       <AnimatePresence>
         {selectedRequest && (
           <RideRequestModal
@@ -629,16 +697,16 @@ export default function DriverApp() {
       <AnimatePresence>
         {showSettings && (
           <Dialog open={showSettings} onOpenChange={setShowSettings}>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-gradient-to-br from-background via-background to-accent/5">
               <DialogHeader>
-                <DialogTitle>Settings</DialogTitle>
+                <DialogTitle className="text-xl font-display font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">Settings</DialogTitle>
               </DialogHeader>
-              <Tabs defaultValue="preferences" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="preferences">Prefs</TabsTrigger>
-                  <TabsTrigger value="schedule">Schedule</TabsTrigger>
-                  <TabsTrigger value="stops">Stops</TabsTrigger>
-                  <TabsTrigger value="pricing">Pricing</TabsTrigger>
+              <Tabs defaultValue="preferences" className="w-full mt-4">
+                <TabsList className="grid w-full grid-cols-4 bg-gradient-to-br from-card/90 via-card to-card/85 backdrop-blur-xl border border-white/10 rounded-2xl">
+                  <TabsTrigger value="preferences" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-primary/10 data-[state=active]:text-primary rounded-xl transition-all">Prefs</TabsTrigger>
+                  <TabsTrigger value="schedule" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-primary/10 data-[state=active]:text-primary rounded-xl transition-all">Schedule</TabsTrigger>
+                  <TabsTrigger value="stops" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-primary/10 data-[state=active]:text-primary rounded-xl transition-all">Stops</TabsTrigger>
+                  <TabsTrigger value="pricing" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-primary/10 data-[state=active]:text-primary rounded-xl transition-all">Pricing</TabsTrigger>
                 </TabsList>
                 <TabsContent value="preferences" className="space-y-4 mt-4">
                   <DriverSettingsModal
@@ -684,7 +752,7 @@ export default function DriverApp() {
         )}
       </AnimatePresence>
 
-      {/* Helper Components - Hidden from UI */}
+      {/* Helper Components - Hidden */}
       <div className="hidden">
         <DriverWalkthrough />
         <DriverAlertBanner driverEmail={user?.email} />

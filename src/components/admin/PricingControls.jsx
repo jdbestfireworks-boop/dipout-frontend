@@ -37,9 +37,18 @@ export default function PricingControls() {
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       if (activeConfig) {
-        await base44.entities.PricingConfig.update(activeConfig.id, { active: false });
+        await base44.entities.PricingConfig.update(activeConfig.id, { 
+          ...data,
+          active: true 
+        });
+        return activeConfig;
+      } else {
+        return await base44.entities.PricingConfig.create({ 
+          ...data, 
+          name: 'Default Pricing',
+          active: true 
+        });
       }
-      return await base44.entities.PricingConfig.create({ ...data, active: true });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pricing-config'] });

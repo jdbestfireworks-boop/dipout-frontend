@@ -140,7 +140,7 @@ export default function RideBookingForm({
                 Requesting ride...
               </span>
             ) : (
-              `Request ${payMethod === 'card' ? 'Card' : 'Cash'} Ride`
+              payMethod ? `Request ${payMethod === 'card' ? 'Card' : 'Cash'} Ride` : 'Select Payment Method'
             )}
           </button>
         </motion.div>

@@ -14,9 +14,15 @@ import { toast } from 'sonner';
 import { haversineMiles } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
 
-// Preload notification sound
-const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-notificationSound.preload = 'auto';
+// Lazy-create audio to avoid module-level crashes (iOS blocks autoplay before user gesture)
+let notificationSound = null;
+function getSound() {
+  if (!notificationSound) {
+    notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    notificationSound.preload = 'auto';
+  }
+  return notificationSound;
+}
 
 export default function DriverApp() {
   const navigate = useNavigate();
@@ -137,8 +143,8 @@ export default function DriverApp() {
           // Auto-show modal for new requests when online and no active ride
           if (profile.status !== 'offline' && !activeRide && !selectedRequest) {
             // Play notification sound
-            notificationSound.currentTime = 0;
-            notificationSound.play().catch(() => console.log('Audio autoplay blocked'));
+            getSound().currentTime = 0;
+            getSound().play().catch(() => console.log('Audio autoplay blocked'));
             
             setSelectedRequest(event.data);
             // Show browser notification
@@ -161,8 +167,8 @@ export default function DriverApp() {
           event.data?.driver_email === user?.email &&
           !activeRide
         ) {
-          notificationSound.currentTime = 0;
-          notificationSound.play().catch(() => {});
+          getSound().currentTime = 0;
+          getSound().play().catch(() => {});
           toast.success(
             `🚗 Ride assigned! Head to ${event.data.pickup_address}`,
             { duration: 6000, description: `Fare: $${((event.data.fare || 0) * 0.8).toFixed(2)} · ${event.data.distance_km || 0} mi` }
@@ -195,14 +201,16 @@ export default function DriverApp() {
     setSelectedRequest(mostRecent);
     
     // Play notification sound
-    notificationSound.currentTime = 0;
-    notificationSound.play().catch(() => console.log('Audio autoplay blocked'));
+    getSound().currentTime = 0;
+    getSound().play().catch(() => console.log('Audio autoplay blocked'));
   }, [profile?.status, requests.length]);
 
   const loadRequests = async () => {
+    const me = user || await base44.auth.me().catch(() => null);
+    if (!me) return;
     const reqs = await base44.entities.Ride.filter({ status: 'requested' }, '-created_date', 20);
     // Filter out rides this driver already declined
-    const filtered = reqs.filter(r => !(r.declined_by || []).includes(user.email));
+    const filtered = reqs.filter(r => !(r.declined_by || []).includes(me.email));
     setRequests(filtered);
   };
 

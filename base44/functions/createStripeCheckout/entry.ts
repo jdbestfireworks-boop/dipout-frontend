@@ -26,7 +26,11 @@ Deno.serve(async (req) => {
 
         const stripe = new Stripe(stripeKey);
 
-        const appUrl = Deno.env.get('BASE44_APP_URL') || 'https://app.base44.com';
+        // Use BASE44_APP_URL if available, otherwise construct from app ID
+        // BASE44_APP_URL is optional - we fallback to app ID or default domain
+        const baseUrl = Deno.env.get('BASE44_APP_URL');
+        const appId = Deno.env.get('BASE44_APP_ID') || 'app';
+        const appUrl = baseUrl || `https://${appId}.base44.com`;
         
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -47,7 +51,7 @@ Deno.serve(async (req) => {
             success_url: `${appUrl}/rides?payment=success&ride_id=${ride_id}`,
             cancel_url: `${appUrl}/rides?payment=cancelled&ride_id=${ride_id}`,
             metadata: {
-                base44_app_id: Deno.env.get('BASE44_APP_ID'),
+                base44_app_id: appId,
                 ride_id: ride_id,
             },
         });

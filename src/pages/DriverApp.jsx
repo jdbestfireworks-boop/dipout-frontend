@@ -6,6 +6,7 @@ import { Loader2, Car, ArrowLeft, Bell } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import DriverAlertBanner from '@/components/driver/DriverAlertBanner';
 import DriverWalkthrough from '@/components/driver/DriverWalkthrough';
+import DriverQuickActions from '@/components/driver/DriverQuickActions';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
 import RideRequestCard from '@/components/driver/RideRequestCard';
@@ -33,6 +34,7 @@ export default function DriverApp() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [locationPermission, setLocationPermission] = useState('prompt');
   const [notificationPermission, setNotificationPermission] = useState('default');
+  const [todayStats, setTodayStats] = useState({ trips: 0, earnings: 0, activeRide: null });
 
   // Request browser notification permission on mount
   useEffect(() => {
@@ -59,6 +61,17 @@ export default function DriverApp() {
         const myRides = await base44.entities.Ride.filter({ driver_email: me.email }, '-created_date', 5);
         const current = myRides.find((r) => ['accepted', 'in_progress'].includes(r.status));
         if (current) setActiveRide(current);
+
+        // Calculate today's stats
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const allMyRides = await base44.entities.Ride.filter({ driver_email: me.email }, '-created_date', 100);
+        const todayRides = allMyRides.filter(r => {
+          const rideDate = new Date(r.created_date);
+          return rideDate >= today && r.status === 'completed';
+        });
+        const todayEarnings = todayRides.reduce((sum, r) => sum + ((r.fare || 0) * 0.8), 0);
+        setTodayStats({ trips: todayRides.length, earnings: todayEarnings, activeRide: current });
       } catch (error) {
         console.error('Driver app init error:', error);
         toast.error('Failed to load driver profile');
@@ -313,6 +326,13 @@ export default function DriverApp() {
         total_earnings: (profile.total_earnings || 0) + earned,
         trips_completed: (profile.trips_completed || 0) + 1,
       });
+      // Update today's stats
+      setTodayStats(prev => ({
+        ...prev,
+        trips: prev.trips + 1,
+        earnings: prev.earnings + earned,
+        activeRide: null
+      }));
       toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
       setActiveRide(null);
       setRequests([]); // Clear requests after completion
@@ -356,6 +376,13 @@ export default function DriverApp() {
 
       {/* Alert banner */}
       <DriverAlertBanner driverEmail={user?.email} />
+
+      {/* Quick Actions & Today's Stats */}
+      <DriverQuickActions
+        profile={profile}
+        onToggleOnline={toggleOnline}
+        todayStats={todayStats}
+      />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">

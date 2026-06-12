@@ -181,7 +181,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-5 space-y-6 max-w-5xl w-full mx-auto">
+        <main className="flex-1 p-3 sm:p-5 space-y-4 sm:space-y-6 max-w-5xl w-full mx-auto">
 
           {/* ── OVERVIEW ── */}
           {tab === 'overview' && (
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
 
               <PickupHeatmap rides={rides} />
 
-              <div className="grid gap-4 xl:grid-cols-2">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 xl:grid-cols-2">
                 <DailyRevenueChart rides={rides} />
                 <PricingControls />
               </div>
@@ -251,49 +251,49 @@ export default function AdminDashboard() {
           {/* ── RIDE HISTORY ── */}
           {tab === 'rides' && (
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
-              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-                <span className="font-semibold">All Rides</span>
+              <div className="px-3 sm:px-4 py-3 border-b border-border flex items-center justify-between">
+                <span className="font-semibold text-sm sm:text-base">All Rides</span>
                 <span className="text-xs text-muted-foreground">{rides.length} total</span>
               </div>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>When</TableHead>
-                      <TableHead>Rider</TableHead>
-                      <TableHead>Driver</TableHead>
-                      <TableHead>Route</TableHead>
-                      <TableHead>Fare</TableHead>
-                      <TableHead>Surge</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Payment</TableHead>
+                      <TableHead className="text-xs">When</TableHead>
+                      <TableHead className="text-xs">Rider</TableHead>
+                      <TableHead className="text-xs">Driver</TableHead>
+                      <TableHead className="text-xs min-w-[200px]">Route</TableHead>
+                      <TableHead className="text-xs">Fare</TableHead>
+                      <TableHead className="text-xs">Surge</TableHead>
+                      <TableHead className="text-xs">Status</TableHead>
+                      <TableHead className="text-xs">Payment</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {rides.map(r => (
                       <TableRow key={r.id}>
-                        <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
+                        <TableCell className="whitespace-nowrap text-muted-foreground text-[10px] sm:text-xs">
                           {r.created_date ? format(new Date(r.created_date), 'MMM d, HH:mm') : '—'}
                         </TableCell>
-                        <TableCell className="max-w-[140px] truncate text-sm">{r.rider_email}</TableCell>
-                        <TableCell className="max-w-[140px] truncate text-sm text-muted-foreground">{r.driver_email || '—'}</TableCell>
-                        <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
+                        <TableCell className="max-w-[100px] sm:max-w-[140px] truncate text-xs sm:text-sm">{r.rider_email}</TableCell>
+                        <TableCell className="max-w-[100px] sm:max-w-[140px] truncate text-xs sm:text-sm text-muted-foreground">{r.driver_email || '—'}</TableCell>
+                        <TableCell className="max-w-[150px] sm:max-w-[200px] truncate text-[10px] sm:text-xs text-muted-foreground">
                           {r.pickup_address} → {r.dropoff_address}
                         </TableCell>
-                        <TableCell className="font-semibold">${(r.fare||0).toFixed(2)}</TableCell>
-                        <TableCell className="text-muted-foreground text-sm">{r.surge_multiplier||1}x</TableCell>
+                        <TableCell className="font-semibold text-xs sm:text-sm">${(r.fare||0).toFixed(2)}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs sm:text-sm">{r.surge_multiplier||1}x</TableCell>
                         <TableCell>
-                          <Badge className={`${statusColors[r.status]} border-0 capitalize text-[10px]`}>{r.status.replace('_',' ')}</Badge>
+                          <Badge className={`${statusColors[r.status]} border-0 capitalize text-[9px] sm:text-[10px]`}>{r.status.replace('_',' ')}</Badge>
                         </TableCell>
                         <TableCell>
-                          <span className={`text-xs font-medium ${r.payment_status === 'paid' ? 'text-green-400' : 'text-muted-foreground'}`}>
+                          <span className={`text-[10px] sm:text-xs font-medium ${r.payment_status === 'paid' ? 'text-green-400' : 'text-muted-foreground'}`}>
                             {r.payment_status} · {r.payment_method || '—'}
                           </span>
                         </TableCell>
                       </TableRow>
                     ))}
                     {rides.length === 0 && (
-                      <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-10">No rides yet</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8 sm:py-10 text-xs sm:text-sm">No rides yet</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>

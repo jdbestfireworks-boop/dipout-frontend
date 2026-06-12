@@ -36,15 +36,15 @@ export default function AppShell() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="h-14 flex items-center justify-between px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100]">
-        <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
-            <Car className="w-4 h-4 text-primary-foreground" />
+      <header className="h-14 flex items-center justify-between px-3 sm:px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100]">
+        <Link to="/" className="flex items-center gap-2 sm:gap-2.5 hover:opacity-80 transition-opacity">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
+            <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
           </div>
-          <span className="font-display font-bold text-lg tracking-tight">Dip Out</span>
+          <span className="font-display font-bold text-base sm:text-lg tracking-tight">Dip Out</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-0.5 sm:gap-1">
           {navItems.map(({ path, label, icon: Icon }) => {
             const active = location.pathname === path || location.pathname.startsWith(path + '/');
             return (
@@ -52,14 +52,14 @@ export default function AppShell() {
                 key={path}
                 to={path}
                 className={cn(
-                  'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all',
+                  'flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all',
                   active
                     ? 'bg-primary text-primary-foreground shadow shadow-primary/20'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 )}
               >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{label}</span>
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden lg:inline">{label}</span>
               </Link>
             );
           })}
@@ -67,31 +67,31 @@ export default function AppShell() {
             <Link
               to="/admin"
               className={cn(
-                'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-all',
+                'flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all',
                 location.pathname.startsWith('/admin')
                   ? 'bg-primary text-primary-foreground shadow shadow-primary/20'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )}
             >
-              <LayoutDashboard className="w-4 h-4" />
-              <span className="hidden sm:inline">Admin</span>
+              <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden lg:inline">Admin</span>
             </Link>
           )}
-          <div className="w-px h-5 bg-border mx-1" />
+          <div className="w-px h-4 sm:h-5 bg-border mx-1" />
           <Link
             to="/register/rider"
-            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
+            className="hidden lg:flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
           >
-            <Car className="w-4 h-4" />
+            <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Sign Up to Ride
-            <ArrowRight className="w-3.5 h-3.5 opacity-70" />
+            <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-70" />
           </Link>
           <Link
             to="/notifications"
             title="Notification Settings"
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Link>
 
           {/* Profile dropdown */}

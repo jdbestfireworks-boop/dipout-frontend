@@ -409,7 +409,7 @@ export default function DriverApp() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
+    <div className="max-w-lg mx-auto px-4 pt-4 pb-20 sm:pt-8 space-y-4 sm:space-y-5">
       {/* Notification Permission Banner */}
       <NotificationPermissionBanner 
         permission={notificationPermission}
@@ -433,14 +433,14 @@ export default function DriverApp() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 shrink-0 rounded-xl">
-            <ArrowLeft className="w-5 h-5" />
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-xl">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-display font-bold">Driver Hub</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">{profile.vehicle} · {profile.plate}</p>
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl font-display font-bold truncate">{profile.vehicle} · {profile.plate}</h1>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">Driver Hub</p>
           </div>
         </div>
         <Button
@@ -462,25 +462,25 @@ export default function DriverApp() {
           boxShadow: profile.status !== 'offline' ? '0 0 30px -5px rgba(34,197,94,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
         }}
         transition={{ duration: 0.3 }}
-        className={`p-6 rounded-3xl border-2 transition-all duration-500 ${
+        className={`p-4 sm:p-6 rounded-3xl border-2 transition-all duration-500 ${
           profile.status !== 'offline' 
             ? 'bg-green-500/10 border-green-500/50' 
             : 'bg-card border-border'
         }`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className={`w-4 h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="relative shrink-0">
+              <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
               {profile.status !== 'offline' && (
-                <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-500 animate-ping opacity-75"></div>
+                <div className="absolute inset-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500 animate-ping opacity-75"></div>
               )}
             </div>
-            <div>
-              <h3 className="text-xl font-bold font-display">
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-xl font-bold font-display truncate">
                 {profile.status === 'offline' ? 'Ready to drive?' : 'You are Online'}
               </h3>
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 line-clamp-2">
                 {profile.status === 'offline' 
                   ? 'Go online to start receiving ride requests' 
                   : 'You are currently visible to nearby riders'}
@@ -490,7 +490,7 @@ export default function DriverApp() {
           <Button 
             size="lg"
             disabled={!!activeRide}
-            className={`rounded-full px-8 font-bold text-sm shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`w-full sm:w-auto rounded-full px-6 sm:px-8 font-bold text-xs sm:text-sm shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               profile.status !== 'offline' 
                 ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' 
                 : 'bg-green-500 hover:bg-green-600 shadow-green-500/30'

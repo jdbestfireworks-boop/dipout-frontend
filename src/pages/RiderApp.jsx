@@ -465,7 +465,7 @@ export default function RiderApp() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-lg mx-auto px-4 pt-6 pb-20">
+      <div className="max-w-lg mx-auto px-4 pt-4 pb-20 sm:pt-6">
         {/* Notification Permission Banner */}
         <NotificationPermissionBanner 
           permission={notificationPermission}
@@ -477,23 +477,23 @@ export default function RiderApp() {
 
         {/* Header */}
         {!ride && (
-          <div className="mb-6">
-            <h1 className="text-3xl font-display font-bold">Where to?</h1>
-            <p className="text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-2xl sm:text-3xl font-display font-bold">Where to?</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
           </div>
         )}
 
         {/* Notification Permission Banner */}
         {!ride && notificationPermission !== 'granted' && (
-          <div className="mb-4">
-            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                  <Bell className="w-5 h-5 text-primary" />
+          <div className="mb-3 sm:mb-4">
+            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">Enable Ride Notifications</h3>
-                  <p className="text-xs text-muted-foreground">Get instant alerts for driver arrival and trip updates</p>
+                  <h3 className="font-semibold text-xs sm:text-sm">Enable Ride Notifications</h3>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Get instant alerts for driver arrival and trip updates</p>
                 </div>
               </div>
               <Button 
@@ -508,7 +508,7 @@ export default function RiderApp() {
                     });
                   }
                 }}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8 w-full sm:w-auto"
               >
                 Enable
               </Button>

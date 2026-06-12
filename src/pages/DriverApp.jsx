@@ -428,7 +428,7 @@ export default function DriverApp() {
         <DriverOnlineStatus profile={profile} onToggleOnline={toggleOnline} hasActiveRide={!!activeRide} />
         
         {!activeRide && (
-          <DriverStats trips={todayStats.trips} earnings={todayStats.earnings} />
+          <DriverStats trips={todayStats.trips} earnings={todayStats.earnings} hasActiveRide={false} />
         )}
 
         <DriverContentView

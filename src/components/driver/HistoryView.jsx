@@ -14,10 +14,10 @@ export default function HistoryView({ tripHistory, user, onBack }) {
     >
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
             Trip History
           </h2>
-          <p className="text-xs text-muted-foreground/80 mt-0.5">
+          <p className="text-sm text-muted-foreground/80 mt-1">
             {tripHistory.length} {tripHistory.length === 1 ? 'trip' : 'trips'} recorded
           </p>
         </div>
@@ -25,7 +25,7 @@ export default function HistoryView({ tripHistory, user, onBack }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onBack}
-          className="text-xs font-semibold px-4 py-2 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/10 hover:border-primary/40 transition-all"
+          className="text-sm font-semibold px-5 py-2.5 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/20 hover:border-primary/50 transition-all"
         >
           Back
         </motion.button>

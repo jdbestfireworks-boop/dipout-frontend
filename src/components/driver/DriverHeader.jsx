@@ -18,24 +18,24 @@ export default function DriverHeader({ profile, onOpenSettings }) {
           variant="ghost"
           size="icon"
           onClick={() => navigate(-1)}
-          className="h-10 w-10 rounded-xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/10 hover:border-primary/40 transition-all"
+          className="h-12 w-12 rounded-xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/20 hover:border-primary/50 transition-all"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-6 h-6" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold font-display bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold font-display bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
             {profile.vehicle}
           </h1>
-          <p className="text-xs text-muted-foreground/80">{profile.plate}</p>
+          <p className="text-sm text-muted-foreground/80 font-mono">{profile.plate}</p>
         </div>
       </div>
       <Button
         variant="ghost"
         size="icon"
         onClick={onOpenSettings}
-        className="h-10 w-10 rounded-xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/10 hover:border-primary/40 transition-all"
+        className="h-12 w-12 rounded-xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/20 hover:border-primary/50 transition-all"
       >
-        <Settings className="w-5 h-5" />
+        <Settings className="w-6 h-6" />
       </Button>
     </motion.div>
   );

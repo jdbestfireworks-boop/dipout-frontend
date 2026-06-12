@@ -14,18 +14,18 @@ export default function RequestsView({ profile, requests, tripHistory, user, onS
     >
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-lg font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
             {profile.status === 'offline'
               ? 'Go Online'
               : requests.length === 0
               ? 'No Rides'
               : 'Available Rides'}
           </h2>
-          <p className="text-xs text-muted-foreground/80 mt-0.5">
+          <p className="text-sm text-muted-foreground/80 mt-1">
             {profile.status === 'offline'
               ? 'Start earning today'
               : requests.length === 0
-              ? 'Stay ready'
+              ? 'Stay ready for requests'
               : `${requests.length} ride${requests.length > 1 ? 's' : ''} waiting`}
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function RequestsView({ profile, requests, tripHistory, user, onS
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onShowHistory}
-            className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/10 hover:border-primary/40 transition-all"
+            className="text-sm font-semibold px-4 py-2 rounded-xl bg-gradient-to-br from-card/80 to-card/40 border border-white/20 hover:border-primary/50 transition-all"
           >
             History ({tripHistory.length})
           </motion.button>

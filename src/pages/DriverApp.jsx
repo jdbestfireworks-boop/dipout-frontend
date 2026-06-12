@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Car, MapPin, Navigation, ExternalLink, Banknote, CreditCard, Clock, XCircle, ArrowLeft, Bell, Phone } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
+import DriverAlertBanner from '@/components/driver/DriverAlertBanner';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import RideChat from '@/components/ride/RideChat';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
@@ -343,6 +344,9 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
+      {/* Alert banner */}
+      <DriverAlertBanner driverEmail={user?.email} />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

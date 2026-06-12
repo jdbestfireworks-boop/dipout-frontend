@@ -388,12 +388,14 @@ export default function RiderApp() {
               <Button 
                 size="sm" 
                 onClick={() => {
-                  Notification.requestPermission().then(permission => {
-                    setNotificationPermission(permission);
-                    if (permission === 'granted') {
-                      toast.success('Notifications enabled!');
-                    }
-                  });
+                  if ('Notification' in window) {
+                    window.Notification.requestPermission().then(permission => {
+                      setNotificationPermission(permission);
+                      if (permission === 'granted') {
+                        toast.success('Notifications enabled!');
+                      }
+                    });
+                  }
                 }}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8"
               >

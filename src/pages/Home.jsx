@@ -81,16 +81,17 @@ export default function Home() {
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.1, rotate: 8 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setDarkMode(!darkMode)}
-          className="absolute top-6 right-6 p-4 rounded-2xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl border border-white/10 hover:border-primary/40 transition-all shadow-xl hover:shadow-primary/20 z-50"
+          className="absolute top-6 right-6 p-3 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 backdrop-blur-xl border-2 border-primary/30 hover:border-primary/60 transition-all shadow-lg hover:shadow-primary/30 z-50"
           title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {darkMode ? (
-            <Sun className="w-6 h-6 text-primary" />
+            <Sun className="w-7 h-7 text-primary" />
           ) : (
-            <Moon className="w-6 h-6 text-muted-foreground" />
+            <Moon className="w-7 h-7 text-primary" />
           )}
         </motion.button>
 

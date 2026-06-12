@@ -381,6 +381,25 @@ export default function DriverApp() {
     }
   };
 
+  const cancelRide = async () => {
+    try {
+      await base44.entities.Ride.update(activeRide.id, {
+        status: 'cancelled',
+        cancelled_at: new Date().toISOString(),
+      });
+      await base44.entities.DriverProfile.update(profile.id, {
+        status: 'available',
+      });
+      setProfile({ ...profile, status: 'available' });
+      toast.info('Ride cancelled');
+      setActiveRide(null);
+      setRequests([]);
+    } catch (error) {
+      console.error('Cancel ride error:', error);
+      toast.error('Failed to cancel ride');
+    }
+  };
+
   if (!user) {
     return (
       <div className="flex items-center justify-center h-full pt-32">
@@ -569,6 +588,7 @@ export default function DriverApp() {
               user={user}
               onStartTrip={startTrip}
               onCompleteTrip={completeTrip}
+              onCancelRide={cancelRide}
             />
           </motion.div>
         ) : showHistory ? (

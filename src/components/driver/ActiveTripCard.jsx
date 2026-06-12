@@ -18,7 +18,8 @@ export default function ActiveTripCard({
   ride, 
   user, 
   onStartTrip, 
-  onCompleteTrip 
+  onCompleteTrip,
+  onCancelRide
 }) {
   const [paymentMode, setPaymentMode] = useState(ride.payment_mode || 'mile');
 
@@ -82,7 +83,11 @@ export default function ActiveTripCard({
           <div className="text-right">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Payment</p>
             <Badge variant="outline" className="capitalize flex items-center gap-1.5 mt-1">
-              <><CreditCard className="w-3.5 h-3.5" /> Card</>
+              {ride.payment_method === 'cash' ? (
+                <><span className="text-xs">💵</span> Cash</>
+              ) : (
+                <><CreditCard className="w-3.5 h-3.5" /> Card</>
+              )}
             </Badge>
           </div>
         </div>
@@ -179,23 +184,45 @@ export default function ActiveTripCard({
       </div>
 
       {/* Action Buttons */}
-      {ride.status === 'accepted' && (
-        <button
-          onClick={onStartTrip}
-          className="w-full h-14 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-base hover:bg-secondary/80 transition-all shadow-sm"
-        >
-          Start Trip - Rider Picked Up
-        </button>
-      )}
+      <div className="space-y-3">
+        {ride.status === 'accepted' && (
+          <>
+            <button
+              onClick={onStartTrip}
+              className="w-full h-14 rounded-2xl bg-secondary text-secondary-foreground font-semibold text-base hover:bg-secondary/80 transition-all shadow-sm"
+            >
+              Start Trip - Rider Picked Up
+            </button>
+            {onCancelRide && (
+              <button
+                onClick={onCancelRide}
+                className="w-full h-12 rounded-2xl bg-destructive/10 text-destructive font-semibold text-sm hover:bg-destructive/20 transition-all border border-destructive/30"
+              >
+                Cancel Ride
+              </button>
+            )}
+          </>
+        )}
 
-      {ride.status === 'in_progress' && (
-        <button
-          onClick={onCompleteTrip}
-          className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all shadow-lg shadow-primary/20"
-        >
-          Complete Trip
-        </button>
-      )}
+        {ride.status === 'in_progress' && (
+          <>
+            <button
+              onClick={onCompleteTrip}
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+            >
+              Complete Trip
+            </button>
+            {onCancelRide && (
+              <button
+                onClick={onCancelRide}
+                className="w-full h-12 rounded-2xl bg-destructive/10 text-destructive font-semibold text-sm hover:bg-destructive/20 transition-all border border-destructive/30"
+              >
+                Cancel Ride
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

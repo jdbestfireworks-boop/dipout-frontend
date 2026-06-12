@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Navigation, Clock, CreditCard, Crosshair, Plus } from 'lucide-react';
+import { MapPin, Navigation, Clock, CreditCard, DollarSign, Crosshair, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddressAutocomplete from './AddressAutocomplete';
 import StopsManager from './StopsManager';
@@ -24,6 +24,7 @@ export default function RideBookingForm({
   stops,
   setStops
 }) {
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const addStop = (stop) => {
     setStops([...stops, stop]);
   };
@@ -207,23 +208,43 @@ export default function RideBookingForm({
             </motion.div>
           )}
 
-          {/* Payment Info */}
+          {/* Payment Method Selection */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="pt-1"
+            className="space-y-3"
           >
-            <div className="relative overflow-hidden bg-gradient-to-br from-primary/12 via-primary/8 to-transparent border border-primary/20 rounded-2xl p-5 text-center">
-              <motion.div
-                animate={{ scale: [1, 1.08, 1], rotate: [0, 3, -3, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
-                className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 mb-2.5 shadow-lg"
+            <p className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-[0.15em]">Payment Method</p>
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setPaymentMethod('cash')}
+                className={`p-4 rounded-2xl border-2 transition-all ${
+                  paymentMethod === 'cash'
+                    ? 'bg-gradient-to-br from-primary/20 to-primary/10 border-primary/50 shadow-lg shadow-primary/20'
+                    : 'bg-card/50 border-border hover:border-primary/30'
+                }`}
               >
-                <CreditCard className="w-6 h-6 text-primary" />
-              </motion.div>
-              <p className="text-sm font-semibold text-primary/90">Pay Now with Card</p>
-              <p className="text-[10px] text-muted-foreground/60 mt-1.5 leading-relaxed">Secure payment processed at booking</p>
+                <DollarSign className={`w-6 h-6 mx-auto mb-2 ${paymentMethod === 'cash' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <p className={`text-xs font-semibold ${paymentMethod === 'cash' ? 'text-primary' : 'text-muted-foreground'}`}>Cash</p>
+                <p className="text-[9px] text-muted-foreground/60 mt-1">Pay at pickup</p>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setPaymentMethod('card')}
+                className={`p-4 rounded-2xl border-2 transition-all ${
+                  paymentMethod === 'card'
+                    ? 'bg-gradient-to-br from-primary/20 to-primary/10 border-primary/50 shadow-lg shadow-primary/20'
+                    : 'bg-card/50 border-border hover:border-primary/30'
+                }`}
+              >
+                <CreditCard className={`w-6 h-6 mx-auto mb-2 ${paymentMethod === 'card' ? 'text-primary' : 'text-muted-foreground'}`} />
+                <p className={`text-xs font-semibold ${paymentMethod === 'card' ? 'text-primary' : 'text-muted-foreground'}`}>Card</p>
+                <p className="text-[9px] text-muted-foreground/60 mt-1">Pay online</p>
+              </motion.button>
             </div>
           </motion.div>
 
@@ -234,7 +255,7 @@ export default function RideBookingForm({
             whileHover={{ scale: 1.03, translateY: -2, shadow: "0 20px 40px -10px rgba(234, 179, 8, 0.4)" }}
             whileTap={{ scale: 0.97 }}
             transition={{ delay: 0.4 }}
-            onClick={onRequestRide}
+            onClick={() => onRequestRide(paymentMethod)}
             disabled={isRequesting || !quote}
             className="w-full h-[3.5rem] rounded-2xl bg-gradient-to-r from-primary via-primary to-primary/85 text-primary-foreground font-semibold text-sm tracking-wide hover:from-primary/95 hover:via-primary/90 hover:to-primary/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-2xl shadow-primary/35 disabled:shadow-none border border-white/10"
           >
@@ -245,10 +266,10 @@ export default function RideBookingForm({
                 className="flex items-center justify-center gap-2.5"
               >
                 <Clock className="w-4 h-4 animate-spin" />
-                <span>Processing payment...</span>
+                <span>{paymentMethod === 'card' ? 'Processing payment...' : 'Booking ride...'}</span>
               </motion.span>
             ) : (
-              'Book & Pay Now'
+              paymentMethod === 'cash' ? 'Book with Cash' : 'Book & Pay with Card'
             )}
           </motion.button>
         </motion.div>

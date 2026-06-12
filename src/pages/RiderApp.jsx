@@ -320,7 +320,7 @@ export default function RiderApp() {
     }
   };
 
-  const requestRide = async () => {
+  const requestRide = async (paymentMethod = 'cash') => {
     if (!quote) { toast.error('Please get a fare quote first'); return; }
     if (!pickupCoords || !dropoffCoords) {
       toast.error('Please select valid addresses from the suggestions');
@@ -330,7 +330,6 @@ export default function RiderApp() {
     try {
       const me = user || await base44.auth.me();
       
-      // Save ride data to localStorage for after payment
       const rideData = {
         rider_email: me.email,
         rider_phone: me.phone_number,
@@ -346,30 +345,45 @@ export default function RiderApp() {
         fare: quote.fare,
         ai_pricing_reason: quote.reason,
         stops: stops,
+        payment_method: paymentMethod,
       };
       
-      window.localStorage.setItem('pending_ride_data', JSON.stringify(rideData));
-      
-      // Create Stripe checkout session
-      const response = await base44.functions.invoke('createStripeCheckout', {
-        fare: quote.fare,
-        ride_data: JSON.stringify(rideData),
-      });
+      if (paymentMethod === 'card') {
+        // Card payment - redirect to Stripe
+        window.localStorage.setItem('pending_ride_data', JSON.stringify(rideData));
+        
+        const response = await base44.functions.invoke('createStripeCheckout', {
+          fare: quote.fare,
+          ride_data: JSON.stringify(rideData),
+        });
 
-      if (response.data?.success && response.data.url) {
-        // Check if running in iframe (preview mode)
-        if (window.self !== window.top) {
-          toast.info('Payment opened in new tab - complete payment to book your ride');
-          window.open(response.data.url, '_blank');
+        if (response.data?.success && response.data.url) {
+          if (window.self !== window.top) {
+            toast.info('Payment opened in new tab - complete payment to book your ride');
+            window.open(response.data.url, '_blank');
+          } else {
+            window.location.href = response.data.url;
+          }
         } else {
-          window.location.href = response.data.url;
+          throw new Error('Failed to create checkout session');
         }
       } else {
-        throw new Error('Failed to create checkout session');
+        // Cash payment - create ride directly
+        const response = await base44.functions.invoke('completeBookingAfterPayment', { 
+          ride_data: { ...rideData, payment_status: 'unpaid' } 
+        });
+        
+        if (response.data?.success) {
+          toast.success('Ride booked with cash! Finding your driver...');
+          const newRide = await base44.entities.Ride.get(response.data.ride_id);
+          setRide(newRide);
+        } else {
+          throw new Error('Failed to create ride');
+        }
       }
     } catch (error) {
       console.error('Ride request error:', error);
-      toast.error('Failed to process payment. Please try again.');
+      toast.error('Failed to book ride. Please try again.');
       setIsRequesting(false);
     }
   };

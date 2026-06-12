@@ -10,7 +10,10 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Ride data required' }, { status: 400 });
         }
 
-        // Create the ride with paid status
+        // Create the ride with payment status based on method
+        const paymentMethod = ride_data.payment_method || 'cash';
+        const paymentStatus = paymentMethod === 'card' ? 'paid' : 'unpaid';
+        
         const ride = await base44.entities.Ride.create({
             rider_email: ride_data.rider_email,
             rider_phone: ride_data.rider_phone || '',
@@ -26,8 +29,8 @@ Deno.serve(async (req) => {
             surge_multiplier: ride_data.surge_multiplier,
             fare: ride_data.fare,
             ai_pricing_reason: ride_data.ai_pricing_reason,
-            payment_status: 'paid',
-            payment_method: 'card',
+            payment_status: paymentStatus,
+            payment_method: paymentMethod,
         });
 
         // Create stop records if any

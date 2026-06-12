@@ -172,33 +172,31 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* Install App section */}
+        {/* Download App section */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="w-full max-w-xs mt-6 space-y-2"
         >
-          <p className="text-center text-xs text-muted-foreground font-medium">Install the App</p>
+          <p className="text-center text-xs text-muted-foreground font-medium">Download the App</p>
           <div className="grid grid-cols-2 gap-2">
-            {/* Android / Chrome install */}
             <button
-              onClick={() => setInstallModal('android')}
+              onClick={() => setInstallModal('rider')}
               className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
-              <span className="text-2xl">🤖</span>
-              <span className="text-xs font-semibold">Android</span>
-              <span className="text-[10px] text-muted-foreground">Chrome / Edge</span>
+              <MapPin className="w-6 h-6 text-primary" />
+              <span className="text-xs font-semibold">Rider App</span>
+              <span className="text-[10px] text-muted-foreground">Book rides</span>
             </button>
 
-            {/* iOS install */}
             <button
-              onClick={() => setInstallModal('ios')}
+              onClick={() => setInstallModal('driver')}
               className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
             >
-              <span className="text-2xl">🍎</span>
-              <span className="text-xs font-semibold">iPhone / iPad</span>
-              <span className="text-[10px] text-muted-foreground">Safari</span>
+              <Car className="w-6 h-6 text-primary" />
+              <span className="text-xs font-semibold">Driver App</span>
+              <span className="text-[10px] text-muted-foreground">Earn money</span>
             </button>
           </div>
         </motion.div>

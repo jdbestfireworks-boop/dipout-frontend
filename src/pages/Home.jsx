@@ -304,10 +304,32 @@ export default function Home() {
           className="flex flex-col items-center gap-3 mt-8 text-xs"
         >
           <div className="flex items-center gap-5 text-muted-foreground">
-            <Link to="/rides" className="hover:text-primary transition-colors">Ride History</Link>
-            <Link to="/notifications" className="hover:text-primary transition-colors flex items-center gap-1">
+            <button
+              onClick={() => {
+                if (!isLoggedIn) {
+                  toast.info('Please login to view ride history');
+                  navigate('/login');
+                } else {
+                  navigate('/rides');
+                }
+              }}
+              className="hover:text-primary transition-colors cursor-pointer"
+            >
+              Ride History
+            </button>
+            <button
+              onClick={() => {
+                if (!isLoggedIn) {
+                  toast.info('Please login to access settings');
+                  navigate('/login');
+                } else {
+                  navigate('/notifications');
+                }
+              }}
+              className="hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+            >
               <Bell className="w-3 h-3" /> Settings
-            </Link>
+            </button>
           </div>
           <Link to="/register/rider" className="text-primary font-semibold hover:underline">
             Create Rider Account

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Car, ArrowLeft, Bell } from 'lucide-react';
+import { Loader2, Car, ArrowLeft, Bell, DollarSign } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
 import DriverAlertBanner from '@/components/driver/DriverAlertBanner';
 import DriverWalkthrough from '@/components/driver/DriverWalkthrough';
@@ -428,256 +428,209 @@ export default function DriverApp() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-4 pb-20 sm:pt-8 space-y-4 sm:space-y-5">
-      {/* Notification Permission Banner */}
-      <NotificationPermissionBanner 
-        permission={notificationPermission}
-        onGrant={() => {
-          setNotificationPermission('granted');
-          toast.success('Notifications enabled! You\'ll get ride alerts.');
-        }}
-      />
-
-      {/* Onboarding walkthrough for newly approved drivers */}
-      <DriverWalkthrough />
-
-      {/* Alert banner */}
-      <DriverAlertBanner driverEmail={user?.email} />
-
-      {/* Quick Actions & Today's Stats */}
-      <DriverQuickActions
-        profile={profile}
-        onToggleOnline={toggleOnline}
-        todayStats={todayStats}
-      />
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-xl">
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </Button>
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-2xl font-display font-bold truncate">{profile.vehicle} · {profile.plate}</h1>
-            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">Driver Hub</p>
-          </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowSettings(true)}
-          className="h-10 w-10 rounded-xl"
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
-      </div>
-
-      {/* Online/Offline Status Card - Production Ready */}
-      <motion.div 
-        initial={{ scale: 0.98, opacity: 0 }}
-        animate={{ 
-          scale: 1, 
-          opacity: 1,
-          boxShadow: profile.status !== 'offline' ? '0 0 30px -5px rgba(34,197,94,0.3)' : '0 1px 3px rgba(0,0,0,0.1)'
-        }}
-        transition={{ duration: 0.3 }}
-        className={`p-4 sm:p-6 rounded-3xl border-2 transition-all duration-500 ${
-          profile.status !== 'offline' 
-            ? 'bg-green-500/10 border-green-500/50' 
-            : 'bg-card border-border'
-        }`}
-      >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="relative shrink-0">
-              <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`}></div>
-              {profile.status !== 'offline' && (
-                <div className="absolute inset-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500 animate-ping opacity-75"></div>
-              )}
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-base sm:text-xl font-bold font-display truncate">
-                {profile.status === 'offline' ? 'Ready to drive?' : 'You are Online'}
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 line-clamp-2">
-                {profile.status === 'offline' 
-                  ? 'Go online to start receiving ride requests' 
-                  : 'You are currently visible to nearby riders'}
-              </p>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-lg mx-auto px-4 py-6 pb-24">
+        {/* Header - Clean & Simple */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-10 w-10 rounded-xl">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold font-display">{profile.vehicle}</h1>
+              <p className="text-xs text-muted-foreground">{profile.plate}</p>
             </div>
           </div>
-          <Button 
-            size="lg"
-            disabled={!!activeRide}
-            className={`w-full sm:w-auto rounded-full px-6 sm:px-8 font-bold text-xs sm:text-sm shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-              profile.status !== 'offline' 
-                ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' 
-                : 'bg-green-500 hover:bg-green-600 shadow-green-500/30'
-            }`}
-            onClick={() => toggleOnline(profile.status === 'offline')}
-          >
-            {profile.status === 'offline' ? 'GO ONLINE' : 'GO OFFLINE'}
-          </Button>
-        </div>
-      </motion.div>
-
-      {/* Status indicators */}
-      {profile.status !== 'offline' && (
-        <div className="flex items-center gap-4 text-xs">
-          {locationPermission === 'granted' && (
-            <span className="text-green-500 flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              GPS active
-            </span>
-          )}
-          {locationPermission === 'denied' && (
-            <span className="text-destructive flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-destructive"></span>
-              GPS denied
-            </span>
-          )}
-          {notificationPermission === 'granted' && (
-            <span className="text-green-500 flex items-center gap-1">
-              <Bell className="w-3 h-3" />
-              Notifications on
-            </span>
-          )}
-          {notificationPermission === 'denied' && (
-            <button
-              onClick={() => {
-                Notification.requestPermission().then(permission => {
-                  setNotificationPermission(permission);
-                  if (permission === 'granted') {
-                    toast.success('Notifications enabled!');
-                  }
-                });
-              }}
-              className="text-muted-foreground flex items-center gap-1 hover:text-primary hover:underline cursor-pointer"
-            >
-              <Bell className="w-3 h-3" /> Notifications blocked
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* View History Button */}
-      {!activeRide && tripHistory.length > 0 && (
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-lg">Ride requests</h2>
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowHistory(!showHistory)}
-            className="gap-2 text-xs"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowSettings(true)}
+            className="h-10 w-10 rounded-xl"
           >
-            {showHistory ? 'Hide' : 'View'} History ({tripHistory.length})
+            <Settings className="w-5 h-5" />
           </Button>
         </div>
-      )}
 
-      <AnimatePresence mode="wait">
-        {activeRide ? (
-          <motion.div 
-            key="active" 
-            initial={{ opacity: 0, y: 8 }} 
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-          >
-            <ActiveTripCard
-              ride={activeRide}
-              user={user}
-              onStartTrip={startTrip}
-              onCompleteTrip={completeTrip}
-              onCancelRide={cancelRide}
-            />
-          </motion.div>
-        ) : showHistory ? (
-          <motion.div 
-            key="history" 
-            initial={{ opacity: 0, y: 8 }} 
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="space-y-3"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-lg">Trip History</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHistory(false)}
-                className="text-xs"
-              >
-                Back to Requests
-              </Button>
-            </div>
-            {tripHistory.length === 0 ? (
-              <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <Car className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-bold">No trip history</h3>
-                <p className="text-sm text-muted-foreground mt-2">Your completed and cancelled trips will appear here</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {tripHistory.map((r) => (
-                  <RideRequestCard
-                    key={r.id}
-                    ride={r}
-                    user={user}
-                    onSelect={() => {}}
-                    isHistory
-                  />
-                ))}
-              </div>
-            )}
-          </motion.div>
-        ) : (
-          <motion.div 
-            key="requests" 
-            initial={{ opacity: 0, y: 8 }} 
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="space-y-3"
-          >
-            {!showHistory && (
-              <>
-                <h2 className="font-semibold text-lg">Ride requests</h2>
-                {profile.status === 'offline' ? (
-                  <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                      <Car className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-lg font-bold">You're offline</h3>
-                    <p className="text-sm text-muted-foreground mt-2">Toggle online above to start receiving ride requests</p>
-                  </div>
-                ) : requests.length === 0 ? (
-                  <div className="bg-card rounded-2xl border border-border p-8 text-center">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <Car className="w-8 h-8 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-bold">No rides available</h3>
-                    <p className="text-sm text-muted-foreground mt-2">Stay online - you'll see requests here when riders book</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {requests.map((r) => (
-                      <RideRequestCard
-                        key={r.id}
-                        ride={r}
-                        user={user}
-                        onSelect={() => setSelectedRequest(r)}
-                      />
-                    ))}
-                  </div>
+        {/* Online Status - Prominent & Clean */}
+        <motion.div 
+          initial={{ scale: 0.98, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className={`mb-6 p-5 rounded-2xl border-2 transition-all ${
+            profile.status !== 'offline' 
+              ? 'bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/50' 
+              : 'bg-card border-border'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className={`w-4 h-4 rounded-full ${profile.status === 'offline' ? 'bg-gray-500' : 'bg-green-500 animate-pulse'}`} />
+                {profile.status !== 'offline' && (
+                  <div className="absolute inset-0 w-4 h-4 rounded-full bg-green-500 animate-ping opacity-75" />
                 )}
-              </>
-            )}
-          </motion.div>
+              </div>
+              <div>
+                <p className="font-bold text-sm">{profile.status === 'offline' ? 'Offline' : 'Online & Available'}</p>
+                <p className="text-xs text-muted-foreground">{profile.status === 'offline' ? 'Tap to go online' : 'Receiving ride requests'}</p>
+              </div>
+            </div>
+            <Button 
+              disabled={!!activeRide}
+              className={`rounded-full px-6 font-bold text-xs ${
+                profile.status !== 'offline' 
+                  ? 'bg-red-500 hover:bg-red-600' 
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
+              onClick={() => toggleOnline(profile.status === 'offline')}
+            >
+              {profile.status === 'offline' ? 'GO ONLINE' : 'OFFLINE'}
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Today's Stats - Compact Grid */}
+        {!activeRide && (
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl border border-border bg-card/50"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Car className="w-4 h-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Trips</span>
+              </div>
+              <p className="text-2xl font-bold font-display">{todayStats.trips}</p>
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="p-4 rounded-2xl border border-border bg-card/50"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-green-500" />
+                <span className="text-xs text-muted-foreground">Earned</span>
+              </div>
+              <p className="text-2xl font-bold font-display text-green-500">${todayStats.earnings.toFixed(2)}</p>
+            </motion.div>
+          </div>
         )}
+
+        {/* Status Indicators - Minimal */}
+        {profile.status !== 'offline' && (
+          <div className="flex items-center gap-3 mb-4 text-xs">
+            {locationPermission === 'granted' && (
+              <span className="text-green-500 flex items-center gap-1.5 bg-green-500/10 px-2.5 py-1.5 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                GPS
+              </span>
+            )}
+            {notificationPermission === 'granted' && (
+              <span className="text-primary flex items-center gap-1.5 bg-primary/10 px-2.5 py-1.5 rounded-full">
+                <Bell className="w-3 h-3" />
+                Alerts
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <AnimatePresence mode="wait">
+        {activeRide ? (
+        <motion.div 
+          key="active" 
+          initial={{ opacity: 0, y: 8 }} 
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold">Active Trip</h2>
+            <Badge className="bg-primary/10 text-primary border-primary/20 capitalize">{activeRide.status.replace('_', ' ')}</Badge>
+          </div>
+          <ActiveTripCard
+            ride={activeRide}
+            user={user}
+            onStartTrip={startTrip}
+            onCompleteTrip={completeTrip}
+            onCancelRide={cancelRide}
+          />
+        </motion.div>
+      ) : showHistory ? (
+        <motion.div 
+          key="history" 
+          initial={{ opacity: 0, y: 8 }} 
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold">History</h2>
+            <Button variant="ghost" size="sm" onClick={() => setShowHistory(false)} className="text-xs">Back</Button>
+          </div>
+          {tripHistory.length === 0 ? (
+            <div className="bg-card rounded-2xl border border-border p-12 text-center">
+              <Car className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">No history yet</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {tripHistory.map((r) => (
+                <RideRequestCard key={r.id} ride={r} user={user} onSelect={() => {}} isHistory />
+              ))}
+            </div>
+          )}
+        </motion.div>
+      ) : (
+        <motion.div 
+          key="requests" 
+          initial={{ opacity: 0, y: 8 }} 
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+        >
+          {!showHistory && (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold">
+                  {profile.status === 'offline' ? 'Go Online' : requests.length === 0 ? 'No Rides' : 'Available Rides'}
+                </h2>
+                {!activeRide && tripHistory.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={() => setShowHistory(true)} className="text-xs">
+                    History ({tripHistory.length})
+                  </Button>
+                )}
+              </div>
+              {profile.status === 'offline' ? (
+                <div className="bg-card rounded-2xl border border-border p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                    <Car className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-2">You're Offline</h3>
+                  <p className="text-sm text-muted-foreground">Go online to receive ride requests</p>
+                </div>
+              ) : requests.length === 0 ? (
+                <div className="bg-card rounded-2xl border border-border p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Car className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-2">No Rides Available</h3>
+                  <p className="text-sm text-muted-foreground">Stay online - rides will appear here</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {requests.map((r) => (
+                    <RideRequestCard key={r.id} ride={r} user={user} onSelect={() => setSelectedRequest(r)} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </motion.div>
+      )}
       </AnimatePresence>
 
-      {/* Ride request popup modal with sound */}
+      </div>
+
+      {/* Modals */}
       <AnimatePresence>
         {selectedRequest && (
           <RideRequestModal
@@ -689,17 +642,16 @@ export default function DriverApp() {
         )}
       </AnimatePresence>
 
-      {/* Settings Modal */}
       <AnimatePresence>
         {showSettings && (
           <Dialog open={showSettings} onOpenChange={setShowSettings}>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Driver Settings</DialogTitle>
+                <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
               <Tabs defaultValue="preferences" className="w-full">
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                  <TabsTrigger value="preferences">Prefs</TabsTrigger>
                   <TabsTrigger value="schedule">Schedule</TabsTrigger>
                   <TabsTrigger value="stops">Stops</TabsTrigger>
                   <TabsTrigger value="pricing">Pricing</TabsTrigger>
@@ -747,6 +699,14 @@ export default function DriverApp() {
           </Dialog>
         )}
       </AnimatePresence>
+
+      {/* Helper Components - Hidden from UI */}
+      <div className="hidden">
+        <DriverWalkthrough />
+        <DriverAlertBanner driverEmail={user?.email} />
+        <DriverQuickActions profile={profile} onToggleOnline={toggleOnline} todayStats={todayStats} />
+        <NotificationPermissionBanner permission={notificationPermission} onGrant={() => {}} />
+      </div>
     </div>
   );
 }

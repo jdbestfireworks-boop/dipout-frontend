@@ -1,0 +1,44 @@
+{
+  "name": "RideStop",
+  "type": "object",
+  "properties": {
+    "ride_id": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "stop_number": {
+      "type": "number",
+      "description": "Order of the stop (1, 2, 3, etc.)"
+    },
+    "stop_type": {
+      "type": "string",
+      "enum": [
+        "pickup",
+        "dropoff"
+      ],
+      "description": "Whether this is a pickup or dropoff stop"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes for this stop"
+    }
+  },
+  "required": [
+    "ride_id",
+    "address",
+    "stop_number",
+    "stop_type"
+  ]
+}

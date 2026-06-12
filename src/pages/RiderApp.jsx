@@ -50,6 +50,7 @@ export default function RiderApp() {
   const [cancellationFee, setCancellationFee] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState('default');
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [stops, setStops] = useState([]);
 
   // Auto-detect pickup location from GPS on mount
   useEffect(() => {
@@ -248,16 +249,27 @@ export default function RiderApp() {
     }
     setQuoting(true);
     try {
-      // Calculate real distance if both coords known, otherwise fall back to 5 miles
-      let miles = 5;
+      // Calculate total distance including stops
+      let miles = 0;
       if (pickupCoords && dropoffCoords) {
-        miles = haversineMiles(pickupCoords.lat, pickupCoords.lng, dropoffCoords.lat, dropoffCoords.lng);
+        // Calculate distance from pickup to first stop, between stops, and last stop to dropoff
+        let prevCoords = pickupCoords;
+        const allPoints = [...stops, { lat: dropoffCoords.lat, lng: dropoffCoords.lng }];
+        
+        for (const point of allPoints) {
+          miles += haversineMiles(prevCoords.lat, prevCoords.lng, point.lat, point.lng);
+          prevCoords = point;
+        }
         miles = Math.max(miles, 0.5);
+      } else {
+        miles = 5;
       }
+      
       const q = await getDynamicFare({
         distanceMiles: miles,
         pickupAddress,
         dropoffAddress,
+        stops,
       });
       setQuote(q);
       setDistanceKm(miles);
@@ -298,6 +310,23 @@ export default function RiderApp() {
         payment_status: 'unpaid',
         payment_method: payMethod,
       });
+
+      // Create stop records if any
+      if (stops.length > 0) {
+        const stopPromises = stops.map((stop, index) => 
+          base44.entities.RideStop.create({
+            ride_id: created.id,
+            address: stop.address,
+            lat: stop.lat,
+            lng: stop.lng,
+            stop_number: index + 1,
+            stop_type: 'intermediate',
+            completed: false,
+          })
+        );
+        await Promise.all(stopPromises);
+      }
+
       setRide(created);
       setIsRequesting(false);
       toast.success('Ride requested! Finding nearest driver...');
@@ -516,6 +545,8 @@ export default function RiderApp() {
                 onRequestRide={requestRide}
                 onSetDropoffGps={setDropoffFromGps}
                 gettingLocation={gettingLocation}
+                stops={stops}
+                setStops={setStops}
               />
             </motion.div>
           ) : (

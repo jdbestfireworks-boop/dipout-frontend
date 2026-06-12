@@ -1,7 +1,8 @@
-import React from 'react';
-import { MapPin, Navigation, Clock, CreditCard, Banknote, Crosshair } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Navigation, Clock, CreditCard, Banknote, Crosshair, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddressAutocomplete from './AddressAutocomplete';
+import StopsManager from './StopsManager';
 
 export default function RideBookingForm({ 
   pickupAddress, 
@@ -23,6 +24,22 @@ export default function RideBookingForm({
   onSetDropoffGps,
   gettingLocation
 }) {
+  const [stops, setStops] = useState([]);
+  const [showStops, setShowStops] = useState(false);
+
+  const addStop = (stop) => {
+    setStops([...stops, stop]);
+  };
+
+  const removeStop = (index) => {
+    setStops(stops.filter((_, i) => i !== index));
+  };
+
+  const updateStop = (index, stop) => {
+    const newStops = [...stops];
+    newStops[index] = stop;
+    setStops(newStops);
+  };
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -76,6 +93,20 @@ export default function RideBookingForm({
           </div>
         </div>
       </div>
+
+      {/* Stops Manager */}
+      {pickupCoords && dropoffCoords && (
+        <div className="bg-card rounded-2xl border border-border p-4">
+          <StopsManager
+            stops={stops}
+            onAddStop={addStop}
+            onRemoveStop={removeStop}
+            onUpdateStop={updateStop}
+            pickupAddress={pickupAddress}
+            dropoffAddress={dropoffAddress}
+          />
+        </div>
+      )}
 
       {/* Get Quote Button */}
       {!quote && (

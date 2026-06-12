@@ -17,8 +17,6 @@ export default function RideBookingForm({
   quoting,
   quote,
   distanceKm,
-  payMethod,
-  setPayMethod,
   onRequestRide,
   isRequesting,
   onSetDropoffGps,
@@ -153,43 +151,28 @@ export default function RideBookingForm({
             </div>
           )}
 
-          {/* Payment Method */}
+          {/* Payment Info */}
           <div className="pt-2">
-            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-3">Payment Method</p>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                onClick={() => setPayMethod('card')}
-                className={`flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 transition-all shadow-lg ${
-                  payMethod === 'card'
-                    ? 'border-primary bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-primary/30 scale-105'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:shadow-md'
-                }`}
-              >
-                <CreditCard className={`w-8 h-8 ${payMethod === 'card' ? 'text-primary animate-pulse' : ''}`} />
-                <span className="text-base font-bold">Card Payment</span>
-                {payMethod === 'card' && (
-                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
-                )}
-              </button>
+            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-center">
+              <CreditCard className="w-8 h-8 text-primary mx-auto mb-2" />
+              <p className="text-sm font-semibold text-primary">Pay Now with Card</p>
+              <p className="text-xs text-muted-foreground mt-1">Secure payment processed at booking</p>
             </div>
-            <p className="text-xs text-muted-foreground mt-3 text-center">
-              Cash payments are no longer accepted. Please pay with card.
-            </p>
           </div>
 
           {/* Request Button */}
           <button
             onClick={onRequestRide}
-            disabled={isRequesting || !payMethod}
+            disabled={isRequesting || !quote}
             className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-3 shadow-lg shadow-primary/20"
           >
             {isRequesting ? (
               <span className="flex items-center justify-center gap-2">
                 <Clock className="w-4 h-4 animate-spin" />
-                Requesting ride...
+                Processing payment...
               </span>
             ) : (
-              payMethod ? 'Request Card Ride' : 'Select Card Payment'
+              'Book & Pay Now'
             )}
           </button>
         </motion.div>

@@ -27,35 +27,34 @@ export default function PostRideScreen({ ride, onDone }) {
     try {
       setSubmitting(true);
       
-      // For card payments, initiate Stripe checkout
-      // First save the ride data with pending payment
+      // Update ride with rating and tip (already paid at booking)
       await base44.entities.Ride.update(ride.id, {
         fare: finalFare,
+        payment_status: 'paid',
         ...(rating > 0 ? { rider_rating: rating } : {}),
         ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
       });
 
-      // Create Stripe checkout session
-      const response = await base44.functions.invoke('createStripeCheckout', {
-        ride_id: ride.id,
-        fare: finalFare,
-      });
-
-      if (response.data?.success && response.data.url) {
-        // Check if running in iframe (preview mode)
-        if (window.self !== window.top) {
-          // Store URL for later use
-          window.localStorage.setItem('pending_stripe_url', response.data.url);
-          toast.info('Payment opened in new tab - complete payment there');
-          window.open(response.data.url, '_blank');
-          onDone(); // Allow user to continue in preview
-        } else {
-          // Redirect to Stripe checkout
-          window.location.href = response.data.url;
+      // Update driver rating
+      if (rating > 0 && ride.driver_email) {
+        try {
+          const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
+          if (profiles.length) {
+            const dp = profiles[0];
+            const totalRatings = (dp.total_ratings || 0) + 1;
+            const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
+            await base44.entities.DriverProfile.update(dp.id, {
+              rating: Math.round(newRating * 10) / 10,
+              total_ratings: totalRatings,
+            });
+          }
+        } catch (err) {
+          console.error('Driver rating update error:', err);
         }
-      } else {
-        throw new Error('Failed to create checkout session');
       }
+
+      toast.success('Thanks for riding with Dip Out!');
+      onDone();
     } catch (error) {
       console.error('Payment error:', error);
       toast.error('Payment failed - please try again');
@@ -211,7 +210,7 @@ export default function PostRideScreen({ ride, onDone }) {
           {submitting ? (
             <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Processing...</>
           ) : (
-            <><CreditCard className="w-5 h-5 mr-2" /> Pay ${((ride.fare || 0) + (tip || 0)).toFixed(2)}</>
+            <><CheckCircle2 className="w-5 h-5 mr-2" /> Complete & Add Tip</>
           )}
           {tip > 0 && <span className="ml-2 text-xs opacity-80">(+${tip.toFixed(2)} tip)</span>}
         </Button>

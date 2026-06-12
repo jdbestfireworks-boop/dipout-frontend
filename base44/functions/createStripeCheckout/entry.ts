@@ -55,11 +55,11 @@ Deno.serve(async (req) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${appUrl}/rides?payment=success&ride_id=${ride_id}`,
-            cancel_url: `${appUrl}/rides?payment=cancelled&ride_id=${ride_id}`,
+            success_url: `${appUrl}/rides?payment=success`,
+            cancel_url: `${appUrl}/rides?payment=cancelled`,
             metadata: {
                 base44_app_id: appId,
-                ride_id: ride_id,
+                ride_data: req.body.ride_data || '',
             },
         });
 

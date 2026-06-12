@@ -42,7 +42,7 @@ export default function RiderApp() {
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
-  const [payMethod, setPayMethod] = useState('card');
+  const [payMethod, setPayMethod] = useState(null);
   const [isRequesting, setIsRequesting] = useState(false);
   const [gpsEnabled, setGpsEnabled] = useState(true);
   const [gpsWatchId, setGpsWatchId] = useState(null);
@@ -120,6 +120,50 @@ export default function RiderApp() {
     }
   }, []);
 
+  // Handle payment success and create ride after Stripe checkout
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      // Clear the URL params
+      window.history.replaceState({}, document.title, '/rider');
+      
+      // Check if we have pending ride data in localStorage
+      const pendingData = window.localStorage.getItem('pending_ride_data');
+      if (pendingData) {
+        try {
+          const rideData = JSON.parse(pendingData);
+          window.localStorage.removeItem('pending_ride_data');
+          
+          // Create the ride after successful payment
+          base44.functions.invoke('completeBookingAfterPayment', { ride_data: rideData })
+            .then((response) => {
+              if (response.data?.success) {
+                toast.success('Ride booked successfully! Finding your driver...');
+                // Load the newly created ride
+                base44.entities.Ride.get(response.data.ride_id).then((ride) => {
+                  setRide(ride);
+                });
+              } else {
+                toast.error('Failed to create ride. Please contact support.');
+              }
+            })
+            .catch((error) => {
+              console.error('Booking error:', error);
+              toast.error('Failed to complete booking. Please contact support.');
+            });
+        } catch (error) {
+          console.error('Parse error:', error);
+          toast.error('Failed to process ride data');
+        }
+      }
+    } else if (paymentStatus === 'cancelled') {
+      window.history.replaceState({}, document.title, '/rider');
+      toast.info('Payment cancelled');
+    }
+  }, []);
+
   // Resume an active ride
   useEffect(() => {
     (async () => {
@@ -132,8 +176,7 @@ export default function RiderApp() {
           5
         );
         const current = active.find((r) =>
-          ['requested', 'accepted', 'in_progress'].includes(r.status) ||
-          (r.status === 'completed' && r.payment_status === 'unpaid')
+          ['requested', 'accepted', 'in_progress'].includes(r.status)
         );
         if (current) setRide(current);
       } catch (error) {
@@ -286,7 +329,9 @@ export default function RiderApp() {
     setIsRequesting(true);
     try {
       const me = user || await base44.auth.me();
-      const created = await base44.entities.Ride.create({
+      
+      // Save ride data to localStorage for after payment
+      const rideData = {
         rider_email: me.email,
         rider_phone: me.phone_number,
         pickup_address: pickupAddress,
@@ -295,38 +340,36 @@ export default function RiderApp() {
         pickup_lng: pickupCoords.lng,
         dropoff_lat: dropoffCoords.lat,
         dropoff_lng: dropoffCoords.lng,
-        status: 'requested',
         distance_km: Math.round(distanceKm * 10) / 10,
         base_fare: quote.baseFare,
         surge_multiplier: quote.surgeMultiplier,
         fare: quote.fare,
         ai_pricing_reason: quote.reason,
-        payment_status: 'unpaid',
-        payment_method: payMethod,
+        stops: stops,
+      };
+      
+      window.localStorage.setItem('pending_ride_data', JSON.stringify(rideData));
+      
+      // Create Stripe checkout session
+      const response = await base44.functions.invoke('createStripeCheckout', {
+        fare: quote.fare,
+        ride_data: JSON.stringify(rideData),
       });
 
-      // Create stop records if any
-      if (stops.length > 0) {
-        const stopPromises = stops.map((stop, index) => 
-          base44.entities.RideStop.create({
-            ride_id: created.id,
-            address: stop.address,
-            lat: stop.lat,
-            lng: stop.lng,
-            stop_number: index + 1,
-            stop_type: 'intermediate',
-            completed: false,
-          })
-        );
-        await Promise.all(stopPromises);
+      if (response.data?.success && response.data.url) {
+        // Check if running in iframe (preview mode)
+        if (window.self !== window.top) {
+          toast.info('Payment opened in new tab - complete payment to book your ride');
+          window.open(response.data.url, '_blank');
+        } else {
+          window.location.href = response.data.url;
+        }
+      } else {
+        throw new Error('Failed to create checkout session');
       }
-
-      setRide(created);
-      setIsRequesting(false);
-      toast.success('Ride requested! Finding nearest driver...');
     } catch (error) {
       console.error('Ride request error:', error);
-      toast.error('Failed to request ride. Please try again.');
+      toast.error('Failed to process payment. Please try again.');
       setIsRequesting(false);
     }
   };
@@ -371,7 +414,7 @@ export default function RiderApp() {
     setDropoffCoords(null);
     setQuote(null);
     setDistanceKm(0);
-    setPayMethod(null);
+    
     // Clear GPS tracking
     if (gpsWatchId !== null) {
       navigator.geolocation.clearWatch(gpsWatchId);

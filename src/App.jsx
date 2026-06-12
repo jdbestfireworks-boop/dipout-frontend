@@ -11,6 +11,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import RegisterRider from '@/pages/RegisterRider';
+import RegisterDriver from '@/pages/RegisterDriver';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import AppShell from '@/components/AppShell';
@@ -53,6 +55,8 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/register/rider" element={<RegisterRider />} />
+      <Route path="/register/driver" element={<RegisterDriver />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Home />} />

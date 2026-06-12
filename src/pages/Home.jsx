@@ -46,8 +46,14 @@ export default function Home() {
   const handleDrive = (e) => {
     if (!isLoggedIn) {
       e.preventDefault();
-      toast.info('Create an account to start driving');
-      navigate('/register?next=/driver');
+      navigate('/register/driver');
+    }
+  };
+
+  const handleBookRideClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      navigate('/register/rider');
     }
   };
 
@@ -94,7 +100,7 @@ export default function Home() {
         >
           <Link
             to="/rider"
-            onClick={handleBookRide}
+            onClick={handleBookRideClick}
             className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
           >
             <div className="flex items-center gap-3">

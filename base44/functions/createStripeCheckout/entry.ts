@@ -4,16 +4,17 @@ import Stripe from 'npm:stripe@14.0.0';
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        const { ride_id, fare } = await req.json();
+        const { ride_id, amount, fare } = await req.json();
 
-        // Validate inputs
-        if (!ride_id || !fare) {
-            console.error('Missing required fields:', { ride_id, fare });
+        // Validate inputs - support both 'amount' and 'fare' parameter names
+        const fareAmount = amount || fare;
+        if (!ride_id || !fareAmount) {
+            console.error('Missing required fields:', { ride_id, amount: fareAmount });
             return Response.json({ error: 'Ride ID and fare required' }, { status: 400 });
         }
 
-        if (fare <= 0 || fare > 10000) {
-            console.error('Invalid fare amount:', fare);
+        if (fareAmount <= 0 || fareAmount > 10000) {
+            console.error('Invalid fare amount:', fareAmount);
             return Response.json({ error: 'Invalid fare amount' }, { status: 400 });
         }
 
@@ -48,7 +49,7 @@ Deno.serve(async (req) => {
                             name: 'Dip Out Ride',
                             description: 'Ride-sharing service',
                         },
-                        unit_amount: Math.round(fare * 100),
+                        unit_amount: Math.round(fareAmount * 100),
                     },
                     quantity: 1,
                 },

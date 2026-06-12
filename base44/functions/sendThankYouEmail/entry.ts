@@ -12,7 +12,13 @@ function encodeEmail(emailData) {
     emailData.html,
   ].join('\r\n');
   
-  return btoa(mimeMessage).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(mimeMessage);
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 Deno.serve(async (req) => {
@@ -25,20 +31,24 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { ride_id } = await req.json();
+    const { ride_id, ride } = await req.json();
 
-    if (!ride_id) {
-      return Response.json({ error: 'Ride ID required' }, { status: 400 });
+    // Support both ride_id only (fetch from DB) or ride object passed directly
+    if (!ride_id && !ride) {
+        return Response.json({ error: 'Ride ID or ride object required' }, { status: 400 });
     }
 
-    // Get ride details
-    const ride = await base44.asServiceRole.entities.Ride.get(ride_id);
-    if (!ride) {
-      return Response.json({ error: 'Ride not found' }, { status: 404 });
+    // If ride object not provided, fetch from database
+    let rideData = ride;
+    if (!rideData && ride_id) {
+        rideData = await base44.asServiceRole.entities.Ride.get(ride_id);
+        if (!rideData) {
+            return Response.json({ error: 'Ride not found' }, { status: 404 });
+        }
     }
 
     // Only send for completed rides
-    if (ride.status !== 'completed') {
+    if (rideData.status !== 'completed') {
       return Response.json({ error: 'Ride not completed yet' }, { status: 400 });
     }
 
@@ -46,9 +56,9 @@ Deno.serve(async (req) => {
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
     // Calculate fare breakdown
-    const baseFare = ride.base_fare || 0;
-    const surge = ride.surge_multiplier || 1;
-    const total = ride.fare || 0;
+    const baseFare = rideData.base_fare || 0;
+    const surge = rideData.surge_multiplier || 1;
+    const total = rideData.fare || 0;
 
     // Create thank you email with rating link
     const htmlContent = `
@@ -85,19 +95,19 @@ Deno.serve(async (req) => {
                 <h3 style="margin-top: 0;">Trip Summary</h3>
                 <div class="detail-row">
                   <span class="detail-label">From:</span>
-                  <span class="detail-value">${ride.pickup_address || 'N/A'}</span>
+                  <span class="detail-value">${rideData.pickup_address || 'N/A'}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">To:</span>
-                  <span class="detail-value">${ride.dropoff_address || 'N/A'}</span>
+                  <span class="detail-value">${rideData.dropoff_address || 'N/A'}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Date:</span>
-                  <span class="detail-value">${new Date(ride.created_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  <span class="detail-value">${new Date(rideData.created_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Distance:</span>
-                  <span class="detail-value">${ride.distance_km || 0} miles</span>
+                  <span class="detail-value">${rideData.distance_km || 0} miles</span>
                 </div>
                 <div class="detail-row">
                   <span class="detail-label">Total Fare:</span>
@@ -120,7 +130,7 @@ Deno.serve(async (req) => {
               <strong>The Dip Out Team</strong></p>
 
               <div class="footer">
-                <p>This email was sent to ${ride.rider_email || 'our valued rider'}</p>
+                <p>This email was sent to ${rideData.rider_email || 'our valued rider'}</p>
                 <p>&copy; ${new Date().getFullYear()} Dip Out. All rights reserved.</p>
               </div>
             </div>
@@ -130,7 +140,7 @@ Deno.serve(async (req) => {
     `;
 
     const emailData = {
-      to: ride.rider_email,
+      to: rideData.rider_email,
       subject: 'Thank You for Riding with Dip Out! 🚗',
       html: htmlContent,
     };
@@ -156,7 +166,7 @@ Deno.serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log('Thank you email sent to:', ride.rider_email, 'Message ID:', result.id);
+    console.log('Thank you email sent to:', rideData.rider_email, 'Message ID:', result.id);
 
     return Response.json({ 
       success: true, 

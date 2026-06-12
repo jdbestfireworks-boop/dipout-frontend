@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { id: 'drivers',   label: 'Drivers',        icon: Users },
   { id: 'revenue',   label: 'Revenue',        icon: BarChart3 },
   { id: 'settings',  label: 'Settings',       icon: Settings },
+  { id: 'test',      label: 'Test Suite',     icon: ShieldCheck, external: true },
 ];
 
 export default function AdminSidebar({ tab, setTab, pendingCount }) {
@@ -28,8 +29,23 @@ export default function AdminSidebar({ tab, setTab, pendingCount }) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+        {NAV_ITEMS.map(({ id, label, icon: Icon, external }) => {
           const isActive = tab === id;
+          if (external) {
+            return (
+              <a
+                key={id}
+                href="/admin/test"
+                className={cn(
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+                  'text-muted-foreground hover:text-foreground hover:bg-accent'
+                )}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                {label}
+              </a>
+            );
+          }
           return (
             <button
               key={id}

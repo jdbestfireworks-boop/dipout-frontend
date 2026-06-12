@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle,
   Download, BarChart3, Sheet, Activity, Settings, AlertCircle,
-  RefreshCw, ExternalLink, MapPin, Menu, X
+  RefreshCw, ExternalLink, MapPin, Menu, X, ShieldCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -150,6 +150,14 @@ export default function AdminDashboard() {
                 <span className="sm:hidden">{pending.length}</span>
               </button>
             )}
+            <a href="/admin/test" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-accent transition-colors text-xs font-medium">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Test Suite</span>
+            </a>
+            <Button onClick={() => navigate('/admin/test')} variant="outline" size="sm" className="gap-1.5 h-8">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Test Suite</span>
+            </Button>
             <Button onClick={downloadCSV} variant="outline" size="sm" className="gap-1.5 h-8">
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Export CSV</span>

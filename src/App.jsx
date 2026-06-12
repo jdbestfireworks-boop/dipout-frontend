@@ -26,6 +26,7 @@ import DemoMode from '@/pages/DemoMode';
 import NotificationSettings from '@/pages/NotificationSettings';
 import ClickSimulation from '@/pages/ClickSimulation';
 import SimulationGuide from '@/pages/SimulationGuide';
+import ProductionTest from '@/pages/ProductionTest';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -71,6 +72,7 @@ const AuthenticatedApp = () => {
           <Route path="/click-simulation" element={<ClickSimulation />} />
           <Route path="/simulation" element={<SimulationGuide />} />
           <Route path="/admin/monitoring" element={<AdminMonitoring />} />
+          <Route path="/admin/test" element={<ProductionTest />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

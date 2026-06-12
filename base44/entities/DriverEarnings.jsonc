@@ -1,0 +1,49 @@
+{
+  "name": "DriverEarnings",
+  "type": "object",
+  "properties": {
+    "driver_email": {
+      "type": "string"
+    },
+    "week_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of the earnings week"
+    },
+    "week_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of the earnings week"
+    },
+    "trips_completed": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of trips completed this week"
+    },
+    "gross_fare": {
+      "type": "number",
+      "default": 0,
+      "description": "Total fare amount before commission"
+    },
+    "driver_payout": {
+      "type": "number",
+      "default": 0,
+      "description": "Driver earnings after commission (80%)"
+    },
+    "platform_cut": {
+      "type": "number",
+      "default": 0,
+      "description": "Platform commission (20%)"
+    },
+    "calculated_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this calculation was run"
+    }
+  },
+  "required": [
+    "driver_email",
+    "week_start",
+    "week_end"
+  ]
+}

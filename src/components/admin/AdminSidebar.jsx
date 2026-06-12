@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp, HardDrive } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp, HardDrive, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { id: 'rides',        label: 'Ride History',    icon: Car },
   { id: 'drivers',      label: 'Drivers',         icon: Users },
   { id: 'performance',  label: 'Performance',     icon: TrendingUp },
+  { id: 'earnings',     label: 'Earnings',        icon: DollarSign },
   { id: 'map',          label: 'Driver Map',      icon: MapPin },
   { id: 'revenue',      label: 'Revenue',         icon: BarChart3 },
   { id: 'settings',     label: 'Settings',        icon: Settings },

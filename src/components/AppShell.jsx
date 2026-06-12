@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Car, Smartphone, LogOut, LayoutDashboard, Bell, User, ChevronDown, Shield } from 'lucide-react';
+import { Car, Smartphone, LogOut, LayoutDashboard, Bell, User, ChevronDown, Shield, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -78,6 +78,14 @@ export default function AppShell() {
             </Link>
           )}
           <div className="w-px h-5 bg-border mx-1" />
+          <Link
+            to="/register/rider"
+            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
+          >
+            <Car className="w-4 h-4" />
+            Sign Up to Ride
+            <ArrowRight className="w-3.5 h-3.5 opacity-70" />
+          </Link>
           <Link
             to="/notifications"
             title="Notification Settings"

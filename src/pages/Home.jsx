@@ -115,13 +115,13 @@ export default function Home() {
 
               <Link
                 to="/register/rider"
-                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-foreground font-bold text-base hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border-2 border-primary bg-primary/10 backdrop-blur-sm text-primary font-bold text-base hover:bg-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <Car className="w-5 h-5 text-primary" />
-                  Sign Up as Rider
+                  <Car className="w-5 h-5" />
+                  Sign Up to Ride
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
           ) : (
@@ -234,11 +234,16 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex items-center gap-5 mt-6 text-xs text-muted-foreground"
+          className="flex flex-col items-center gap-3 mt-8 text-xs"
         >
-          <Link to="/rides" className="hover:text-primary transition-colors">Ride History</Link>
-          <Link to="/notifications" className="hover:text-primary transition-colors flex items-center gap-1">
-            <Bell className="w-3 h-3" /> Settings
+          <div className="flex items-center gap-5 text-muted-foreground">
+            <Link to="/rides" className="hover:text-primary transition-colors">Ride History</Link>
+            <Link to="/notifications" className="hover:text-primary transition-colors flex items-center gap-1">
+              <Bell className="w-3 h-3" /> Settings
+            </Link>
+          </div>
+          <Link to="/register/rider" className="text-primary font-semibold hover:underline">
+            Create Rider Account
           </Link>
         </motion.div>
       </div>

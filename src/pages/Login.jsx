@@ -125,10 +125,23 @@ export default function Login() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary font-semibold hover:underline">Create one</Link>
-          </p>
+          <div className="space-y-3 text-center mt-6">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link to="/register" className="text-primary font-semibold hover:underline">Create one</Link>
+            </p>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-background px-2 text-muted-foreground uppercase tracking-wider">or</span></div>
+            </div>
+            <Link
+              to="/register/rider"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border-2 border-primary/30 bg-primary/5 text-primary font-semibold text-sm hover:bg-primary/10 transition-colors"
+            >
+              <Car className="w-4 h-4" />
+              New rider? Create an account
+            </Link>
+          </div>
         </motion.div>
       </div>
     </div>

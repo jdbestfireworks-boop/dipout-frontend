@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle,
   Download, BarChart3, Sheet, Activity, Settings, AlertCircle,
-  RefreshCw, ExternalLink, MapPin, Menu, X, ShieldCheck
+  RefreshCw, ExternalLink, MapPin, Menu, X, ShieldCheck, Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -16,6 +16,7 @@ import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
 import DriverDocViewer from '@/components/admin/DriverDocViewer';
 import DailyRevenueChart from '@/components/admin/DailyRevenueChart';
+import DashboardSummaryCharts from '@/components/admin/DashboardSummaryCharts';
 import PricingControls from '@/components/admin/PricingControls';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSidebar from '@/components/admin/AdminSidebar';
@@ -171,12 +172,7 @@ export default function AdminDashboard() {
           {/* ── OVERVIEW ── */}
           {tab === 'overview' && (
             <>
-              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-                <StatCard icon={DollarSign} label="Revenue"     value={`$${revenue.toFixed(2)}`} sub={`${completed.length} completed`} />
-                <StatCard icon={Car}        label="Active Rides" value={active.length}            sub={`${rides.length} total`} />
-                <StatCard icon={Users}      label="Drivers"      value={drivers.length}           sub={`${online} online now`} />
-                <StatCard icon={TrendingUp} label="Avg Surge"    value={`${avgSurge.toFixed(2)}x`} sub="AI dynamic pricing" />
-              </div>
+              <DashboardSummaryCharts rides={rides} drivers={drivers} />
 
               {/* Sheets sync */}
               <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between gap-4">

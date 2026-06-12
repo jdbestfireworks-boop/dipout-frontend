@@ -10,6 +10,7 @@ import DriverQuickActions from '@/components/driver/DriverQuickActions';
 import RideRequestModal from '@/components/driver/RideRequestModal';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
 import RideRequestCard from '@/components/driver/RideRequestCard';
+import NotificationPermissionBanner from '@/components/notifications/NotificationPermissionBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { haversineMiles } from '@/lib/geo';
@@ -371,6 +372,15 @@ export default function DriverApp() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-8 pb-20 space-y-5">
+      {/* Notification Permission Banner */}
+      <NotificationPermissionBanner 
+        permission={notificationPermission}
+        onGrant={() => {
+          setNotificationPermission('granted');
+          toast.success('Notifications enabled! You\'ll get ride alerts.');
+        }}
+      />
+
       {/* Onboarding walkthrough for newly approved drivers */}
       <DriverWalkthrough />
 

@@ -21,6 +21,7 @@ import PricingControls from '@/components/admin/PricingControls';
 import AdminContact from '@/components/admin/AdminContact';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import RevenueTab from '@/components/admin/RevenueTab';
+import DriverTrackingMap from '@/components/admin/DriverTrackingMap.jsx';
 import { cn } from '@/lib/utils';
 
 const statusColors = {
@@ -66,11 +67,13 @@ export default function AdminDashboard() {
   const approveDriver = async (driver) => {
     await base44.entities.DriverProfile.update(driver.id, { approved: true });
     queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
+    toast.success(`Driver hired successfully!`);
   };
 
   const fireDriver = async (driver) => {
     await base44.entities.DriverProfile.update(driver.id, { approved: false, status: 'offline' });
     queryClient.invalidateQueries({ queryKey: ['admin-drivers'] });
+    toast.success(`Driver fired successfully!`);
   };
 
   const downloadCSV = async () => {
@@ -137,7 +140,7 @@ export default function AdminDashboard() {
             </button>
             <div>
               <h1 className="font-display font-bold text-base leading-none capitalize">
-                {tab === 'overview' ? 'Overview' : tab === 'rides' ? 'Ride History' : tab === 'drivers' ? 'Drivers' : tab === 'revenue' ? 'Revenue' : 'Settings'}
+                {tab === 'overview' ? 'Overview' : tab === 'rides' ? 'Ride History' : tab === 'drivers' ? 'Drivers' : tab === 'revenue' ? 'Revenue' : tab === 'map' ? 'Driver Map' : 'Settings'}
               </h1>
               <p className="text-[11px] text-muted-foreground mt-0.5 hidden sm:block">Dip Out Operations</p>
             </div>
@@ -318,6 +321,11 @@ export default function AdminDashboard() {
 
           {/* ── REVENUE ── */}
           {tab === 'revenue' && <RevenueTab rides={rides} drivers={drivers} />}
+
+          {/* ── DRIVER MAP ── */}
+          {tab === 'map' && (
+            <DriverTrackingMap drivers={drivers} rides={rides} />
+          )}
 
           {/* ── SETTINGS ── */}
           {tab === 'settings' && (

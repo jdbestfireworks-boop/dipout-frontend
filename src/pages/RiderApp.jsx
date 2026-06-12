@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle, Bell } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ import EmptyState from '@/components/ui/empty-state';
 import RideBookingForm from '@/components/rider/RideBookingForm';
 import ActiveRideCard from '@/components/rider/ActiveRideCard';
 import TripProgress from '@/components/rider/TripProgress';
+import NotificationPermissionBanner from '@/components/notifications/NotificationPermissionBanner';
 
 const statusLabels = {
   requested: 'Finding your driver…',
@@ -47,6 +48,37 @@ export default function RiderApp() {
   const [gpsWatchId, setGpsWatchId] = useState(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancellationFee, setCancellationFee] = useState(0);
+  const [notificationPermission, setNotificationPermission] = useState('default');
+
+  // Request notification permission
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          setNotificationPermission(permission);
+          if (permission === 'granted') {
+            toast.success('Notifications enabled - you\'ll get ride status updates!');
+          }
+        });
+      }
+    }
+  }, []);
+
+  // Request notification permission
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          setNotificationPermission(permission);
+          if (permission === 'granted') {
+            toast.success('Notifications enabled - you\'ll receive ride updates!');
+          }
+        });
+      }
+    }
+  }, []);
 
   // Resume an active ride
   useEffect(() => {
@@ -307,11 +339,51 @@ export default function RiderApp() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-4 pt-6 pb-20">
+        {/* Notification Permission Banner */}
+        <NotificationPermissionBanner 
+          permission={notificationPermission}
+          onGrant={() => {
+            setNotificationPermission('granted');
+            toast.success('Notifications enabled! You\'ll receive ride status updates.');
+          }}
+        />
+
         {/* Header */}
         {!ride && (
           <div className="mb-6">
             <h1 className="text-3xl font-display font-bold">Where to?</h1>
             <p className="text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
+          </div>
+        )}
+
+        {/* Notification Permission Banner */}
+        {!ride && notificationPermission !== 'granted' && (
+          <div className="mb-4">
+            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm">Enable Ride Notifications</h3>
+                  <p className="text-xs text-muted-foreground">Get instant alerts for driver arrival and trip updates</p>
+                </div>
+              </div>
+              <Button 
+                size="sm" 
+                onClick={() => {
+                  Notification.requestPermission().then(permission => {
+                    setNotificationPermission(permission);
+                    if (permission === 'granted') {
+                      toast.success('Notifications enabled!');
+                    }
+                  });
+                }}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-4 h-8"
+              >
+                Enable
+              </Button>
+            </div>
           </div>
         )}
 

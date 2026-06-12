@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Car, Smartphone, LogOut, LayoutDashboard, Bell } from 'lucide-react';
+import { Car, Smartphone, LogOut, LayoutDashboard, Bell, User, ChevronDown, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -11,10 +11,27 @@ const navItems = [
 
 export default function AppShell() {
   const location = useLocation();
+  const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
+    base44.auth.me().then(u => {
+      setUser(u);
+      setIsAdmin(u?.role === 'admin');
+    }).catch(() => {});
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   return (
@@ -68,13 +85,82 @@ export default function AppShell() {
           >
             <Bell className="w-4 h-4" />
           </Link>
-          <button
-            onClick={() => base44.auth.logout()}
-            className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-            title="Log out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+
+          {/* Profile dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen(o => !o)}
+              className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-xl hover:bg-accent transition-colors"
+            >
+              <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
+              </div>
+              <ChevronDown className={cn('w-3.5 h-3.5 text-muted-foreground transition-transform', dropdownOpen && 'rotate-180')} />
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl border border-border bg-card shadow-xl shadow-black/30 z-50 overflow-hidden">
+                {/* User info */}
+                <div className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary shrink-0">
+                      {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm truncate">{user?.full_name || 'User'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                      {isAdmin && (
+                        <span className="inline-flex items-center gap-1 mt-0.5 text-[10px] font-semibold text-primary">
+                          <Shield className="w-3 h-3" /> Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Links */}
+                <div className="p-1.5 space-y-0.5">
+                  <Link
+                    to="/notifications"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-accent transition-colors w-full"
+                  >
+                    <Bell className="w-4 h-4 text-muted-foreground" />
+                    Notification Settings
+                  </Link>
+                  <Link
+                    to="/rides"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-accent transition-colors w-full"
+                  >
+                    <Car className="w-4 h-4 text-muted-foreground" />
+                    Ride History
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-accent transition-colors w-full"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-muted-foreground" />
+                      Admin Dashboard
+                    </Link>
+                  )}
+                </div>
+
+                {/* Logout */}
+                <div className="p-1.5 border-t border-border">
+                  <button
+                    onClick={() => base44.auth.logout()}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-destructive hover:bg-destructive/10 transition-colors w-full"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Log out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </nav>
       </header>
 

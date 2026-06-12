@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { id: 'drivers',      label: 'Driver Management', icon: Users },
   { id: 'performance',  label: 'Performance',     icon: TrendingUp },
   { id: 'earnings',     label: 'Earnings',        icon: DollarSign },
+  { id: 'reports',      label: 'Monthly Reports', icon: BarChart3 },
   { id: 'ai',           label: 'AI Assistant',    icon: Bot },
   { id: 'map',          label: 'Driver Map',      icon: MapPin },
   { id: 'revenue',      label: 'Revenue',         icon: BarChart3 },

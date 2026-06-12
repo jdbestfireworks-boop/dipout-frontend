@@ -11,7 +11,9 @@ import RideRequestModal from '@/components/driver/RideRequestModal';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
 import RideRequestCard from '@/components/driver/RideRequestCard';
 import NotificationPermissionBanner from '@/components/notifications/NotificationPermissionBanner';
+import { Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DriverSettingsModal from '@/components/driver/DriverSettingsModal';
 import { toast } from 'sonner';
 import { haversineMiles } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
@@ -36,6 +38,28 @@ export default function DriverApp() {
   const [locationPermission, setLocationPermission] = useState('prompt');
   const [notificationPermission, setNotificationPermission] = useState('default');
   const [todayStats, setTodayStats] = useState({ trips: 0, earnings: 0, activeRide: null });
+  const [showSettings, setShowSettings] = useState(false);
+  const [swipeMode, setSwipeMode] = useState(true);
+  const [autoAccept, setAutoAccept] = useState(false);
+  const [maxDistance, setMaxDistance] = useState(10);
+
+  // Load driver settings
+  useEffect(() => {
+    (async () => {
+      try {
+        const me = await base44.auth.me();
+        const profiles = await base44.entities.DriverProfile.filter({ user_email: me.email });
+        if (profiles.length > 0) {
+          const profile = profiles[0];
+          setSwipeMode(profile.swipe_mode ?? true);
+          setAutoAccept(profile.auto_accept ?? false);
+          setMaxDistance(profile.max_accept_distance ?? 10);
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    })();
+  }, []);
 
   // Request browser notification permission on mount
   useEffect(() => {
@@ -405,6 +429,14 @@ export default function DriverApp() {
             <p className="text-xs text-muted-foreground mt-0.5">{profile.vehicle} · {profile.plate}</p>
           </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowSettings(true)}
+          className="h-10 w-10 rounded-xl"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
       </div>
 
       {/* Online/Offline Status Card - Production Ready */}
@@ -558,6 +590,40 @@ export default function DriverApp() {
             ride={selectedRequest}
             onAccept={() => acceptRide(selectedRequest)}
             onDecline={declineRide}
+            swipeMode={swipeMode}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {showSettings && (
+          <DriverSettingsModal
+            onClose={() => setShowSettings(false)}
+            swipeMode={swipeMode}
+            setSwipeMode={setSwipeMode}
+            autoAccept={autoAccept}
+            setAutoAccept={setAutoAccept}
+            maxDistance={maxDistance}
+            setMaxDistance={setMaxDistance}
+            onSave={async () => {
+              try {
+                const me = await base44.auth.me();
+                const profiles = await base44.entities.DriverProfile.filter({ user_email: me.email });
+                if (profiles.length > 0) {
+                  await base44.entities.DriverProfile.update(profiles[0].id, {
+                    swipe_mode: swipeMode,
+                    auto_accept: autoAccept,
+                    max_accept_distance: maxDistance,
+                  });
+                }
+                toast.success('Settings saved!');
+                setShowSettings(false);
+              } catch (error) {
+                console.error('Failed to save settings:', error);
+                toast.error('Failed to save settings');
+              }
+            }}
           />
         )}
       </AnimatePresence>

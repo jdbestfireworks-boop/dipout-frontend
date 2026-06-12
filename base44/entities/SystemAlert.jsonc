@@ -1,0 +1,68 @@
+{
+  "name": "SystemAlert",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "stuck_ride",
+        "no_drivers",
+        "long_ride",
+        "pending_driver",
+        "payment_issues",
+        "system_error"
+      ],
+      "description": "Type of alert"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "Alert severity level"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short alert title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Detailed alert message"
+    },
+    "ride_id": {
+      "type": "string",
+      "description": "Related ride ID if applicable"
+    },
+    "driver_email": {
+      "type": "string",
+      "description": "Related driver email if applicable"
+    },
+    "action_required": {
+      "type": "string",
+      "description": "Suggested action to resolve the issue"
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the alert has been resolved"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the alert was resolved"
+    },
+    "resolution_note": {
+      "type": "string",
+      "description": "Notes about how the issue was resolved"
+    }
+  },
+  "required": [
+    "type",
+    "severity",
+    "title",
+    "message"
+  ]
+}

@@ -2,8 +2,14 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-export default function DriverOnlineStatus({ profile, onToggle, disabled }) {
+export default function DriverOnlineStatus({ profile, onToggleOnline, hasActiveRide }) {
   const isOnline = profile.status !== 'offline';
+  const disabled = hasActiveRide;
+
+  const handleToggle = async () => {
+    if (disabled) return;
+    onToggleOnline(!isOnline);
+  };
 
   return (
     <motion.div
@@ -38,12 +44,12 @@ export default function DriverOnlineStatus({ profile, onToggle, disabled }) {
         </div>
         <Button
           disabled={disabled}
-          className={`rounded-xl px-8 font-bold text-sm shadow-lg transition-all ${
+          className={`rounded-xl px-8 font-bold text-sm shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
             isOnline
               ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
               : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
           }`}
-          onClick={() => onToggle(!isOnline)}
+          onClick={handleToggle}
         >
           {isOnline ? 'GO OFFLINE' : 'GO ONLINE'}
         </Button>

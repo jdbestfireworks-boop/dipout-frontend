@@ -100,29 +100,57 @@ export default function Home() {
           transition={{ delay: 0.25, duration: 0.4 }}
           className="w-full max-w-xs space-y-3"
         >
-          <Link
-            to="/rider"
-            onClick={handleBookRideClick}
-            className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
-          >
-            <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5" />
-              Book a Ride
-            </div>
-            <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          {!isLoggedIn ? (
+            <>
+              <Link
+                to="/login"
+                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+              >
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5" />
+                  Login
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+              </Link>
 
-          <Link
-            to="/driver"
-            onClick={handleDrive}
-            className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-foreground font-bold text-base hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <Car className="w-5 h-5 text-primary" />
-              Drive with Dip Out
-            </div>
-            <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
-          </Link>
+              <Link
+                to="/register/rider"
+                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-foreground font-bold text-base hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Car className="w-5 h-5 text-primary" />
+                  Sign Up as Rider
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/rider"
+                onClick={handleBookRideClick}
+                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+              >
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5" />
+                  Book a Ride
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              <Link
+                to="/driver"
+                onClick={handleDrive}
+                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-foreground font-bold text-base hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Car className="w-5 h-5 text-primary" />
+                  Drive with Dip Out
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </>
+          )}
 
           {isAdmin && (
             <Link

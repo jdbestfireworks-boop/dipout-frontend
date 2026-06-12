@@ -156,28 +156,34 @@ export default function RideBookingForm({
           {/* Payment Method */}
           <div className="pt-2">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-3">Payment Method</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setPayMethod('card')}
-                className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 transition-all shadow-lg ${
                   payMethod === 'card'
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                    : 'border-border bg-transparent text-muted-foreground hover:border-primary/50'
+                    ? 'border-primary bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-primary/30 scale-105'
+                    : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:shadow-md'
                 }`}
               >
-                <CreditCard className="w-4 h-4" />
-                <span className="text-sm font-medium">Card</span>
+                <CreditCard className={`w-8 h-8 ${payMethod === 'card' ? 'text-primary animate-pulse' : ''}`} />
+                <span className="text-base font-bold">Card</span>
+                {payMethod === 'card' && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
+                )}
               </button>
               <button
                 onClick={() => setPayMethod('cash')}
-                className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 transition-all ${
+                className={`flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 transition-all shadow-lg ${
                   payMethod === 'cash'
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                    : 'border-border bg-transparent text-muted-foreground hover:border-primary/50'
+                    ? 'border-primary bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-primary/30 scale-105'
+                    : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:shadow-md'
                 }`}
               >
-                <Banknote className="w-4 h-4" />
-                <span className="text-sm font-medium">Cash</span>
+                <Banknote className={`w-8 h-8 ${payMethod === 'cash' ? 'text-primary animate-pulse' : ''}`} />
+                <span className="text-base font-bold">Cash</span>
+                {payMethod === 'cash' && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
+                )}
               </button>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle, Bell } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle, Bell, Sun, Moon } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -51,6 +51,25 @@ export default function RiderApp() {
   const [notificationPermission, setNotificationPermission] = useState('default');
   const [gettingLocation, setGettingLocation] = useState(false);
   const [stops, setStops] = useState([]);
+  const [darkMode, setDarkMode] = useState(true);
+
+  // Theme toggle effect
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  // Toggle dark mode class on document
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Auto-detect pickup location from GPS on mount
   useEffect(() => {
@@ -475,11 +494,24 @@ export default function RiderApp() {
           }}
         />
 
-        {/* Header */}
+        {/* Header with Theme Toggle */}
         {!ride && (
-          <div className="mb-4 sm:mb-6">
-            <h1 className="text-2xl sm:text-3xl font-display font-bold">Where to?</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-display font-bold">Where to?</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">Book a ride in Louisiana with instant AI pricing</p>
+            </div>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2.5 rounded-xl bg-card border border-border hover:border-primary/50 transition-all shadow-sm"
+              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {darkMode ? (
+                <Sun className="w-5 h-5 text-amber-400" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
           </div>
         )}
 

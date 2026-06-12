@@ -14,6 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsLoggedIn);
+    base44.auth.me().then(u => setIsAdmin(u?.role === 'admin')).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -115,16 +116,18 @@ export default function Home() {
             <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
           </Link>
 
-          <Link
-            to="/admin"
-            className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-muted-foreground font-semibold text-sm hover:border-border/80 hover:text-foreground active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <Shield className="w-4 h-4" />
-              Admin Dashboard
-            </div>
-            <ArrowRight className="w-4 h-4 opacity-30 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-muted-foreground font-semibold text-sm hover:border-border/80 hover:text-foreground active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <Shield className="w-4 h-4" />
+                Admin Dashboard
+              </div>
+              <ArrowRight className="w-4 h-4 opacity-30 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          )}
 
 
         </motion.div>

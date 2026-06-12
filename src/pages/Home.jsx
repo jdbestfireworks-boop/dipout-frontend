@@ -170,12 +170,45 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* Install App section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="w-full max-w-xs mt-6 space-y-2"
+        >
+          <p className="text-center text-xs text-muted-foreground font-medium">Install the App</p>
+          <div className="grid grid-cols-2 gap-2">
+            {/* Android / Chrome install */}
+            <button
+              onClick={installPrompt ? handleInstall : () => {
+                alert('To install on Android:\n1. Open this page in Chrome\n2. Tap the menu (⋮)\n3. Tap "Add to Home screen"');
+              }}
+              className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
+            >
+              <span className="text-2xl">🤖</span>
+              <span className="text-xs font-semibold">Android</span>
+              <span className="text-[10px] text-muted-foreground">Chrome / Edge</span>
+            </button>
+
+            {/* iOS install */}
+            <button
+              onClick={() => alert('To install on iPhone/iPad:\n1. Open this page in Safari\n2. Tap the Share button (□↑)\n3. Tap "Add to Home Screen"')}
+              className="flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border border-border bg-card/60 hover:border-primary/50 hover:bg-card active:scale-[0.97] transition-all"
+            >
+              <span className="text-2xl">🍎</span>
+              <span className="text-xs font-semibold">iPhone / iPad</span>
+              <span className="text-[10px] text-muted-foreground">Safari</span>
+            </button>
+          </div>
+        </motion.div>
+
         {/* Footer links */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex items-center gap-5 mt-10 text-xs text-muted-foreground"
+          className="flex items-center gap-5 mt-6 text-xs text-muted-foreground"
         >
           <Link to="/rides" className="hover:text-primary transition-colors">Ride History</Link>
           <Link to="/notifications" className="hover:text-primary transition-colors flex items-center gap-1">

@@ -29,8 +29,14 @@ Deno.serve(async (req) => {
         // Use BASE44_APP_URL if available, otherwise construct from app ID
         // BASE44_APP_URL is optional - we fallback to app ID or default domain
         const baseUrl = Deno.env.get('BASE44_APP_URL');
-        const appId = Deno.env.get('BASE44_APP_ID') || 'app';
-        const appUrl = baseUrl || `https://${appId}.base44.com`;
+        const appId = Deno.env.get('BASE44_APP_ID');
+        let appUrl = baseUrl || (appId ? `https://${appId}.base44.com` : 'https://app.base44.com');
+        
+        // Ensure appUrl has a scheme and no trailing slash
+        if (!appUrl.startsWith('http://') && !appUrl.startsWith('https://')) {
+            appUrl = 'https://' + appUrl;
+        }
+        appUrl = appUrl.replace(/\/$/, '');
         
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],

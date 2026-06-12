@@ -73,6 +73,8 @@ export default function DriverManagementPanel() {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  const [selectedDrivers, setSelectedDrivers] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   const { data: drivers = [], isLoading } = useQuery({
     queryKey: ['admin-drivers-all'],
@@ -136,6 +138,63 @@ export default function DriverManagementPanel() {
     });
   };
 
+  const bulkApproveMutation = useMutation({
+    mutationFn: async (driverIds) => {
+      await Promise.all(
+        driverIds.map(id =>
+          base44.entities.DriverProfile.update(id, { approved: true, rejection_reason: null })
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-drivers-all'] });
+      toast.success(`Approved ${selectedDrivers.length} drivers`);
+      setSelectedDrivers([]);
+      setSelectAll(false);
+    },
+  });
+
+  const bulkDeactivateMutation = useMutation({
+    mutationFn: async (driverIds) => {
+      await Promise.all(
+        driverIds.map(id =>
+          base44.entities.DriverProfile.update(id, { status: 'offline', approved: false })
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-drivers-all'] });
+      toast.success(`Deactivated ${selectedDrivers.length} drivers`);
+      setSelectedDrivers([]);
+      setSelectAll(false);
+    },
+  });
+
+  const handleSelectDriver = (driverId) => {
+    setSelectedDrivers(prev =>
+      prev.includes(driverId)
+        ? prev.filter(id => id !== driverId)
+        : [...prev, driverId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedDrivers([]);
+    } else {
+      setSelectedDrivers(filteredDrivers.map(d => d.id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleBulkApprove = () => {
+    bulkApproveMutation.mutate(selectedDrivers);
+  };
+
+  const handleBulkDeactivate = () => {
+    bulkDeactivateMutation.mutate(selectedDrivers);
+  };
+
   const openRejectDialog = (driver) => {
     setSelectedDriver(driver);
     setShowRejectDialog(true);
@@ -145,6 +204,8 @@ export default function DriverManagementPanel() {
     setSelectedDriver(driver);
     setShowDetailsDialog(true);
   };
+
+
 
   const filteredDrivers = drivers.filter((driver) => {
     const matchesSearch =
@@ -255,6 +316,42 @@ export default function DriverManagementPanel() {
 
       {/* Drivers Table */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        {/* Bulk Actions Bar */}
+        {selectedDrivers.length > 0 && (
+          <div className="px-4 py-3 bg-primary/10 border-b border-border flex items-center justify-between">
+            <span className="text-sm font-medium text-primary">
+              {selectedDrivers.length} driver{selectedDrivers.length !== 1 ? 's' : ''} selected
+            </span>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={handleBulkApprove}
+                disabled={bulkApproveMutation.isPending}
+                className="gap-2"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Approve
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleBulkDeactivate}
+                disabled={bulkDeactivateMutation.isPending}
+                className="gap-2"
+              >
+                <UserX className="w-4 h-4" />
+                Deactivate
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => { setSelectedDrivers([]); setSelectAll(false); }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
         <div className="px-4 py-3 border-b border-border flex items-center justify-between">
           <span className="font-semibold text-sm">
             {filteredDrivers.length} Driver{filteredDrivers.length !== 1 ? 's' : ''}
@@ -264,6 +361,14 @@ export default function DriverManagementPanel() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <input
+                    type="checkbox"
+                    checked={selectAll && filteredDrivers.length > 0}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                </TableHead>
                 <TableHead>Driver</TableHead>
                 <TableHead>Vehicle</TableHead>
                 <TableHead>Stats</TableHead>
@@ -284,11 +389,13 @@ export default function DriverManagementPanel() {
                   onActivate={handleActivate}
                   onRestore={handleRestore}
                   onViewDetails={openDetailsDialog}
+                  onSelect={handleSelectDriver}
+                  isSelected={selectedDrivers.includes(driver.id)}
                 />
               ))}
               {filteredDrivers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
+                  <TableCell colSpan={8} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2">
                       <UserX className="w-12 h-12 text-muted-foreground opacity-50" />
                       <p className="text-muted-foreground text-sm">

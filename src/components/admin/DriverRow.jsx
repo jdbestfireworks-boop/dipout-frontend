@@ -27,6 +27,8 @@ export default function DriverRow({
   onActivate,
   onRestore,
   onViewDetails,
+  onSelect,
+  isSelected,
 }) {
   const statusColor = statusColors[driver.status] || statusColors.offline;
   const approvalColor = driver.approved
@@ -36,7 +38,16 @@ export default function DriverRow({
     : approvalColors.pending;
 
   return (
-    <TableRow className="hover:bg-accent/20">
+    <TableRow className={cn("hover:bg-accent/20", isSelected && "bg-primary/5")}>
+      <TableCell>
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onSelect && onSelect(driver.id)}
+          className="w-4 h-4 rounded border-border"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </TableCell>
       <TableCell>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center text-sm font-bold">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ShieldCheck, MapPin, TrendingUp, HardDrive, DollarSign, Bot, AlertTriangle } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ShieldCheck, MapPin, TrendingUp, HardDrive, DollarSign, Bot, AlertTriangle, Bell, UserCog, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -9,6 +9,9 @@ const NAV_ITEMS = [
   { id: 'performance',  label: 'Performance',     icon: TrendingUp },
   { id: 'earnings',     label: 'Earnings',        icon: DollarSign },
   { id: 'reports',      label: 'Monthly Reports', icon: BarChart3 },
+  { id: 'system-alerts', label: 'System Alerts',  icon: Bell },
+  { id: 'users',        label: 'User Management', icon: UserCog },
+  { id: 'analytics',    label: 'Advanced Analytics', icon: BrainCircuit },
   { id: 'alerts',       label: 'Driver Alerts',   icon: AlertTriangle },
   { id: 'ai',           label: 'AI Assistant',    icon: Bot },
   { id: 'map',          label: 'Driver Map',      icon: MapPin },

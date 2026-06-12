@@ -29,6 +29,9 @@ import AIAssistantPanel from '@/components/admin/AIAssistantPanel';
 import DriverManagementPanel from '@/components/admin/DriverManagementPanel';
 import MonthlyReportTab from '@/components/admin/MonthlyReportTab';
 import DriverAlertsTab from '@/components/admin/DriverAlertsTab';
+import SystemAlertsPanel from '@/components/admin/SystemAlertsPanel';
+import UserManagementPanel from '@/components/admin/UserManagementPanel';
+import AdvancedAnalytics from '@/components/admin/AdvancedAnalytics';
 import { cn } from '@/lib/utils';
 
 const statusColors = {
@@ -306,6 +309,12 @@ export default function AdminDashboard() {
           {/* ── DRIVER MANAGEMENT ── */}
           {tab === 'drivers' && <DriverManagementPanel />}
 
+          {/* ── SYSTEM ALERTS ── */}
+          {tab === 'alerts' && <SystemAlertsPanel />}
+
+          {/* ── USER MANAGEMENT ── */}
+          {tab === 'users' && <UserManagementPanel users={[]} rides={rides} />}
+
           {/* ── DRIVER PERFORMANCE ── */}
           {tab === 'performance' && <DriverPerformanceTab rides={rides} drivers={drivers} />}
 
@@ -331,6 +340,15 @@ export default function AdminDashboard() {
 
           {/* ── MONTHLY REPORTS ── */}
           {tab === 'reports' && <MonthlyReportTab rides={rides} drivers={drivers} />}
+
+          {/* ── SYSTEM ALERTS ── */}
+          {tab === 'system-alerts' && <SystemAlertsPanel />}
+
+          {/* ── USER MANAGEMENT ── */}
+          {tab === 'users' && <UserManagementPanel rides={rides} />}
+
+          {/* ── ADVANCED ANALYTICS ── */}
+          {tab === 'analytics' && <AdvancedAnalytics rides={rides} drivers={drivers} />}
 
           {/* ── DRIVER ALERTS ── */}
           {tab === 'alerts' && <DriverAlertsTab />}

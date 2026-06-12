@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Navigation, Clock, CreditCard, Banknote } from 'lucide-react';
+import { MapPin, Navigation, Clock, CreditCard, Banknote, Crosshair } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddressAutocomplete from './AddressAutocomplete';
 
@@ -19,7 +19,9 @@ export default function RideBookingForm({
   payMethod,
   setPayMethod,
   onRequestRide,
-  isRequesting 
+  isRequesting,
+  onSetDropoffGps,
+  gettingLocation
 }) {
   return (
     <motion.div 
@@ -33,24 +35,45 @@ export default function RideBookingForm({
         <div className="absolute left-4 top-8 bottom-8 w-0.5 bg-gradient-to-b from-primary/50 to-muted-foreground/30 z-10" />
         
         <div className="space-y-3 bg-card rounded-2xl border border-border p-4 shadow-sm">
-          <AddressAutocomplete
-            placeholder="Enter pickup location"
-            value={pickupAddress}
-            onChange={(val, coords) => { 
-              setPickupAddress(val); 
-              setPickupCoords(coords); 
-            }}
-            icon={<MapPin className="w-4 h-4 text-primary" />}
-          />
-          <AddressAutocomplete
-            placeholder="Enter destination"
-            value={dropoffAddress}
-            onChange={(val, coords) => { 
-              setDropoffAddress(val); 
-              setDropoffCoords(coords); 
-            }}
-            icon={<Navigation className="w-4 h-4 text-muted-foreground" />}
-          />
+          <div className="relative">
+            <AddressAutocomplete
+              placeholder="Enter pickup location"
+              value={pickupAddress}
+              onChange={(val, coords) => { 
+                setPickupAddress(val); 
+                setPickupCoords(coords); 
+              }}
+              icon={<MapPin className="w-4 h-4 text-primary" />}
+            />
+            {pickupCoords && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <span className="text-xs text-green-500 flex items-center gap-1 bg-green-500/10 px-2 py-1 rounded-full">
+                  <MapPin className="w-3 h-3" />
+                  GPS set
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <AddressAutocomplete
+              placeholder="Enter destination"
+              value={dropoffAddress}
+              onChange={(val, coords) => { 
+                setDropoffAddress(val); 
+                setDropoffCoords(coords); 
+              }}
+              icon={<Navigation className="w-4 h-4 text-muted-foreground" />}
+            />
+            <button
+              type="button"
+              onClick={onSetDropoffGps}
+              disabled={gettingLocation}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all disabled:opacity-50"
+              title="Use current location"
+            >
+              <Crosshair className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 

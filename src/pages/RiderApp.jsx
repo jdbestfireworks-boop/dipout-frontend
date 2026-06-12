@@ -49,6 +49,50 @@ export default function RiderApp() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancellationFee, setCancellationFee] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState('default');
+  const [gettingLocation, setGettingLocation] = useState(false);
+
+  // Auto-detect pickup location from GPS on mount
+  useEffect(() => {
+    if ('geolocation' in navigator && !pickupCoords) {
+      setGettingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude: lat, longitude: lng } = position.coords;
+          try {
+            // Reverse geocode to get address
+            const response = await base44.functions.invoke('getAddressDetails', {
+              lat,
+              lng
+            });
+            if (response.data && response.data.address) {
+              setPickupAddress(response.data.address);
+              setPickupCoords({ lat, lng });
+              toast.success('Pickup location detected');
+            }
+          } catch (error) {
+            console.error('Geocoding error:', error);
+            // Still set coords even if address lookup fails
+            setPickupCoords({ lat, lng });
+            setPickupAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+          } finally {
+            setGettingLocation(false);
+          }
+        },
+        (error) => {
+          console.error('GPS error:', error);
+          setGettingLocation(false);
+          if (error.code === 1) {
+            toast.info('Enable location to auto-fill pickup');
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    }
+  }, []);
 
   // Request notification permission
   useEffect(() => {
@@ -337,6 +381,44 @@ export default function RiderApp() {
     }
   };
 
+  const setDropoffFromGps = async () => {
+    if ('geolocation' in navigator) {
+      setGettingLocation(true);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude: lat, longitude: lng } = position.coords;
+          try {
+            const response = await base44.functions.invoke('getAddressDetails', {
+              lat,
+              lng
+            });
+            if (response.data && response.data.address) {
+              setDropoffAddress(response.data.address);
+              setDropoffCoords({ lat, lng });
+              toast.success('Dropoff location set from GPS');
+            }
+          } catch (error) {
+            console.error('Geocoding error:', error);
+            setDropoffCoords({ lat, lng });
+            setDropoffAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+          } finally {
+            setGettingLocation(false);
+          }
+        },
+        (error) => {
+          console.error('GPS error:', error);
+          setGettingLocation(false);
+          toast.error('Failed to get location');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    }
+  };
+
   const riderCompleteTrip = async () => {
     if (!ride) return;
     await base44.entities.Ride.update(ride.id, { status: 'completed' });
@@ -432,6 +514,8 @@ export default function RiderApp() {
                 isRequesting={isRequesting}
                 onGetQuote={getQuote}
                 onRequestRide={requestRide}
+                onSetDropoffGps={setDropoffFromGps}
+                gettingLocation={gettingLocation}
               />
             </motion.div>
           ) : (

@@ -10,10 +10,30 @@ export default function Home() {
   const [simulating, setSimulating] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then(setIsLoggedIn);
   }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+      setShowInstallBanner(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') setShowInstallBanner(false);
+    setInstallPrompt(null);
+  };
 
   const handleBookRide = (e) => {
     if (!isLoggedIn) {
@@ -161,6 +181,38 @@ export default function Home() {
               : <><Play className="w-4 h-4" /> Load Demo Data</>}
           </button>
         </motion.div>
+
+        {/* Install App banner */}
+        {showInstallBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-xs mt-4"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-primary/30 bg-primary/10">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                  <span className="text-base">📲</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-foreground leading-none">Install Dip Out</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Add to home screen</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={handleInstall}
+                  className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity"
+                >
+                  Install
+                </button>
+                <button onClick={() => setShowInstallBanner(false)} className="p-1.5 text-muted-foreground hover:text-foreground">
+                  ✕
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Footer links */}
         <motion.div

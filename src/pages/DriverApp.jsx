@@ -517,23 +517,7 @@ export default function DriverApp() {
           </div>
         )}
 
-        {/* Status Indicators - Minimal */}
-        {profile.status !== 'offline' && (
-          <div className="flex items-center gap-3 mb-4 text-xs">
-            {locationPermission === 'granted' && (
-              <span className="text-green-500 flex items-center gap-1.5 bg-green-500/10 px-2.5 py-1.5 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                GPS
-              </span>
-            )}
-            {notificationPermission === 'granted' && (
-              <span className="text-primary flex items-center gap-1.5 bg-primary/10 px-2.5 py-1.5 rounded-full">
-                <Bell className="w-3 h-3" />
-                Alerts
-              </span>
-            )}
-          </div>
-        )}
+
 
         {/* Main Content Area */}
         <AnimatePresence mode="wait">

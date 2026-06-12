@@ -1,0 +1,38 @@
+{
+  "name": "DynamicPricing",
+  "type": "object",
+  "properties": {
+    "driver_email": {
+      "type": "string"
+    },
+    "base_multiplier": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Base price multiplier (1.0 = normal price)"
+    },
+    "day_of_week": {
+      "type": "number",
+      "description": "0=Sunday, 1=Monday, ..., 6=Saturday"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time in HH:MM format"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "End time in HH:MM format"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for price adjustment (e.g., 'High demand', 'Weekend surge')"
+    }
+  },
+  "required": [
+    "driver_email",
+    "base_multiplier"
+  ]
+}

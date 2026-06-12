@@ -1,30 +1,10 @@
 import React from 'react';
-import { X, Hand, MousePointer2, Zap, MapPin } from 'lucide-react';
+import { Hand, MousePointer2, Zap, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
 
 export default function DriverSettingsModal({ onClose, swipeMode, setSwipeMode, autoAccept, setAutoAccept, maxDistance, setMaxDistance, onSave }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="rounded-2xl border border-border bg-card w-full max-w-md shadow-2xl overflow-hidden"
-      >
-        {/* Header */}
-        <div className="p-5 border-b border-border flex items-center justify-between">
-          <h3 className="text-xl font-bold">Driver Settings</h3>
-          <button onClick={onClose} className="p-2 hover:bg-accent rounded-lg transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="space-y-6">
 
         {/* Content */}
         <div className="p-5 space-y-6">
@@ -128,7 +108,7 @@ export default function DriverSettingsModal({ onClose, swipeMode, setSwipeMode, 
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t border-border flex gap-3">
+        <div className="flex gap-3 pt-4">
           <Button
             variant="outline"
             onClick={onClose}
@@ -143,7 +123,6 @@ export default function DriverSettingsModal({ onClose, swipeMode, setSwipeMode, 
             Save Settings
           </Button>
         </div>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }

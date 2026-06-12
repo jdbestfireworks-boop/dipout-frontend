@@ -11,12 +11,17 @@ import RideRequestModal from '@/components/driver/RideRequestModal';
 import ActiveTripCard from '@/components/driver/ActiveTripCard';
 import RideRequestCard from '@/components/driver/RideRequestCard';
 import NotificationPermissionBanner from '@/components/notifications/NotificationPermissionBanner';
-import { Settings } from 'lucide-react';
+import { Settings, Calendar, MapPin, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DriverSettingsModal from '@/components/driver/DriverSettingsModal';
+import DriverScheduleEditor from '@/components/driver/DriverScheduleEditor';
+import DriverStopsManager from '@/components/driver/DriverStopsManager';
+import DriverPricingManager from '@/components/driver/DriverPricingManager';
 import { toast } from 'sonner';
 import { haversineMiles } from '@/lib/geo';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Lazy-create audio to avoid module-level crashes (iOS blocks autoplay before user gesture)
 let notificationSound = null;
@@ -44,6 +49,9 @@ export default function DriverApp() {
   const [maxDistance, setMaxDistance] = useState(10);
   const [showHistory, setShowHistory] = useState(false);
   const [tripHistory, setTripHistory] = useState([]);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [showStops, setShowStops] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
 
   // Load driver settings
   useEffect(() => {
@@ -664,33 +672,59 @@ export default function DriverApp() {
       {/* Settings Modal */}
       <AnimatePresence>
         {showSettings && (
-          <DriverSettingsModal
-            onClose={() => setShowSettings(false)}
-            swipeMode={swipeMode}
-            setSwipeMode={setSwipeMode}
-            autoAccept={autoAccept}
-            setAutoAccept={setAutoAccept}
-            maxDistance={maxDistance}
-            setMaxDistance={setMaxDistance}
-            onSave={async () => {
-              try {
-                const me = await base44.auth.me();
-                const profiles = await base44.entities.DriverProfile.filter({ user_email: me.email });
-                if (profiles.length > 0) {
-                  await base44.entities.DriverProfile.update(profiles[0].id, {
-                    swipe_mode: swipeMode,
-                    auto_accept: autoAccept,
-                    max_accept_distance: maxDistance,
-                  });
-                }
-                toast.success('Settings saved!');
-                setShowSettings(false);
-              } catch (error) {
-                console.error('Failed to save settings:', error);
-                toast.error('Failed to save settings');
-              }
-            }}
-          />
+          <Dialog open={showSettings} onOpenChange={setShowSettings}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Driver Settings</DialogTitle>
+              </DialogHeader>
+              <Tabs defaultValue="preferences" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                  <TabsTrigger value="schedule">Schedule</TabsTrigger>
+                  <TabsTrigger value="stops">Stops</TabsTrigger>
+                  <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                </TabsList>
+                <TabsContent value="preferences" className="space-y-4 mt-4">
+                  <DriverSettingsModal
+                    onClose={() => setShowSettings(false)}
+                    swipeMode={swipeMode}
+                    setSwipeMode={setSwipeMode}
+                    autoAccept={autoAccept}
+                    setAutoAccept={setAutoAccept}
+                    maxDistance={maxDistance}
+                    setMaxDistance={setMaxDistance}
+                    onSave={async () => {
+                      try {
+                        const me = await base44.auth.me();
+                        const profiles = await base44.entities.DriverProfile.filter({ user_email: me.email });
+                        if (profiles.length > 0) {
+                          await base44.entities.DriverProfile.update(profiles[0].id, {
+                            swipe_mode: swipeMode,
+                            auto_accept: autoAccept,
+                            max_accept_distance: maxDistance,
+                          });
+                        }
+                        toast.success('Settings saved!');
+                        setShowSettings(false);
+                      } catch (error) {
+                        console.error('Failed to save settings:', error);
+                        toast.error('Failed to save settings');
+                      }
+                    }}
+                  />
+                </TabsContent>
+                <TabsContent value="schedule" className="mt-4">
+                  <DriverScheduleEditor driverEmail={user.email} />
+                </TabsContent>
+                <TabsContent value="stops" className="mt-4">
+                  <DriverStopsManager driverEmail={user.email} />
+                </TabsContent>
+                <TabsContent value="pricing" className="mt-4">
+                  <DriverPricingManager driverEmail={user.email} />
+                </TabsContent>
+              </Tabs>
+            </DialogContent>
+          </Dialog>
         )}
       </AnimatePresence>
     </div>

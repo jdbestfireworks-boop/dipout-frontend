@@ -1,15 +1,16 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { id: 'overview',  label: 'Overview',       icon: Activity },
-  { id: 'rides',     label: 'Ride History',   icon: Car },
-  { id: 'drivers',   label: 'Drivers',        icon: Users },
-  { id: 'map',       label: 'Driver Map',     icon: MapPin },
-  { id: 'revenue',   label: 'Revenue',        icon: BarChart3 },
-  { id: 'settings',  label: 'Settings',       icon: Settings },
-  { id: 'test',      label: 'Test Suite',     icon: ShieldCheck, external: true },
+  { id: 'overview',     label: 'Overview',        icon: Activity },
+  { id: 'rides',        label: 'Ride History',    icon: Car },
+  { id: 'drivers',      label: 'Drivers',         icon: Users },
+  { id: 'performance',  label: 'Performance',     icon: TrendingUp },
+  { id: 'map',          label: 'Driver Map',      icon: MapPin },
+  { id: 'revenue',      label: 'Revenue',         icon: BarChart3 },
+  { id: 'settings',     label: 'Settings',        icon: Settings },
+  { id: 'test',         label: 'Test Suite',      icon: ShieldCheck, external: true },
 ];
 
 export default function AdminSidebar({ tab, setTab, pendingCount }) {

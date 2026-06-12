@@ -28,6 +28,7 @@ import ClickSimulation from '@/pages/ClickSimulation';
 import SimulationGuide from '@/pages/SimulationGuide';
 import ProductionTest from '@/pages/ProductionTest';
 import PreLaunchTests from '@/pages/PreLaunchTests';
+import MigrateData from '@/pages/MigrateData';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -75,6 +76,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/monitoring" element={<AdminMonitoring />} />
           <Route path="/admin/test" element={<ProductionTest />} />
           <Route path="/admin/pre-launch" element={<PreLaunchTests />} />
+          <Route path="/admin/migrate" element={<MigrateData />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -84,18 +84,22 @@
 1. **Switch to Production Database**
    - Go to Dashboard → Database
    - Switch from Test to Production mode
-   - Re-create pricing config and surge zones in production
 
-2. **Set Missing Secret**
+2. **Run Migration Tool** (copies your test data to Production)
+   - Navigate to `/admin/migrate` in your app
+   - Click "Start Migration"
+   - This copies: pricing configs, surge zones, approved drivers, saved addresses
+
+3. **Set Missing Secret**
    - Add `BASE44_APP_URL` to environment variables
    - Required for Stripe checkout to work properly
 
-3. **Claim Stripe Account** (for live payments)
+4. **Claim Stripe Account** (for live payments)
    - Dashboard → Integrations → Stripe
    - Click "Claim Account"
    - Replace test keys with live Stripe keys
 
-4. **Approve Initial Drivers**
+5. **Approve Any Remaining Drivers**
    - Admin dashboard → Drivers tab
    - Review and approve driver applications
    - Verify documents uploaded
@@ -183,13 +187,12 @@
 ## 🎯 Launch Day Steps
 
 ### 1 Hour Before
-1. Switch to Production database
-2. Create pricing config in production
-3. Create surge zones in production
-4. Set BASE44_APP_URL secret
-5. Verify Stripe live keys (if going live)
-6. Approve initial drivers
-7. Test one complete ride end-to-end
+1. Switch to Production database (Dashboard → Database)
+2. Run migration tool (`/admin/migrate` → Click "Start Migration")
+3. Set BASE44_APP_URL secret
+4. Verify Stripe live keys (if going live)
+5. Approve any remaining drivers
+6. Test one complete ride end-to-end
 
 ### Launch Time
 1. Monitor admin dashboard
@@ -229,11 +232,12 @@
 **Ready to Launch:** YES ✅
 
 **Remaining Tasks:**
-- Switch to production database (5 min)
+- Switch to production database (2 min)
+- Run migration tool at `/admin/migrate` (1 min)
 - Set BASE44_APP_URL secret (2 min)
 - Test one complete ride (10 min)
 
-**Estimated Time to Fully Ready:** 15-20 minutes
+**Estimated Time to Fully Ready:** 15 minutes
 
 ---
 

@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   DollarSign, Car, Users, TrendingUp, Star, CheckCircle2, XCircle,
   Download, BarChart3, Sheet, Activity, FileText, Settings, ChevronRight,
-  Clock, MapPin, CreditCard, AlertCircle
+  Clock, MapPin, CreditCard, AlertCircle, RefreshCw, ExternalLink
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import StatCard from '@/components/admin/StatCard';
 import SurgeZoneManager from '@/components/admin/SurgeZoneManager';
@@ -37,6 +38,21 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('overview');
+  const [syncing, setSyncing] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState(null);
+
+  const bulkSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await base44.functions.invoke('bulkSyncRidesToSheets', {});
+      setSheetUrl(res.data.spreadsheet_url);
+      toast.success(`Synced ${res.data.rides_synced} rides to Google Sheets`);
+    } catch (err) {
+      toast.error('Sync failed: ' + err.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const { data: rides = [] } = useQuery({
     queryKey: ['admin-rides'],
@@ -159,20 +175,31 @@ export default function AdminDashboard() {
               <StatCard icon={TrendingUp} label="Avg Surge"    value={`${avgSurge.toFixed(2)}x`} sub="AI dynamic pricing" />
             </div>
 
-            {/* Sheets sync status */}
-            <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center">
+            {/* Sheets sync */}
+            <div className="rounded-2xl border border-border bg-card p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
                   <Sheet className="w-4.5 h-4.5 text-green-500" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-semibold text-sm">Google Sheets Sync</p>
-                  <p className="text-xs text-muted-foreground">Completed rides logged automatically for tax reporting</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    New completed &amp; paid rides sync automatically · <span className="text-green-500">Auto-sync active</span>
+                  </p>
                 </div>
               </div>
-              <span className="flex items-center gap-1.5 text-xs text-green-500 font-medium shrink-0">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Active
-              </span>
+              <div className="flex items-center gap-2 shrink-0">
+                {sheetUrl && (
+                  <a href={sheetUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-primary hover:underline">
+                    <ExternalLink className="w-3 h-3" /> Open Sheet
+                  </a>
+                )}
+                <Button size="sm" variant="outline" onClick={bulkSync} disabled={syncing} className="gap-1.5 h-8">
+                  <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
+                  {syncing ? 'Syncing…' : 'Sync All'}
+                </Button>
+              </div>
             </div>
 
             {/* Charts */}

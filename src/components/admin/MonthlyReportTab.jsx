@@ -116,6 +116,8 @@ export default function MonthlyReportTab() {
   const revenueChange = lastMonth.revenue ? ((currentMonth.revenue - lastMonth.revenue) / lastMonth.revenue) * 100 : 0;
   const ridesChange = lastMonth.totalRides ? ((currentMonth.totalRides - lastMonth.totalRides) / lastMonth.totalRides) * 100 : 0;
 
+  const [generating, setGenerating] = useState(false);
+
   const handleExport = () => {
     const headers = ['Metric', 'Value'];
     const rows = [
@@ -139,6 +141,18 @@ export default function MonthlyReportTab() {
     toast.success('Monthly report exported');
   };
 
+  const handleGenerateReport = async () => {
+    setGenerating(true);
+    try {
+      const res = await base44.functions.invoke('generateMonthlyReport', {});
+      toast.success(`Report sent to your email! ${res.data.stats.total_rides} rides, $${res.data.stats.total_revenue.toFixed(2)} revenue`);
+    } catch (err) {
+      toast.error('Failed to generate report: ' + err.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const months = [];
   for (let i = 0; i < 6; i++) {
     months.push(subMonths(new Date(), i));
@@ -159,7 +173,7 @@ export default function MonthlyReportTab() {
               const [year, month] = e.target.value.split('-');
               setSelectedMonth(new Date(parseInt(year), parseInt(month) - 1));
             }}
-            className="px-3 py-2 rounded-lg border border-border bg-card text-sm"
+            className="px-4 py-3 rounded-xl border border-border bg-card text-base"
           >
             {months.map(m => (
               <option key={m.toISOString()} value={format(m, 'yyyy-MM')}>
@@ -167,9 +181,23 @@ export default function MonthlyReportTab() {
               </option>
             ))}
           </select>
-          <Button size="sm" variant="outline" onClick={handleExport} className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
+          <Button 
+            variant="outline" 
+            onClick={handleExport} 
+            className="gap-2 px-6 py-3 text-base"
+            size="lg"
+          >
+            <Download className="w-5 h-5" />
+            Export CSV
+          </Button>
+          <Button 
+            variant="default" 
+            onClick={handleGenerateReport} 
+            disabled={generating}
+            className="gap-2 px-6 py-3 text-base"
+            size="lg"
+          >
+            {generating ? 'Generating...' : '📧 Email Report'}
           </Button>
         </div>
       </div>

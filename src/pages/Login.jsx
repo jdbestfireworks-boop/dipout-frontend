@@ -86,10 +86,10 @@ export default function Login() {
 
           <Button
             variant="outline"
-            className="w-full h-12 rounded-xl font-medium mb-5 gap-2"
+            className="w-full h-14 rounded-xl font-bold text-base mb-6 gap-3"
             onClick={() => base44.auth.loginWithProvider("google", "/")}
           >
-            <GoogleIcon className="w-4 h-4" />
+            <GoogleIcon className="w-5 h-5" />
             Continue with Google
           </Button>
 
@@ -120,8 +120,8 @@ export default function Login() {
             <div className="flex justify-end">
               <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
             </div>
-            <Button type="submit" className="w-full h-12 rounded-xl font-bold text-base" disabled={loading}>
-              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Logging in…</> : "Log in →"}
+            <Button type="submit" className="w-full h-14 rounded-xl font-bold text-lg" disabled={loading}>
+              {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> Logging in…</> : "Log in →"}
             </Button>
           </form>
 
@@ -136,9 +136,9 @@ export default function Login() {
             </div>
             <Link
               to="/register/rider"
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border-2 border-primary/30 bg-primary/5 text-primary font-semibold text-sm hover:bg-primary/10 transition-colors"
+              className="flex items-center justify-center gap-3 w-full px-6 py-4 rounded-xl border-2 border-primary/30 bg-primary/5 text-primary font-bold text-base hover:bg-primary/10 transition-colors"
             >
-              <Car className="w-4 h-4" />
+              <Car className="w-5 h-5" />
               New rider? Create an account
             </Link>
           </div>

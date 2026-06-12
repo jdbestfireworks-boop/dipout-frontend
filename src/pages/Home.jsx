@@ -104,24 +104,24 @@ export default function Home() {
             <>
               <Link
                 to="/login"
-                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
               >
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5" />
+                <div className="flex items-center gap-4">
+                  <MapPin className="w-6 h-6" />
                   Login
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
                 to="/register/rider"
-                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border-2 border-primary bg-primary/10 backdrop-blur-sm text-primary font-bold text-base hover:bg-primary/20 active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary bg-primary/10 backdrop-blur-sm text-primary font-bold text-lg hover:bg-primary/20 active:scale-[0.98] transition-all"
               >
-                <div className="flex items-center gap-3">
-                  <Car className="w-5 h-5" />
+                <div className="flex items-center gap-4">
+                  <Car className="w-6 h-6" />
                   Sign Up to Ride
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
           ) : (
@@ -129,25 +129,25 @@ export default function Home() {
               <Link
                 to="/rider"
                 onClick={handleBookRideClick}
-                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
               >
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5" />
+                <div className="flex items-center gap-4">
+                  <MapPin className="w-6 h-6" />
                   Book a Ride
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <Link
                 to="/driver"
                 onClick={handleDrive}
-                className="group flex items-center justify-between w-full px-6 py-4 rounded-2xl border border-border bg-card/60 backdrop-blur-sm text-foreground font-bold text-base hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary bg-card/60 backdrop-blur-sm text-foreground font-bold text-lg hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
               >
-                <div className="flex items-center gap-3">
-                  <Car className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-4">
+                  <Car className="w-6 h-6 text-primary" />
                   Drive with Dip Out
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-40 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-40 group-hover:translate-x-1 transition-transform" />
               </Link>
             </>
           )}

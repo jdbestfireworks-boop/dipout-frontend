@@ -3,29 +3,37 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
+import { Mail, Lock, Loader2, Car, MapPin, Star, Shield, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const perks = [
+  { icon: MapPin,       text: "Book rides instantly across Louisiana" },
+  { icon: Car,          text: "Drive and earn on your schedule" },
+  { icon: Star,         text: "Keep 80% of every fare as a driver" },
+  { icon: Shield,       text: "Safe, verified drivers every time" },
+];
 
 export default function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail]                   = useState("");
+  const [password, setPassword]             = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
+  const [error, setError]                   = useState("");
+  const [loading, setLoading]               = useState(false);
+  const [showOtp, setShowOtp]               = useState(false);
+  const [otpCode, setOtpCode]               = useState("");
+
+  const params = new URLSearchParams(window.location.search);
+  const next   = params.get("next") || "/";
+  const isDriverFlow = next.includes("driver");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    if (password !== confirmPassword) { setError("Passwords don't match"); return; }
+    if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
     setLoading(true);
     try {
       await base44.auth.register({ email, password });
@@ -42,15 +50,10 @@ export default function Register() {
     setLoading(true);
     try {
       const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
-      }
-      // If came from driver flow, go to driver onboarding; otherwise home
-      const params = new URLSearchParams(window.location.search);
-      const next = params.get("next") || "/";
+      if (result?.access_token) base44.auth.setToken(result.access_token);
       window.location.href = next;
     } catch (err) {
-      setError(err.message || "Invalid verification code");
+      setError(err.message || "Invalid code — please try again");
     } finally {
       setLoading(false);
     }
@@ -60,172 +63,171 @@ export default function Register() {
     setError("");
     try {
       await base44.auth.resendOtp(email);
-      toast({
-        title: "Code sent",
-        description: "Check your email for the new code.",
-      });
+      toast({ title: "Code resent", description: "Check your inbox." });
     } catch (err) {
-      setError(err.message || "Failed to resend code");
+      setError(err.message || "Failed to resend");
     }
   };
 
-  const handleGoogle = () => {
-    base44.auth.loginWithProvider("google", "/");
-  };
-
-  if (showOtp) {
-    return (
-      <AuthLayout
-        icon={Mail}
-        title="Verify your email"
-        subtitle={`We sent a code to ${email}`}
-      >
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-            {error}
-          </div>
-        )}
-        <div className="flex justify-center mb-6">
-          <InputOTP
-            maxLength={6}
-            value={otpCode}
-            onChange={setOtpCode}
-            autoFocus
-            autoComplete="one-time-code"
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
-        </div>
-        <Button
-          className="w-full h-12 font-medium"
-          onClick={handleVerify}
-          disabled={loading || otpCode.length < 6}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Verifying...
-            </>
-          ) : (
-            "Verify"
-          )}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Didn't receive the code?{" "}
-          <button onClick={handleResend} className="text-primary font-medium hover:underline">
-            Resend
-          </button>
-        </p>
-      </AuthLayout>
-    );
-  }
-
   return (
-    <AuthLayout
-      icon={UserPlus}
-      title="Create your account"
-      subtitle="Sign up to get started"
-      footer={
-        <>
-          Already have an account?{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
-            Log in
-          </Link>
-        </>
-      }
-    >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
+    <div className="min-h-screen flex">
+      {/* Left panel — branding */}
+      <div className="hidden lg:flex flex-col justify-between w-[45%] bg-gradient-to-br from-purple-950 via-background to-background p-12 border-r border-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+            <Car className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <span className="font-display font-bold text-xl">Dip Out</span>
+        </div>
 
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-4xl font-display font-bold leading-tight">
+              {isDriverFlow ? "Start earning\ntoday." : "Your ride,\nyour way."}
+            </h2>
+            <p className="text-muted-foreground mt-3 text-lg">
+              {isDriverFlow
+                ? "Join the Dip Out driver network and set your own hours."
+                : "Fast, affordable rides across Louisiana."}
+            </p>
+          </div>
+          <div className="space-y-4">
+            {perks.map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-sm text-muted-foreground">{text}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
+
+        <p className="text-xs text-muted-foreground">© 2025 Dip Out · Louisiana</p>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-background">
+        <div className="w-full max-w-sm">
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              autoFocus
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
+          <AnimatePresence mode="wait">
+            {!showOtp ? (
+              <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.2 }}>
+                {/* Mobile logo */}
+                <div className="flex items-center gap-2 mb-8 lg:hidden">
+                  <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                    <Car className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                  <span className="font-display font-bold">Dip Out</span>
+                </div>
+
+                <div className="mb-8">
+                  <h1 className="text-3xl font-display font-bold">Create account</h1>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {isDriverFlow ? "Sign up to start driving with Dip Out" : "Sign up to book your first ride"}
+                  </p>
+                </div>
+
+                {/* Google */}
+                <Button variant="outline" className="w-full h-12 rounded-xl font-medium mb-5 gap-2"
+                  onClick={() => base44.auth.loginWithProvider("google", next)}>
+                  <GoogleIcon className="w-4 h-4" />
+                  Continue with Google
+                </Button>
+
+                <div className="relative mb-5">
+                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+                  <div className="relative flex justify-center text-xs"><span className="bg-background px-3 text-muted-foreground uppercase tracking-wider">or</span></div>
+                </div>
+
+                {error && (
+                  <div className="mb-4 px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input type="email" placeholder="Email address" autoComplete="email" autoFocus
+                      value={email} onChange={e => setEmail(e.target.value)}
+                      className="pl-10 h-12 rounded-xl" required />
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input type="password" placeholder="Password" autoComplete="new-password"
+                      value={password} onChange={e => setPassword(e.target.value)}
+                      className="pl-10 h-12 rounded-xl" required />
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input type="password" placeholder="Confirm password" autoComplete="new-password"
+                      value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                      className="pl-10 h-12 rounded-xl" required />
+                  </div>
+
+                  <Button type="submit" className="w-full h-12 rounded-xl font-bold text-base mt-2" disabled={loading}>
+                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account…</> : "Create account →"}
+                  </Button>
+                </form>
+
+                <p className="text-center text-sm text-muted-foreground mt-6">
+                  Already have an account?{" "}
+                  <Link to="/login" className="text-primary font-semibold hover:underline">Log in</Link>
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div key="otp" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.2 }}>
+                <button onClick={() => setShowOtp(false)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+
+                <div className="mb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mb-4">
+                    <Mail className="w-7 h-7 text-primary" />
+                  </div>
+                  <h1 className="text-3xl font-display font-bold">Check your email</h1>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    We sent a 6-digit code to <span className="text-foreground font-medium">{email}</span>
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="mb-4 px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex justify-center mb-6">
+                  <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode} autoFocus autoComplete="one-time-code">
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+
+                <Button className="w-full h-12 rounded-xl font-bold text-base gap-2"
+                  onClick={handleVerify} disabled={loading || otpCode.length < 6}>
+                  {loading
+                    ? <><Loader2 className="w-4 h-4 animate-spin" /> Verifying…</>
+                    : <><CheckCircle2 className="w-4 h-4" /> Verify & Continue</>}
+                </Button>
+
+                <p className="text-center text-sm text-muted-foreground mt-5">
+                  Didn't get it?{" "}
+                  <button onClick={handleResend} className="text-primary font-semibold hover:underline">Resend code</button>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="confirm"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            "Create account"
-          )}
-        </Button>
-      </form>
-    </AuthLayout>
+      </div>
+    </div>
   );
 }

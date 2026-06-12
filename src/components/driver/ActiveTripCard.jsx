@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { MapPin, Navigation, ExternalLink, CreditCard, Phone, MessageCircle, Clock, Gauge } from 'lucide-react';
+import { MapPin, Navigation, ExternalLink, CreditCard, Phone, MessageCircle, Clock, Gauge, Map } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import RideChat from '@/components/ride/RideChat';
+import RealTimeTrackingMap from '@/components/RealTimeTrackingMap';
 import { toast } from 'sonner';
 import { haversineMiles } from '@/lib/geo';
 
@@ -167,6 +168,30 @@ export default function ActiveTripCard({
           </div>
         )}
       </div>
+
+      {/* Proximity Map */}
+      {(ride?.driver_lat || ride?.rider_lat) && (
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-gradient-to-r from-primary/10 to-transparent">
+            <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center">
+              <Map className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-primary">Live Proximity Map</p>
+              <p className="text-[10px] text-muted-foreground/70">See your distance to rider</p>
+            </div>
+          </div>
+          <div className="h-64 w-full">
+            <RealTimeTrackingMap
+              ride={ride}
+              showDriver={true}
+              showRider={true}
+              autoCenter={true}
+              className="h-full w-full rounded-none"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Route Info Card */}
       <div className="rounded-2xl border border-border bg-card p-5 space-y-4">

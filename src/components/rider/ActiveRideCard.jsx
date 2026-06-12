@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Navigation, ExternalLink, Car, AlertTriangle, Shield, Gauge } from 'lucide-react';
+import { MapPin, Navigation, ExternalLink, Car, AlertTriangle, Shield, Gauge, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import RideChat from '@/components/ride/RideChat';
+import RealTimeTrackingMap from '@/components/RealTimeTrackingMap';
 import { motion } from 'framer-motion';
 import { haversineMiles } from '@/lib/geo';
 
@@ -116,6 +117,35 @@ export default function ActiveRideCard({
             />
           </button>
         </motion.div>
+
+        {/* Proximity Map */}
+        {gpsEnabled && (ride?.driver_lat || ride?.rider_lat) && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl"
+          >
+            <div className="absolute top-3 left-4 z-10 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary/20 backdrop-blur-sm flex items-center justify-center">
+                <Map className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-primary">Live Proximity Map</p>
+                <p className="text-[10px] text-muted-foreground/70">Real-time driver location</p>
+              </div>
+            </div>
+            <div className="h-64 w-full mt-12">
+              <RealTimeTrackingMap
+                ride={ride}
+                showDriver={true}
+                showRider={true}
+                autoCenter={true}
+                className="h-full w-full rounded-none"
+              />
+            </div>
+          </motion.div>
+        )}
 
         {/* Route Info */}
         <div className="space-y-4 pt-1">

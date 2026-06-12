@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ChevronRight, ShieldCheck, MapPin, TrendingUp, HardDrive, DollarSign, Bot, Bell, AlertTriangle } from 'lucide-react';
+import { BarChart3, Car, Users, Settings, Activity, ExternalLink, ShieldCheck, MapPin, TrendingUp, HardDrive, DollarSign, Bot, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
@@ -24,11 +24,11 @@ export default function AdminSidebar({ tab, setTab, pendingCount }) {
       {/* Brand */}
       <div className="px-5 py-6 border-b border-border">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-amber-400 flex items-center justify-center shrink-0 shadow-lg shadow-primary/30">
             <span className="text-primary-foreground font-bold text-xs">DO</span>
           </div>
           <div>
-            <p className="font-display font-bold text-sm leading-none">Dip Out</p>
+            <p className="font-display font-bold text-sm leading-none bg-gradient-to-r from-primary to-amber-300 bg-clip-text text-transparent">Dip Out</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">Admin Console</p>
           </div>
         </div>

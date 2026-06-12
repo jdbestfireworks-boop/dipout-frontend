@@ -38,10 +38,10 @@ export default function AppShell() {
     <div className="min-h-screen bg-background text-foreground flex flex-col w-full">
       <header className="h-14 flex items-center justify-between px-3 sm:px-4 md:px-8 border-b border-border/60 bg-background/80 backdrop-blur-xl sticky top-0 z-[1100] w-full">
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 hover:opacity-80 transition-opacity">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-br from-primary to-amber-300 flex items-center justify-center shadow-md shadow-primary/40">
             <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
           </div>
-          <span className="font-display font-bold text-base sm:text-lg tracking-tight">Dip Out</span>
+          <span className="font-display font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-primary to-amber-300 bg-clip-text text-transparent">Dip Out</span>
         </Link>
 
         <nav className="flex items-center gap-0.5 sm:gap-1">

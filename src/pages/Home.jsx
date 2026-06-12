@@ -72,13 +72,14 @@ export default function Home() {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, type: 'spring' }}
-          className="mb-6"
+          className="mb-8"
         >
-          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-amber-400 flex items-center justify-center shadow-2xl shadow-primary/40 overflow-hidden">
+          <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary via-amber-300 to-primary flex items-center justify-center shadow-2xl shadow-primary/50 overflow-hidden ring-4 ring-primary/20">
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
             <img
               src="https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png"
               alt="Dip Out"
-              className="w-20 h-20 object-contain"
+              className="w-22 h-22 object-contain relative z-10"
             />
           </div>
         </motion.div>
@@ -89,8 +90,8 @@ export default function Home() {
           transition={{ delay: 0.15, duration: 0.4 }}
           className="text-center mb-10"
         >
-          <h1 className="text-5xl font-display font-bold tracking-tight mb-2">Dip Out</h1>
-          <p className="text-muted-foreground text-base">Simple, affordable rides — Louisiana only.</p>
+          <h1 className="text-6xl font-display font-bold tracking-tight mb-3 bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">Dip Out</h1>
+          <p className="text-muted-foreground text-lg font-light">Simple, affordable rides — Louisiana only.</p>
         </motion.div>
 
         {/* Main CTAs */}
@@ -104,18 +105,19 @@ export default function Home() {
             <>
               <Link
                 to="/login"
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+                className="group relative flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-lg hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
               >
-                <div className="flex items-center gap-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <div className="flex items-center gap-4 relative z-10">
                   <MapPin className="w-6 h-6" />
                   Login
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
               </Link>
 
               <Link
                 to="/register/rider"
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary bg-primary/10 backdrop-blur-sm text-primary font-bold text-lg hover:bg-primary/20 active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-primary font-bold text-lg hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4">
                   <Car className="w-6 h-6" />
@@ -129,19 +131,20 @@ export default function Home() {
               <Link
                 to="/rider"
                 onClick={handleBookRideClick}
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/30"
+                className="group relative flex items-center justify-between w-full px-8 py-5 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-lg hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
               >
-                <div className="flex items-center gap-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <div className="flex items-center gap-4 relative z-10">
                   <MapPin className="w-6 h-6" />
                   Book a Ride
                 </div>
-                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform relative z-10" />
               </Link>
 
               <Link
                 to="/driver"
                 onClick={handleDrive}
-                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary bg-card/60 backdrop-blur-sm text-foreground font-bold text-lg hover:border-primary/50 hover:bg-card active:scale-[0.98] transition-all"
+                className="group flex items-center justify-between w-full px-8 py-5 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-foreground font-bold text-lg hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4">
                   <Car className="w-6 h-6 text-primary" />

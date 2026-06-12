@@ -55,8 +55,8 @@ Deno.serve(async (req) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${appUrl}/rides?payment=success`,
-            cancel_url: `${appUrl}/rides?payment=cancelled`,
+            success_url: `${appUrl}/rider?payment=success`,
+            cancel_url: `${appUrl}/rider?payment=cancelled`,
             metadata: {
                 base44_app_id: appId,
                 ride_data: req.body.ride_data || '',

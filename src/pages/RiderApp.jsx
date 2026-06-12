@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, Loader2, CreditCard, Banknote, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle, Bell, Sun, Moon } from 'lucide-react';
+import { MapPin, Navigation, Loader2, CreditCard, CheckCircle2, X, ExternalLink, Car, Flag, Star, Phone, MapPinned, MapPinOff, AlertTriangle, Bell, Sun, Moon } from 'lucide-react';
 import AddressAutocomplete from '@/components/rider/AddressAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -42,7 +42,7 @@ export default function RiderApp() {
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
-  const [payMethod, setPayMethod] = useState(null);
+  
   const [isRequesting, setIsRequesting] = useState(false);
   const [gpsEnabled, setGpsEnabled] = useState(true);
   const [gpsWatchId, setGpsWatchId] = useState(null);
@@ -575,28 +575,26 @@ export default function RiderApp() {
               exit={{ opacity: 0, y: -8 }}
             >
               <RideBookingForm
-                pickupAddress={pickupAddress}
-                setPickupAddress={setPickupAddress}
-                pickupCoords={pickupCoords}
-                setPickupCoords={setPickupCoords}
-                dropoffAddress={dropoffAddress}
-                setDropoffAddress={setDropoffAddress}
-                dropoffCoords={dropoffCoords}
-                setDropoffCoords={setDropoffCoords}
-                quote={quote}
-                setQuote={setQuote}
-                distanceKm={distanceKm}
-                setDistanceKm={setDistanceKm}
-                payMethod={payMethod}
-                setPayMethod={setPayMethod}
-                quoting={quoting}
-                isRequesting={isRequesting}
-                onGetQuote={getQuote}
-                onRequestRide={requestRide}
-                onSetDropoffGps={setDropoffFromGps}
-                gettingLocation={gettingLocation}
-                stops={stops}
-                setStops={setStops}
+              pickupAddress={pickupAddress}
+              setPickupAddress={setPickupAddress}
+              pickupCoords={pickupCoords}
+              setPickupCoords={setPickupCoords}
+              dropoffAddress={dropoffAddress}
+              setDropoffAddress={setDropoffAddress}
+              dropoffCoords={dropoffCoords}
+              setDropoffCoords={setDropoffCoords}
+              quote={quote}
+              setQuote={setQuote}
+              distanceKm={distanceKm}
+              setDistanceKm={setDistanceKm}
+              quoting={quoting}
+              isRequesting={isRequesting}
+              onGetQuote={getQuote}
+              onRequestRide={requestRide}
+              onSetDropoffGps={setDropoffFromGps}
+              gettingLocation={gettingLocation}
+              stops={stops}
+              setStops={setStops}
               />
             </motion.div>
           ) : (

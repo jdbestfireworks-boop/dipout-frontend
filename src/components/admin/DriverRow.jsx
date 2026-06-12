@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+
 
 const statusColors = {
   offline: 'bg-secondary text-secondary-foreground',
@@ -45,7 +47,7 @@ export default function DriverRow({
             <p className="text-xs text-muted-foreground">
               Joined{' '}
               {driver.created_date
-                ? new Date(driver.created_date).toLocaleDateString()
+                ? format(new Date(driver.created_date), 'MMM d, yyyy')
                 : 'N/A'}
             </p>
           </div>

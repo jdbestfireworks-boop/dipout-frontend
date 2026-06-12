@@ -156,7 +156,7 @@ export default function RideBookingForm({
           {/* Payment Method */}
           <div className="pt-2">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-3">Payment Method</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={() => setPayMethod('card')}
                 className={`flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 transition-all shadow-lg ${
@@ -166,26 +166,15 @@ export default function RideBookingForm({
                 }`}
               >
                 <CreditCard className={`w-8 h-8 ${payMethod === 'card' ? 'text-primary animate-pulse' : ''}`} />
-                <span className="text-base font-bold">Card</span>
+                <span className="text-base font-bold">Card Payment</span>
                 {payMethod === 'card' && (
                   <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
                 )}
               </button>
-              <button
-                onClick={() => setPayMethod('cash')}
-                className={`flex flex-col items-center justify-center gap-2 p-5 rounded-2xl border-2 transition-all shadow-lg ${
-                  payMethod === 'cash'
-                    ? 'border-primary bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-primary/30 scale-105'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:shadow-md'
-                }`}
-              >
-                <Banknote className={`w-8 h-8 ${payMethod === 'cash' ? 'text-primary animate-pulse' : ''}`} />
-                <span className="text-base font-bold">Cash</span>
-                {payMethod === 'cash' && (
-                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
-                )}
-              </button>
             </div>
+            <p className="text-xs text-muted-foreground mt-3 text-center">
+              Cash payments are no longer accepted. Please pay with card.
+            </p>
           </div>
 
           {/* Request Button */}
@@ -200,7 +189,7 @@ export default function RideBookingForm({
                 Requesting ride...
               </span>
             ) : (
-              payMethod ? `Request ${payMethod === 'card' ? 'Card' : 'Cash'} Ride` : 'Select Payment Method'
+              payMethod ? 'Request Card Ride' : 'Select Card Payment'
             )}
           </button>
         </motion.div>

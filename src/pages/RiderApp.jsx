@@ -42,7 +42,7 @@ export default function RiderApp() {
   const [quote, setQuote] = useState(null);
   const [quoting, setQuoting] = useState(false);
   const [ride, setRide] = useState(null);
-  const [payMethod, setPayMethod] = useState(null);
+  const [payMethod, setPayMethod] = useState('card');
   const [isRequesting, setIsRequesting] = useState(false);
   const [gpsEnabled, setGpsEnabled] = useState(true);
   const [gpsWatchId, setGpsWatchId] = useState(null);
@@ -278,7 +278,6 @@ export default function RiderApp() {
   };
 
   const requestRide = async () => {
-    if (!payMethod) { toast.error('Choose a payment method'); return; }
     if (!quote) { toast.error('Please get a fare quote first'); return; }
     if (!pickupCoords || !dropoffCoords) {
       toast.error('Please select valid addresses from the suggestions');

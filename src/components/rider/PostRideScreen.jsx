@@ -27,39 +27,6 @@ export default function PostRideScreen({ ride, onDone }) {
     try {
       setSubmitting(true);
       
-      // For cash payments, complete immediately
-      if (ride.payment_method === 'cash') {
-        await base44.entities.Ride.update(ride.id, {
-          payment_status: 'paid',
-          fare: finalFare,
-          ...(rating > 0 ? { rider_rating: rating } : {}),
-          ...(comment.trim() ? { rider_comment: comment.trim() } : {}),
-        });
-
-        // Update driver rating
-        if (rating > 0 && ride.driver_email) {
-          try {
-            const profiles = await base44.entities.DriverProfile.filter({ user_email: ride.driver_email });
-            if (profiles.length) {
-              const dp = profiles[0];
-              const totalRatings = (dp.total_ratings || 0) + 1;
-              const newRating = ((dp.rating || 5) * (dp.total_ratings || 0) + rating) / totalRatings;
-              await base44.entities.DriverProfile.update(dp.id, {
-                rating: Math.round(newRating * 10) / 10,
-                total_ratings: totalRatings,
-              });
-            }
-          } catch (err) {
-            console.error('Driver rating update error:', err);
-            // Continue even if driver rating fails
-          }
-        }
-
-        toast.success('Thanks for riding with Dip Out!');
-        onDone();
-        return;
-      }
-
       // For card payments, initiate Stripe checkout
       // First save the ride data with pending payment
       await base44.entities.Ride.update(ride.id, {
@@ -129,9 +96,7 @@ export default function PostRideScreen({ ride, onDone }) {
         <div className="flex items-center justify-between pt-2 border-t border-border">
           <span className="text-muted-foreground text-sm">Payment Method</span>
           <span className="flex items-center gap-2 font-semibold capitalize">
-            {ride.payment_method === 'cash'
-              ? <><Banknote className="w-4 h-4 text-primary" /> Cash</>
-              : <><CreditCard className="w-4 h-4 text-primary" /> Card</>}
+            <><CreditCard className="w-4 h-4 text-primary" /> Card</>
           </span>
         </div>
       </div>
@@ -245,8 +210,6 @@ export default function PostRideScreen({ ride, onDone }) {
         >
           {submitting ? (
             <><CheckCircle2 className="w-5 h-5 mr-2 animate-pulse" /> Processing...</>
-          ) : ride.payment_method === 'cash' ? (
-            <><Banknote className="w-5 h-5 mr-2" /> Confirm Payment · ${((ride.fare || 0) + (tip || 0)).toFixed(2)}</>
           ) : (
             <><CreditCard className="w-5 h-5 mr-2" /> Pay ${((ride.fare || 0) + (tip || 0)).toFixed(2)}</>
           )}

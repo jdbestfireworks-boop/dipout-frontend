@@ -1,10 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DailyRevenueChart from './DailyRevenueChart';
 import StatCard from './StatCard';
-import { DollarSign, TrendingUp, Star, CreditCard } from 'lucide-react';
+import { DollarSign, TrendingUp, Star, CreditCard, Sheet, ExternalLink, RefreshCw, Download } from 'lucide-react';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function RevenueTab({ rides, drivers }) {
+  const [syncing, setSyncing] = useState(false);
+  const [sheetUrl, setSheetUrl] = useState(null);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await base44.functions.invoke('bulkSyncRidesToSheets', {});
+      setSheetUrl(res.data.spreadsheet_url);
+      toast.success(`Exported ${res.data.rides_synced} rides + ${res.data.drivers_synced} drivers to Google Sheets`);
+    } catch (err) {
+      toast.error('Export failed: ' + err.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const downloadCSV = async () => {
+    const allRides = await base44.entities.Ride.list('-created_date', 2000);
+    const headers = ['Date','Time','ID','Status','Rider','Driver','Pickup','Dropoff','Distance (mi)','Base Fare','Surge','Total Fare','Driver Earnings','Payment Method','Payment Status','Rating','Comment'];
+    const rows = allRides.map(r => [
+      r.created_date ? format(new Date(r.created_date), 'yyyy-MM-dd') : '',
+      r.created_date ? format(new Date(r.created_date), 'HH:mm') : '',
+      r.id || '',
+      r.status || '',
+      r.rider_email || '', r.driver_email || '',
+      r.pickup_address || '', r.dropoff_address || '',
+      (r.distance_km || 0).toFixed(2),
+      (r.base_fare || 0).toFixed(2),
+      (r.surge_multiplier || 1).toFixed(2),
+      (r.fare || 0).toFixed(2),
+      r.status === 'completed' ? ((r.fare || 0) * 0.8).toFixed(2) : '',
+      r.payment_method || '', r.payment_status || '',
+      r.rider_rating || '', r.rider_comment || '',
+    ].map(f => `"${String(f).replace(/"/g,'""')}"`).join(','));
+    const blob = new Blob([[headers.join(','), ...rows].join('\n')], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dip_out_export_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+    toast.success(`Downloaded ${allRides.length} rides as CSV`);
+  };
+
   const completed = rides.filter(r => r.status === 'completed');
   const paid = completed.filter(r => r.payment_status === 'paid');
   const revenue = paid.reduce((s, r) => s + (r.fare || 0), 0);
@@ -25,9 +70,29 @@ export default function RevenueTab({ rides, drivers }) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-display font-bold">Revenue Reports</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">Financial overview across all rides</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-display font-bold">Revenue Reports</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">Financial overview across all rides</p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button size="sm" variant="outline" onClick={downloadCSV} className="gap-1.5 h-8">
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">CSV</span>
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleSync} disabled={syncing} className="gap-1.5 h-8">
+            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{syncing ? 'Exporting…' : 'Google Sheets'}</span>
+          </Button>
+          {sheetUrl && (
+            <a href={sheetUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="gap-1.5 h-8 bg-green-600 hover:bg-green-700 text-white">
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Open Sheet</span>
+              </Button>
+            </a>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">

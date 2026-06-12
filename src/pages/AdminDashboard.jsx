@@ -54,7 +54,7 @@ export default function AdminDashboard() {
     try {
       const res = await base44.functions.invoke('bulkSyncRidesToSheets', {});
       setSheetUrl(res.data.spreadsheet_url);
-      toast.success(`Synced ${res.data.rides_synced} rides to Google Sheets`);
+      toast.success(`Exported ${res.data.rides_synced} rides + ${res.data.drivers_synced} drivers to Google Sheets`);
     } catch (err) {
       toast.error('Sync failed: ' + err.message);
     } finally {

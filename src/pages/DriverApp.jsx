@@ -195,30 +195,27 @@ export default function DriverApp() {
 
   const toggleOnline = async (online) => {
     if (online) {
-      if (!('geolocation' in navigator)) {
-        toast.error('Geolocation not supported on this device');
-        return;
+      // Go online immediately — attempt to get GPS in background but don't block
+      await base44.entities.DriverProfile.update(profile.id, { status: 'available' });
+      setProfile((prev) => ({ ...prev, status: 'available' }));
+      toast.success("You're now online!");
+
+      // Try to grab GPS silently in background
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude: lat, longitude: lng } = position.coords;
+            await base44.entities.DriverProfile.update(profile.id, { lat, lng });
+            setProfile((prev) => ({ ...prev, lat, lng }));
+            setLocationPermission('granted');
+          },
+          (error) => {
+            console.error('GPS error:', error);
+            setLocationPermission('denied');
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
       }
-      // Use callback-based API (works on all browsers incl. iOS Safari)
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude: lat, longitude: lng } = position.coords;
-          if (!isInLouisiana(lat, lng)) {
-            toast.error('Dip Out is only available in Louisiana');
-            return;
-          }
-          await base44.entities.DriverProfile.update(profile.id, { lat, lng, status: 'available' });
-          setProfile((prev) => ({ ...prev, lat, lng, status: 'available' }));
-          setLocationPermission('granted');
-          toast.success("You're now online!");
-        },
-        (error) => {
-          console.error('GPS error:', error);
-          setLocationPermission('denied');
-          toast.error('Location access is required to go online. Please allow location in your browser settings.');
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
     } else {
       await base44.entities.DriverProfile.update(profile.id, { status: 'offline' });
       setProfile((prev) => ({ ...prev, status: 'offline' }));

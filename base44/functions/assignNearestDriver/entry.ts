@@ -52,7 +52,10 @@ Deno.serve(async (req) => {
 
     // Only process requested rides
     if (ride.status !== 'requested') {
-      return Response.json({ success: true, message: 'Ride not in requested status' });
+      return Response.json({ 
+        success: true, 
+        message: `Ride not in requested status (current: ${ride.status})` 
+      });
     }
 
     // Validate pickup coordinates
@@ -67,7 +70,17 @@ Deno.serve(async (req) => {
     });
 
     if (!drivers.length) {
-      return Response.json({ alerted: 0, message: 'No available drivers' });
+      // No available drivers - cancel the ride gracefully
+      await base44.asServiceRole.entities.Ride.update(ride_id, {
+        status: 'cancelled',
+        cancellation_fee: 0,
+        cancelled_at: new Date().toISOString(),
+      });
+      return Response.json({ 
+        success: true, 
+        assigned: false,
+        message: 'No available drivers - ride cancelled' 
+      });
     }
 
     // Calculate distance for each driver and filter those with valid locations
@@ -80,7 +93,17 @@ Deno.serve(async (req) => {
       .sort((a, b) => a.distance - b.distance);
 
     if (driversWithDistance.length === 0) {
-      return Response.json({ alerted: 0, message: 'No drivers with location data' });
+      // Drivers exist but no location data - cancel ride
+      await base44.asServiceRole.entities.Ride.update(ride_id, {
+        status: 'cancelled',
+        cancellation_fee: 0,
+        cancelled_at: new Date().toISOString(),
+      });
+      return Response.json({ 
+        success: true, 
+        assigned: false,
+        message: 'No drivers with location data - ride cancelled' 
+      });
     }
 
     // Get the nearest driver

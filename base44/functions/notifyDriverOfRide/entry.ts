@@ -39,9 +39,14 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Ride not found' }, { status: 404 });
         }
         
-        // Only notify for requested rides
+        // Only notify for requested rides (fallback when auto-assignment fails)
         if (ride.status !== 'requested') {
             return Response.json({ success: true, message: 'Ride not in requested status, skipping notification' });
+        }
+
+        // Check if ride was already assigned by auto-assign function
+        if (ride.driver_email) {
+            return Response.json({ success: true, message: 'Ride already assigned to driver' });
         }
 
         // Fetch all available/online drivers
@@ -51,7 +56,7 @@ Deno.serve(async (req) => {
         });
 
         if (!drivers.length) {
-            return Response.json({ alerted: 0, message: 'No available drivers' });
+            return Response.json({ alerted: 0, message: 'No available drivers - manual assignment needed' });
         }
 
         const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
@@ -111,10 +116,19 @@ Deno.serve(async (req) => {
             }
         }
 
+        // If no drivers were notified, update ride status to indicate issue
+        if (alerted === 0) {
+            await base44.asServiceRole.entities.Ride.update(ride_id, {
+                status: 'cancelled',
+                cancellation_fee: 0,
+                cancelled_at: new Date().toISOString(),
+            });
+        }
+
         return Response.json({ 
             success: true, 
             alerted,
-            message: `Notified ${alerted} available driver(s)` 
+            message: alerted > 0 ? `Notified ${alerted} available driver(s)` : 'No drivers notified - ride cancelled' 
         });
     } catch (error) {
         console.error('Driver notification error:', error);

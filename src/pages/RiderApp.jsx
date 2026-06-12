@@ -108,7 +108,23 @@ export default function RiderApp() {
   useEffect(() => {
     if (!ride) return;
     const unsubscribe = base44.entities.Ride.subscribe((event) => {
-      if (event.id === ride.id && event.type === 'update') setRide(event.data);
+      if (event.id === ride.id && event.type === 'update') {
+        setRide(event.data);
+        // Show notification when driver is assigned
+        if (event.data.status === 'accepted' && event.data.driver_email && ride.status === 'requested') {
+          toast.success('🚗 Driver found!', {
+            description: `Your driver is on the way to ${event.data.pickup_address}`,
+            duration: 5000
+          });
+        }
+        // Show notification when ride is cancelled due to no drivers
+        if (event.data.status === 'cancelled' && ride.status === 'requested') {
+          toast.error('No drivers available', {
+            description: 'Your ride was cancelled. Please try again later.',
+            duration: 6000
+          });
+        }
+      }
     });
     return unsubscribe;
   }, [ride?.id]);
@@ -240,7 +256,7 @@ export default function RiderApp() {
       });
       setRide(created);
       setIsRequesting(false);
-      toast.success('Ride requested! Waiting for driver acceptance...');
+      toast.success('Ride requested! Finding nearest driver...');
     } catch (error) {
       console.error('Ride request error:', error);
       toast.error('Failed to request ride. Please try again.');

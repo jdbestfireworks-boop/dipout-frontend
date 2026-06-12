@@ -1,12 +1,12 @@
 {
   "name": "Dip Out",
   "short_name": "Dip Out",
-  "description": "Simple, affordable rides — Louisiana only.",
+  "description": "Simple, affordable rides — Louisiana only",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#120f1a",
+  "background_color": "#1a161f",
   "theme_color": "#f5c518",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png",

@@ -1,0 +1,17 @@
+{
+  "name": "realtimeSimulation",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "description": "Real-time driver movement simulation with realistic pickup/dropoff speeds",
+      "ends_type": "never",
+      "is_active": true,
+      "name": "Real-Time Ride Simulation",
+      "repeat_interval": 5,
+      "repeat_unit": "minutes",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple"
+    }
+  ]
+}

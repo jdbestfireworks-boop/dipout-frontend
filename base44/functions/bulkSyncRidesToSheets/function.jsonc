@@ -1,0 +1,4 @@
+{
+  "name": "bulkSyncRidesToSheets",
+  "entry": "entry.ts"
+}

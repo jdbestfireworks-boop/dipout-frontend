@@ -1,0 +1,21 @@
+{
+  "name": "aiServerMaintenance",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "description": "Daily AI-powered maintenance at 3am - cleanup, archive, and analyze",
+      "ends_type": "never",
+      "function_args": {
+        "task": "full"
+      },
+      "is_active": true,
+      "name": "Daily AI Server Maintenance",
+      "repeat_interval": 1,
+      "repeat_unit": "days",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple",
+      "start_time": "03:00"
+    }
+  ]
+}

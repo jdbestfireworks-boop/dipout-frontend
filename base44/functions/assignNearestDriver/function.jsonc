@@ -1,0 +1,16 @@
+{
+  "name": "assignNearestDriver",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "entity",
+      "description": "Automatically assigns new ride requests to the closest available driver based on GPS location",
+      "entity_name": "Ride",
+      "event_types": [
+        "create"
+      ],
+      "is_active": true,
+      "name": "Auto Assign Nearest Driver"
+    }
+  ]
+}

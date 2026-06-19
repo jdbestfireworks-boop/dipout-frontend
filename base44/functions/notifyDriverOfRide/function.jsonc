@@ -1,0 +1,4 @@
+{
+  "name": "notifyDriverOfRide",
+  "entry": "entry.ts"
+}

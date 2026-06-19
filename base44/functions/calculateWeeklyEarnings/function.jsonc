@@ -1,0 +1,21 @@
+{
+  "name": "calculateWeeklyEarnings",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "description": "Automatically calculates and stores driver earnings every Monday at 2am",
+      "ends_type": "never",
+      "is_active": true,
+      "name": "Weekly Driver Earnings Calculation",
+      "repeat_interval": 1,
+      "repeat_on_days": [
+        1
+      ],
+      "repeat_unit": "weeks",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple",
+      "start_time": "07:00"
+    }
+  ]
+}

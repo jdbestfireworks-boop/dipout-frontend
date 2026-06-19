@@ -1,0 +1,18 @@
+{
+  "name": "generateMonthlyReport",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "description": "Sends monthly driver performance and earnings report to admin email",
+      "ends_type": "never",
+      "is_active": true,
+      "name": "Monthly Driver Performance Report",
+      "repeat_on_day_of_month": 1,
+      "repeat_unit": "months",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple",
+      "start_time": "14:00"
+    }
+  ]
+}

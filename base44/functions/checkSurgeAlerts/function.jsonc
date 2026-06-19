@@ -1,0 +1,16 @@
+{
+  "name": "checkSurgeAlerts",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "ends_type": "never",
+      "is_active": true,
+      "name": "Surge Zone Driver Alerts",
+      "repeat_interval": 10,
+      "repeat_unit": "minutes",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple"
+    }
+  ]
+}

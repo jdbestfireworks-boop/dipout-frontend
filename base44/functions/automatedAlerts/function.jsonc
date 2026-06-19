@@ -1,0 +1,17 @@
+{
+  "name": "automatedAlerts",
+  "entry": "entry.ts",
+  "automations": [
+    {
+      "type": "scheduled",
+      "description": "Run system health checks every 30 minutes and send critical alerts",
+      "ends_type": "never",
+      "is_active": true,
+      "name": "Automated System Alerts",
+      "repeat_interval": 30,
+      "repeat_unit": "minutes",
+      "schedule_mode": "recurring",
+      "schedule_type": "simple"
+    }
+  ]
+}

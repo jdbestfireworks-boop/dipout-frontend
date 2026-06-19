@@ -1,0 +1,4 @@
+{
+  "name": "sendMonthlyReport",
+  "entry": "entry.ts"
+}

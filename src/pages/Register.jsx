@@ -1,59 +1,83 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import backend from "@/api/backend"; // ✅ FIXED — using your backend
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
-import { Mail, Lock, Loader2, Car, MapPin, Star, Shield, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Loader2, Car, MapPin, Star, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const perks = [
-  { icon: MapPin,       text: "Book rides instantly across Louisiana" },
-  { icon: Car,          text: "Drive and earn on your schedule" },
-  { icon: Star,         text: "Keep 80% of every fare as a driver" },
-  { icon: Shield,       text: "Safe, verified drivers every time" },
+  { icon: MapPin, text: "Book rides instantly across Louisiana" },
+  { icon: Car, text: "Drive and earn on your schedule" },
+  { icon: Star, text: "Keep 80% of every fare as a driver" },
+  { icon: Shield, text: "Safe, verified drivers every time" },
 ];
 
 export default function Register() {
-  const [email, setEmail]                   = useState("");
-  const [password, setPassword]             = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError]                   = useState("");
-  const [loading, setLoading]               = useState(false);
-  const [showOtp, setShowOtp]               = useState(false);
-  const [otpCode, setOtpCode]               = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
   const params = new URLSearchParams(window.location.search);
-  const next   = params.get("next") || "/";
+  const next = params.get("next") || "/";
   const isDriverFlow = next.includes("driver");
 
+  // ⭐ FIXED — now uses your backend route
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (password !== confirmPassword) { setError("Passwords don't match"); return; }
-    if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     setLoading(true);
+
     try {
-      await base44.auth.register({ email, password });
+      await backend.post("/register", {
+        email,
+        password,
+      });
+
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
+  // ⭐ FIXED — your backend OTP route
   const handleVerify = async () => {
     setError("");
     setLoading(true);
+
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.access_token) base44.auth.setToken(result.access_token);
+      const result = await backend.post("/verify-otp", {
+        email,
+        otp: otpCode,
+      });
+
+      if (result?.data?.token) {
+        localStorage.setItem("token", result.data.token);
+      }
+
       window.location.href = next;
     } catch (err) {
-      setError(err.message || "Invalid code — please try again");
+      setError(err.response?.data?.message || "Invalid code — please try again");
     } finally {
       setLoading(false);
     }
@@ -61,17 +85,18 @@ export default function Register() {
 
   const handleResend = async () => {
     setError("");
+
     try {
-      await base44.auth.resendOtp(email);
+      await backend.post("/resend-otp", { email });
       toast({ title: "Code resent", description: "Check your inbox." });
     } catch (err) {
-      setError(err.message || "Failed to resend");
+      setError(err.response?.data?.message || "Failed to resend");
     }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel — branding */}
+      {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-[45%] bg-gradient-to-br from-purple-950 via-background to-background p-12 border-r border-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
@@ -91,6 +116,7 @@ export default function Register() {
                 : "Fast, affordable rides across Louisiana."}
             </p>
           </div>
+
           <div className="space-y-4">
             {perks.map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
@@ -106,126 +132,118 @@ export default function Register() {
         <p className="text-xs text-muted-foreground">© 2025 Dip Out · Louisiana</p>
       </div>
 
-      {/* Right panel — form */}
+      {/* Right panel */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-background">
         <div className="w-full max-w-sm">
-
           <AnimatePresence mode="wait">
             {!showOtp ? (
-              <motion.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.2 }}>
-                {/* Mobile logo */}
-                <div className="flex items-center gap-2 mb-8 lg:hidden">
-                  <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                    <Car className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                  <span className="font-display font-bold">Dip Out</span>
-                </div>
-
-                <div className="mb-8">
-                  <h1 className="text-3xl font-display font-bold">Create account</h1>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {isDriverFlow ? "Sign up to start driving with Dip Out" : "Sign up to book your first ride"}
-                  </p>
-                </div>
-
-                {/* Google */}
-                <Button variant="outline" className="w-full h-12 rounded-xl font-medium mb-5 gap-2"
-                  onClick={() => base44.auth.loginWithProvider("google", next)}>
-                  <GoogleIcon className="w-4 h-4" />
-                  Continue with Google
-                </Button>
-
-                <div className="relative mb-5">
-                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-                  <div className="relative flex justify-center text-xs"><span className="bg-background px-3 text-muted-foreground uppercase tracking-wider">or</span></div>
-                </div>
-
-                {error && (
-                  <div className="mb-4 px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                    {error}
-                  </div>
-                )}
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.25 }}
+              >
+                <h1 className="text-2xl font-display font-bold mb-6">
+                  Create your account
+                </h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input type="email" placeholder="Email address" autoComplete="email" autoFocus
-                      value={email} onChange={e => setEmail(e.target.value)}
-                      className="pl-10 h-12 rounded-xl" required />
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input type="password" placeholder="Password" autoComplete="new-password"
-                      value={password} onChange={e => setPassword(e.target.value)}
-                      className="pl-10 h-12 rounded-xl" required />
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input type="password" placeholder="Confirm password" autoComplete="new-password"
-                      value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-                      className="pl-10 h-12 rounded-xl" required />
+                  <div>
+                    <label className="text-sm font-medium">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        className="pl-10"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <Button type="submit" className="w-full h-12 rounded-xl font-bold text-base mt-2" disabled={loading}>
-                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account…</> : "Create account →"}
+                  <div>
+                    <label className="text-sm font-medium">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        className="pl-10"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium">Confirm Password</label>
+                    <Input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {error && (
+                    <p className="text-red-500 text-sm">{error}</p>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create account →"}
                   </Button>
                 </form>
 
-                <p className="text-center text-sm text-muted-foreground mt-6">
+                <p className="text-center text-sm mt-4">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-primary font-semibold hover:underline">Log in</Link>
+                  <Link to="/login" className="text-primary font-medium">
+                    Log in
+                  </Link>
                 </p>
               </motion.div>
             ) : (
-              <motion.div key="otp" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.2 }}>
-                <button onClick={() => setShowOtp(false)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </button>
+              <motion.div
+                key="otp"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.25 }}
+              >
+                <h1 className="text-2xl font-display font-bold mb-4">
+                  Enter verification code
+                </h1>
 
-                <div className="mb-8">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mb-4">
-                    <Mail className="w-7 h-7 text-primary" />
-                  </div>
-                  <h1 className="text-3xl font-display font-bold">Check your email</h1>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    We sent a 6-digit code to <span className="text-foreground font-medium">{email}</span>
-                  </p>
-                </div>
+                <p className="text-muted-foreground mb-6">
+                  We sent a 6‑digit code to <strong>{email}</strong>
+                </p>
+
+                <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
+                  <InputOTPGroup>
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <InputOTPSlot key={i} index={i} />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
 
                 {error && (
-                  <div className="mb-4 px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                    {error}
-                  </div>
+                  <p className="text-red-500 text-sm mt-3">{error}</p>
                 )}
 
-                <div className="flex justify-center mb-6">
-                  <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode} autoFocus autoComplete="one-time-code">
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-
-                <Button className="w-full h-12 rounded-xl font-bold text-base gap-2"
-                  onClick={handleVerify} disabled={loading || otpCode.length < 6}>
-                  {loading
-                    ? <><Loader2 className="w-4 h-4 animate-spin" /> Verifying…</>
-                    : <><CheckCircle2 className="w-4 h-4" /> Verify & Continue</>}
+                <Button onClick={handleVerify} className="w-full mt-6" disabled={loading}>
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify →"}
                 </Button>
 
-                <p className="text-center text-sm text-muted-foreground mt-5">
-                  Didn't get it?{" "}
-                  <button onClick={handleResend} className="text-primary font-semibold hover:underline">Resend code</button>
-                </p>
+                <button
+                  onClick={handleResend}
+                  className="text-sm text-primary mt-4 w-full text-center"
+                >
+                  Resend code
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
-
         </div>
       </div>
     </div>

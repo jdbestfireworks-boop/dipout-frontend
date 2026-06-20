@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import backend from "@/api/backend"; // ✅ FIXED — using your backend
+import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { Mail, Lock, Loader2, Car, MapPin, Star, Shield } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,7 +28,6 @@ export default function Register() {
   const next = params.get("next") || "/";
   const isDriverFlow = next.includes("driver");
 
-  // ⭐ FIXED — now uses your backend route
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -47,11 +45,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await backend.post("/register", {
-        email,
-        password,
-      });
-
+      await api.post("/users/users/register", { email, password });
       setShowOtp(true);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -60,13 +54,12 @@ export default function Register() {
     }
   };
 
-  // ⭐ FIXED — your backend OTP route
   const handleVerify = async () => {
     setError("");
     setLoading(true);
 
     try {
-      const result = await backend.post("/verify-otp", {
+      const result = await api.post("/users/users/verify-otp", {
         email,
         otp: otpCode,
       });
@@ -77,7 +70,7 @@ export default function Register() {
 
       window.location.href = next;
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid code — please try again");
+      setError(err.response?.data?.message || "Invalid code â€” please try again");
     } finally {
       setLoading(false);
     }
@@ -87,7 +80,7 @@ export default function Register() {
     setError("");
 
     try {
-      await backend.post("/resend-otp", { email });
+      await api.post("/users/users/resend-otp", { email });
       toast({ title: "Code resent", description: "Check your inbox." });
     } catch (err) {
       setError(err.response?.data?.message || "Failed to resend");
@@ -129,7 +122,7 @@ export default function Register() {
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground">© 2025 Dip Out · Louisiana</p>
+        <p className="text-xs text-muted-foreground">Â© 2025 Dip Out Â· Louisiana</p>
       </div>
 
       {/* Right panel */}
@@ -192,13 +185,13 @@ export default function Register() {
                   )}
 
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create account →"}
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create account â†’"}
                   </Button>
                 </form>
 
                 <p className="text-center text-sm mt-4">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-primary font-medium">
+                  <Link to="/users/login" className="text-primary font-medium">
                     Log in
                   </Link>
                 </p>
@@ -216,7 +209,7 @@ export default function Register() {
                 </h1>
 
                 <p className="text-muted-foreground mb-6">
-                  We sent a 6‑digit code to <strong>{email}</strong>
+                  We sent a 6â€‘digit code to <strong>{email}</strong>
                 </p>
 
                 <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
@@ -232,7 +225,7 @@ export default function Register() {
                 )}
 
                 <Button onClick={handleVerify} className="w-full mt-6" disabled={loading}>
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify →"}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify â†’"}
                 </Button>
 
                 <button

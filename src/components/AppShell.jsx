@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Car, Smartphone, LogOut, LayoutDashboard, Bell, User, ChevronDown, Shield, ArrowRight } from 'lucide-react';
@@ -79,7 +79,7 @@ export default function AppShell() {
           )}
           <div className="w-px h-4 sm:h-5 bg-border mx-1" />
           <Link
-            to="/register/rider"
+            to="/users/register/rider"
             className="hidden lg:flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs sm:text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
           >
             <Car className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

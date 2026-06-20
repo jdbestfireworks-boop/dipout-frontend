@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Bell, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +19,7 @@ export default function DriverAlertBanner({ driverEmail }) {
       if (event.type === 'create' && event.data?.driver_email === driverEmail && !event.data?.read) {
         setAlerts((prev) => [event.data, ...prev]);
         toast(event.data.message, {
-          icon: '🔔',
+          icon: 'ðŸ””',
           duration: 5000,
         });
       }

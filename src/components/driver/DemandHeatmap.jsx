@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Circle, Tooltip as MapTooltip, CircleMarker } from 'react-leaflet';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -22,9 +22,9 @@ function clusterPoints(rides) {
 }
 
 function demandColor(count) {
-  if (count >= 4) return '#ef4444'; // red — very high
-  if (count >= 2) return '#f97316'; // orange — high
-  return '#eab308';                  // yellow — moderate
+  if (count >= 4) return '#ef4444'; // red â€” very high
+  if (count >= 2) return '#f97316'; // orange â€” high
+  return '#eab308';                  // yellow â€” moderate
 }
 
 export default function DemandHeatmap() {
@@ -90,7 +90,7 @@ export default function DemandHeatmap() {
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
 
-          {/* Surge zones — large pulsing circles */}
+          {/* Surge zones â€” large pulsing circles */}
           {surgeZones.map((zone) => (
             <Circle
               key={zone.id}
@@ -106,13 +106,13 @@ export default function DemandHeatmap() {
             >
               <MapTooltip permanent={false} sticky>
                 <span className="text-xs font-semibold">
-                  ⚡ {zone.name} — {zone.surge_multiplier}x surge
+                  âš¡ {zone.name} â€” {zone.surge_multiplier}x surge
                 </span>
               </MapTooltip>
             </Circle>
           ))}
 
-          {/* Demand clusters — coloured dots */}
+          {/* Demand clusters â€” coloured dots */}
           {demandClusters.map((c, i) => (
             <CircleMarker
               key={i}
@@ -139,7 +139,7 @@ export default function DemandHeatmap() {
           <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block" /> 1 rider
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> 2–3 riders
+          <span className="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block" /> 2â€“3 riders
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" /> 4+ riders

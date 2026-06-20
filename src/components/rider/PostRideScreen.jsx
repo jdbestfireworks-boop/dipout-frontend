@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,7 +16,7 @@ export default function PostRideScreen({ ride, onDone }) {
   const [showComment, setShowComment] = useState(false);
 
   const labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'];
-  const emojis = ['', '😞', '😐', '🙂', '😊', '🌟'];
+  const emojis = ['', 'ðŸ˜ž', 'ðŸ˜', 'ðŸ™‚', 'ðŸ˜Š', 'ðŸŒŸ'];
 
   const confirm = async () => {
     if (tip === null) { toast.error('Please select a tip amount (or $0)'); return; }

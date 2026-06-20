@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Car, ToggleRight, Bell, CheckCircle2, ArrowRight, X } from 'lucide-react';
@@ -8,7 +8,7 @@ const STEPS = [
     icon: Car,
     iconColor: 'text-primary',
     iconBg: 'bg-primary/15',
-    title: "Welcome to Driver Hub! 🎉",
+    title: "Welcome to Driver Hub! ðŸŽ‰",
     description: "You're approved and ready to earn. Let's take a quick 30-second tour so you know exactly how it works.",
     highlight: null,
   },
@@ -18,7 +18,7 @@ const STEPS = [
     iconBg: 'bg-green-500/15',
     title: "Go Online to Start Earning",
     description: 'Tap the "GO ONLINE" button at the top of the screen. Riders nearby will immediately be able to book you. Go offline anytime to stop receiving requests.',
-    highlight: 'The big GO ONLINE button is right at the top — tap it when you\'re ready to drive.',
+    highlight: 'The big GO ONLINE button is right at the top â€” tap it when you\'re ready to drive.',
   },
   {
     icon: Bell,
@@ -26,15 +26,15 @@ const STEPS = [
     iconBg: 'bg-primary/15',
     title: "New Ride Requests",
     description: "When a rider books you, a popup appears with the pickup location, fare, and distance. You have a few seconds to accept or decline before it moves on.",
-    highlight: 'Allow notifications so you never miss a request — even when the app is in the background.',
+    highlight: 'Allow notifications so you never miss a request â€” even when the app is in the background.',
   },
   {
     icon: CheckCircle2,
     iconColor: 'text-green-400',
     iconBg: 'bg-green-500/15',
     title: "Complete Rides & Get Paid",
-    description: "Head to pickup → tap \"Rider Picked Up\" → drive to dropoff → tap \"Complete Trip\". You keep 80% of every fare. Earnings are tracked in your dashboard.",
-    highlight: 'GPS auto-detects arrivals when location is enabled — no manual tapping needed!',
+    description: "Head to pickup â†’ tap \"Rider Picked Up\" â†’ drive to dropoff â†’ tap \"Complete Trip\". You keep 80% of every fare. Earnings are tracked in your dashboard.",
+    highlight: 'GPS auto-detects arrivals when location is enabled â€” no manual tapping needed!',
   },
 ];
 
@@ -117,7 +117,7 @@ export default function DriverWalkthrough() {
           {/* Highlight tip */}
           {current.highlight && (
             <div className="bg-primary/8 border border-primary/20 rounded-xl px-4 py-3 flex gap-2.5">
-              <span className="text-primary text-base mt-0.5">💡</span>
+              <span className="text-primary text-base mt-0.5">ðŸ’¡</span>
               <p className="text-xs text-muted-foreground leading-relaxed">{current.highlight}</p>
             </div>
           )}

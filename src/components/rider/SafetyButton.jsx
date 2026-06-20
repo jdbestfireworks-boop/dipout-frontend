@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Shield, X, Send, CheckCircle2 } from 'lucide-react';
@@ -25,7 +25,7 @@ export default function SafetyButton({ ride }) {
     const body = `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:24px;background:#0f0a1e;color:#f5f0e8;border-radius:12px;">
         <div style="margin-bottom:20px;">
-          <span style="background:#f5c518;color:#0f0a1e;font-weight:700;padding:4px 12px;border-radius:20px;font-size:13px;">🛡️ Dip Out Safety Alert</span>
+          <span style="background:#f5c518;color:#0f0a1e;font-weight:700;padding:4px 12px;border-radius:20px;font-size:13px;">ðŸ›¡ï¸ Dip Out Safety Alert</span>
         </div>
         <h2 style="margin:0 0 6px;font-size:22px;">A rider shared their trip with you</h2>
         <p style="color:#9e94b8;margin:0 0 24px;font-size:14px;">This was sent from the Dip Out app as a safety check-in.</p>
@@ -58,7 +58,7 @@ export default function SafetyButton({ ride }) {
 
     await base44.integrations.Core.SendEmail({
       to: email.trim(),
-      subject: `🛡️ Safety check-in from Dip Out — ${ride.rider_email} is on a trip`,
+      subject: `ðŸ›¡ï¸ Safety check-in from Dip Out â€” ${ride.rider_email} is on a trip`,
       body,
     });
 
@@ -91,11 +91,11 @@ export default function SafetyButton({ ride }) {
             </div>
 
             <p className="text-sm text-muted-foreground">
-              Send your current ride details — status, route, and driver info — to an emergency contact.
+              Send your current ride details â€” status, route, and driver info â€” to an emergency contact.
             </p>
 
             <div className="rounded-xl border border-border bg-secondary/50 p-3 text-xs space-y-1 text-muted-foreground">
-              <p><span className="text-foreground font-medium">Route:</span> {ride.pickup_address} → {ride.dropoff_address}</p>
+              <p><span className="text-foreground font-medium">Route:</span> {ride.pickup_address} â†’ {ride.dropoff_address}</p>
               {ride.driver_email && <p><span className="text-foreground font-medium">Driver:</span> {ride.driver_email}</p>}
             </div>
 
@@ -115,7 +115,7 @@ export default function SafetyButton({ ride }) {
               {sent ? (
                 <><CheckCircle2 className="w-4 h-4 mr-2" /> Sent!</>
               ) : sending ? (
-                'Sending…'
+                'Sendingâ€¦'
               ) : (
                 <><Send className="w-4 h-4 mr-2" /> Send safety info</>
               )}

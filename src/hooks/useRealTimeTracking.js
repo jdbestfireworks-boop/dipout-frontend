@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
@@ -33,9 +33,9 @@ export function useRideTracking(rideId) {
             // Show toast for status changes
             if (event.data.status !== ride?.status) {
               const statusMessages = {
-                accepted: 'Driver accepted your ride! 🚗',
-                in_progress: 'Trip in progress 📍',
-                completed: 'Trip completed! ⭐',
+                accepted: 'Driver accepted your ride! ðŸš—',
+                in_progress: 'Trip in progress ðŸ“',
+                completed: 'Trip completed! â­',
                 cancelled: 'Ride cancelled',
               };
               if (statusMessages[event.data.status]) {
@@ -198,7 +198,7 @@ export function useRideRequests(userEmail, isOnline) {
               const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
               audio.play().catch(() => {});
               
-              toast.info('New ride request! 💰');
+              toast.info('New ride request! ðŸ’°');
             }
           }
           

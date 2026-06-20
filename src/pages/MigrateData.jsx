@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,7 +105,7 @@ export default function MigrateData() {
         <Button variant="ghost" size="icon" onClick={() => navigate('/admin')}>
           <Database className="w-5 h-5" />
         </Button>
-        <h1 className="text-2xl font-display font-bold">Migrate Test → Production</h1>
+        <h1 className="text-2xl font-display font-bold">Migrate Test â†’ Production</h1>
       </div>
 
       <Card>

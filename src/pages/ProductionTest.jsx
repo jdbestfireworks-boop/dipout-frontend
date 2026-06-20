@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export default function ProductionTest() {
 
     const failed = results.filter(t => !t.passed).length;
     if (failed === 0) {
-      toast.success('All production tests passed! 🎉');
+      toast.success('All production tests passed! ðŸŽ‰');
     } else {
       toast.error(`${failed} test(s) failed - review issues below`);
     }

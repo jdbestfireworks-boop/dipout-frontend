@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 
 const PERCENT_OPTIONS = [10, 15, 20, 25];

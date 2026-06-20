@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { MapPin, Navigation, ExternalLink, CreditCard, Phone, MessageCircle, Clock, Gauge, Map } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -121,7 +121,7 @@ export default function ActiveTripCard({
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Payment</p>
             <Badge variant="outline" className="capitalize flex items-center gap-1.5 mt-1">
               {ride.payment_method === 'cash' ? (
-                <><span className="text-xs">💵</span> Cash</>
+                <><span className="text-xs">ðŸ’µ</span> Cash</>
               ) : (
                 <><CreditCard className="w-3.5 h-3.5" /> Card</>
               )}

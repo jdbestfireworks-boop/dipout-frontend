@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -87,7 +87,7 @@ export default function SurgeZoneManager() {
           <div className="col-span-2 flex justify-end gap-2">
             <Button variant="outline" size="sm" onClick={() => setAdding(false)} className="h-9 rounded-xl">Cancel</Button>
             <Button size="sm" onClick={save} disabled={saving || !form.name || !form.lat || !form.lng} className="h-9 rounded-xl">
-              {saving ? 'Saving…' : 'Save zone'}
+              {saving ? 'Savingâ€¦' : 'Save zone'}
             </Button>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function SurgeZoneManager() {
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {z.lat?.toFixed(4)}, {z.lng?.toFixed(4)} · {z.radius_km} km radius
+                {z.lat?.toFixed(4)}, {z.lng?.toFixed(4)} Â· {z.radius_km} km radius
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">

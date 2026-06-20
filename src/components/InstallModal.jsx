@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { X, MapPin, Car } from 'lucide-react';
 
 const config = {
@@ -19,17 +19,17 @@ const config = {
 };
 
 const androidSteps = [
-  { icon: '🌐', text: 'Open this page in Chrome on your Android device' },
-  { icon: '⋮', text: 'Tap the 3-dot menu in the top-right corner' },
-  { icon: '➕', text: 'Tap "Add to Home screen"' },
-  { icon: '✅', text: 'Tap "Add" to confirm — done!' },
+  { icon: 'ðŸŒ', text: 'Open this page in Chrome on your Android device' },
+  { icon: 'â‹®', text: 'Tap the 3-dot menu in the top-right corner' },
+  { icon: 'âž•', text: 'Tap "Add to Home screen"' },
+  { icon: 'âœ…', text: 'Tap "Add" to confirm â€” done!' },
 ];
 
 const iosSteps = [
-  { icon: '🧭', text: 'Open this page in Safari on your iPhone or iPad' },
-  { icon: '□↑', text: 'Tap the Share button at the bottom of the screen' },
-  { icon: '➕', text: 'Scroll down and tap "Add to Home Screen"' },
-  { icon: '✅', text: 'Tap "Add" — the app icon appears on your home screen!' },
+  { icon: 'ðŸ§­', text: 'Open this page in Safari on your iPhone or iPad' },
+  { icon: 'â–¡â†‘', text: 'Tap the Share button at the bottom of the screen' },
+  { icon: 'âž•', text: 'Scroll down and tap "Add to Home Screen"' },
+  { icon: 'âœ…', text: 'Tap "Add" â€” the app icon appears on your home screen!' },
 ];
 
 function StepList({ steps }) {
@@ -92,7 +92,7 @@ export default function InstallModal({ platform, onClose, onInstall }) {
                 onClick={() => setOs('android')}
                 className="flex flex-col items-center gap-2 px-3 py-4 rounded-2xl border border-border hover:border-primary/50 hover:bg-accent transition-all"
               >
-                <span className="text-3xl">🤖</span>
+                <span className="text-3xl">ðŸ¤–</span>
                 <span className="text-sm font-semibold">Android</span>
                 <span className="text-[10px] text-muted-foreground">Chrome / Edge</span>
               </button>
@@ -100,7 +100,7 @@ export default function InstallModal({ platform, onClose, onInstall }) {
                 onClick={() => setOs('ios')}
                 className="flex flex-col items-center gap-2 px-3 py-4 rounded-2xl border border-border hover:border-primary/50 hover:bg-accent transition-all"
               >
-                <span className="text-3xl">🍎</span>
+                <span className="text-3xl">ðŸŽ</span>
                 <span className="text-sm font-semibold">iPhone / iPad</span>
                 <span className="text-[10px] text-muted-foreground">Safari</span>
               </button>
@@ -119,7 +119,7 @@ export default function InstallModal({ platform, onClose, onInstall }) {
               onClick={() => setOs(null)}
               className="flex-1 py-3 rounded-2xl border border-border text-sm font-semibold hover:bg-accent transition-colors"
             >
-              ← Back
+              â† Back
             </button>
             {os === 'android' && onInstall ? (
               <button
@@ -133,7 +133,7 @@ export default function InstallModal({ platform, onClose, onInstall }) {
                 onClick={onClose}
                 className="flex-1 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all"
               >
-                Got it ✓
+                Got it âœ“
               </button>
             )}
           </div>

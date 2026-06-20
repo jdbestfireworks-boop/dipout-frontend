@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -286,9 +286,9 @@ export default function ControlCenter() {
                     'bg-yellow-500'
                   }`} />
                   <div>
-                    <p className="text-sm font-medium">{ride.pickup_address} → {ride.dropoff_address}</p>
+                    <p className="text-sm font-medium">{ride.pickup_address} â†’ {ride.dropoff_address}</p>
                     <p className="text-xs text-muted-foreground">
-                      {ride.rider_email} • {format(new Date(ride.created_date), 'MMM d, HH:mm')}
+                      {ride.rider_email} â€¢ {format(new Date(ride.created_date), 'MMM d, HH:mm')}
                     </p>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ function RideControlCard({ ride, onStatusChange }) {
         </div>
         <span className="font-bold text-sm">${ride.fare?.toFixed(2)}</span>
       </div>
-      <p className="text-sm font-medium mb-2">{ride.pickup_address} → {ride.dropoff_address}</p>
+      <p className="text-sm font-medium mb-2">{ride.pickup_address} â†’ {ride.dropoff_address}</p>
       <div className="flex items-center justify-between gap-2">
         <div className="text-xs text-muted-foreground">
           {ride.rider_email}
@@ -389,8 +389,8 @@ function DriverControlCard({ driver, onStatusChange }) {
         <div>
           <p className="text-sm font-medium">{driver.user_email}</p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{driver.vehicle} • {driver.plate}</span>
-            <span>•</span>
+            <span>{driver.vehicle} â€¢ {driver.plate}</span>
+            <span>â€¢</span>
             <span className="flex items-center gap-1">
               <Star className="w-3 h-3 text-primary fill-primary" />
               {driver.rating?.toFixed(1)}

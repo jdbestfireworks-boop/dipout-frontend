@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,7 +84,7 @@ export default function ChatPage() {
         <p className="text-sm text-muted-foreground">
           Your ride chats will appear here once you have an active or completed trip.
         </p>
-        <Link to="/" className="text-primary text-sm font-medium hover:underline">Book a ride →</Link>
+        <Link to="/" className="text-primary text-sm font-medium hover:underline">Book a ride â†’</Link>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default function ChatPage() {
           <p className="text-xs text-muted-foreground">Your ride conversations</p>
         </div>
       </div>
-      {/* Sidebar — ride list */}
+      {/* Sidebar â€” ride list */}
       <div className="w-full md:w-72 border-b md:border-b-0 md:border-r border-border bg-card flex-shrink-0">
         <div className="p-4 border-b border-border">
           <h2 className="font-display font-bold text-lg">Messages</h2>
@@ -139,7 +139,7 @@ export default function ChatPage() {
               {selectedRide?.rider_email === user?.email ? selectedRide?.driver_email : selectedRide?.rider_email}
             </p>
             <p className="text-xs text-muted-foreground truncate max-w-[240px]">
-              {selectedRide?.pickup_address} → {selectedRide?.dropoff_address}
+              {selectedRide?.pickup_address} â†’ {selectedRide?.dropoff_address}
             </p>
           </div>
         </div>
@@ -179,7 +179,7 @@ export default function ChatPage() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKey}
-              placeholder="Type a message…"
+              placeholder="Type a messageâ€¦"
               className="flex-1 rounded-xl h-10"
             />
             <Button onClick={send} size="icon" className="h-10 w-10 rounded-xl shrink-0">

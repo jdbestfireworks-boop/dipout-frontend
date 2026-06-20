@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Hand, MousePointer2, Zap, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -98,9 +98,9 @@ export default function DriverSettingsModal({ onClose, swipeMode, setSwipeMode, 
 
           {/* Info Box */}
           <div className="rounded-xl bg-muted/50 p-4 space-y-2 border border-border">
-            <p className="text-xs font-semibold">💡 Tips:</p>
+            <p className="text-xs font-semibold">ðŸ’¡ Tips:</p>
             <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-              <li>Use arrow keys (← →) when swipe mode is on</li>
+              <li>Use arrow keys (â† â†’) when swipe mode is on</li>
               <li>Auto-accept works even with screen locked</li>
               <li>Shorter distance = more relevant rides</li>
             </ul>

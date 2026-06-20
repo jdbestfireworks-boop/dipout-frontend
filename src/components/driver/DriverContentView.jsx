@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AnimatePresence } from 'framer-motion';
 import ActiveTripView from './ActiveTripView';
 import HistoryView from './HistoryView';

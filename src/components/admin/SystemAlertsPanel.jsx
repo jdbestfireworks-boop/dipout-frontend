@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -195,8 +195,8 @@ export default function SystemAlertsPanel() {
                     <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
                     <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       <span>{format(new Date(alert.created_date), 'MMM d, HH:mm')}</span>
-                      {alert.ride_id && <span>• Ride: {alert.ride_id}</span>}
-                      {alert.driver_email && <span>• Driver: {alert.driver_email}</span>}
+                      {alert.ride_id && <span>â€¢ Ride: {alert.ride_id}</span>}
+                      {alert.driver_email && <span>â€¢ Driver: {alert.driver_email}</span>}
                     </div>
                   </div>
                 </div>

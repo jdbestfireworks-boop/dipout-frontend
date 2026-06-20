@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -210,7 +210,7 @@ export default function DriverAlertsPanel() {
                                 `${alert.data.trips_completed} trips`
                               }
                               {alert.data.rating !== undefined && 
-                                `Rating: ${alert.data.rating}★`
+                                `Rating: ${alert.data.rating}â˜…`
                               }
                             </span>
                           )}

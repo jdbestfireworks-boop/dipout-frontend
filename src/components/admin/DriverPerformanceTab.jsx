@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Star, DollarSign, TrendingUp, Calendar, Car, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -135,7 +135,7 @@ export default function DriverPerformanceTab({ rides, drivers }) {
                     <TableCell>
                       <div>
                         <p className="font-medium text-sm">{driver.user_email}</p>
-                        <p className="text-xs text-muted-foreground">{driver.vehicle} · {driver.plate}</p>
+                        <p className="text-xs text-muted-foreground">{driver.vehicle} Â· {driver.plate}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -186,7 +186,7 @@ export default function DriverPerformanceTab({ rides, drivers }) {
                 <div>
                   <CardTitle className="text-base">{driver.user_email.split('@')[0]}</CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Last 7 days · Total: ${driver.totalEarnings.toFixed(2)}
+                    Last 7 days Â· Total: ${driver.totalEarnings.toFixed(2)}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 text-sm">

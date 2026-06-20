@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -126,13 +126,13 @@ export default function DriverTrackingMap({ drivers, rides }) {
                       </div>
                     </div>
                     <div className="text-xs space-y-1 text-muted-foreground">
-                      <p>🚗 {driver.vehicle} · {driver.plate}</p>
-                      <p>⭐ {(driver.rating || 5).toFixed(1)} ({driver.trips_completed || 0} trips)</p>
-                      <p>💰 ${driver.total_earnings || 0} earned</p>
+                      <p>ðŸš— {driver.vehicle} Â· {driver.plate}</p>
+                      <p>â­ {(driver.rating || 5).toFixed(1)} ({driver.trips_completed || 0} trips)</p>
+                      <p>ðŸ’° ${driver.total_earnings || 0} earned</p>
                       {driver.approved ? (
-                        <p className="text-green-600">✓ Approved</p>
+                        <p className="text-green-600">âœ“ Approved</p>
                       ) : (
-                        <p className="text-yellow-600">⏳ Pending</p>
+                        <p className="text-yellow-600">â³ Pending</p>
                       )}
                     </div>
                   </div>
@@ -153,7 +153,7 @@ export default function DriverTrackingMap({ drivers, rides }) {
                 <div className="text-xs text-muted-foreground space-y-1">
                   <p>Vehicle: {selectedDriver.vehicle} ({selectedDriver.plate})</p>
                   <p>Phone: {selectedDriver.phone || 'Not provided'}</p>
-                  <p>Rating: ⭐ {(selectedDriver.rating || 5).toFixed(1)}</p>
+                  <p>Rating: â­ {(selectedDriver.rating || 5).toFixed(1)}</p>
                   <p>Status: <Badge className="text-[10px]">{selectedDriver.status}</Badge></p>
                   <p>Earnings: ${(selectedDriver.total_earnings || 0).toFixed(2)}</p>
                   <p>Trips: {selectedDriver.trips_completed || 0}</p>
@@ -163,7 +163,7 @@ export default function DriverTrackingMap({ drivers, rides }) {
                 onClick={() => setSelectedDriver(null)}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                ✕
+                âœ•
               </button>
             </div>
           </div>

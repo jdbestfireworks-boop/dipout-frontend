@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { startOfWeek, endOfWeek, subWeeks, format, eachDayOfInterval } from 'date-fns';
@@ -28,7 +28,7 @@ export default function WeeklyStats({ profile, driverEmail }) {
 
   const weeklyTrips = weeklyRides.length;
 
-  // Average rating this week (rides that have a rating linked — use profile overall as fallback)
+  // Average rating this week (rides that have a rating linked â€” use profile overall as fallback)
   const avgRating = profile.rating || 5;
 
   // Daily earnings chart data
@@ -87,7 +87,7 @@ export default function WeeklyStats({ profile, driverEmail }) {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-display font-bold">Weekly Performance</h2>
         <span className="text-xs text-muted-foreground">
-          {format(weekStart, 'MMM d')} – {format(weekEnd, 'MMM d')}
+          {format(weekStart, 'MMM d')} â€“ {format(weekEnd, 'MMM d')}
         </span>
       </div>
 

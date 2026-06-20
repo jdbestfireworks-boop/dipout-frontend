@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -128,7 +128,7 @@ export default function AdminContact() {
         {userType === 'driver' && (
           <div className="space-y-2">
             <p className="text-sm font-medium">Vehicle</p>
-            <p className="text-sm">{user.vehicle} • {user.plate}</p>
+            <p className="text-sm">{user.vehicle} â€¢ {user.plate}</p>
           </div>
         )}
 
@@ -136,7 +136,7 @@ export default function AdminContact() {
           <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
             <div>
               <p className="text-xs text-muted-foreground">Rating</p>
-              <p className="text-lg font-bold">{user.rating || 'N/A'}★</p>
+              <p className="text-lg font-bold">{user.rating || 'N/A'}â˜…</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Trips</p>

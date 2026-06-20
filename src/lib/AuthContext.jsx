@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+﻿import React, { createContext, useState, useContext, useEffect } from "react";
 import backend from "@/api/backend";
 
 const AuthContext = createContext();
@@ -45,11 +45,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     setUser(null);
     setIsAuthenticated(false);
-    window.location.href = "/login";
+    window.location.href = "/users/login";
   };
 
   const navigateToLogin = () => {
-    window.location.href = "/login";
+    window.location.href = "/users/login";
   };
 
   return (

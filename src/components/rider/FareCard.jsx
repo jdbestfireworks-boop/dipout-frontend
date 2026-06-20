@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export default function FareCard({ quote, distanceKm }) {
       <div className="flex items-baseline gap-3">
         <span className="text-3xl font-display font-bold">${quote.fare.toFixed(2)}</span>
         <span className="text-sm text-muted-foreground">
-          {distanceKm.toFixed(1)} km · base ${quote.baseFare.toFixed(2)} × {quote.surgeMultiplier}
+          {distanceKm.toFixed(1)} km Â· base ${quote.baseFare.toFixed(2)} Ã— {quote.surgeMultiplier}
         </span>
       </div>
       <p className="text-sm text-muted-foreground leading-relaxed">{quote.reason}</p>

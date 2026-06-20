@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import DailyRevenueChart from './DailyRevenueChart';
 import StatCard from './StatCard';
 import { DollarSign, TrendingUp, Star, CreditCard, Sheet, ExternalLink, RefreshCw, Download } from 'lucide-react';
@@ -82,7 +82,7 @@ export default function RevenueTab({ rides, drivers }) {
           </Button>
           <Button size="sm" variant="outline" onClick={handleSync} disabled={syncing} className="gap-1.5 h-8">
             <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">{syncing ? 'Exporting…' : 'Google Sheets'}</span>
+            <span className="hidden sm:inline">{syncing ? 'Exportingâ€¦' : 'Google Sheets'}</span>
           </Button>
           {sheetUrl && (
             <a href={sheetUrl} target="_blank" rel="noopener noreferrer">
@@ -127,7 +127,7 @@ export default function RevenueTab({ rides, drivers }) {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold">${methodRevenue.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground">{pct}% · {methodRides.length} rides</p>
+                  <p className="text-xs text-muted-foreground">{pct}% Â· {methodRides.length} rides</p>
                 </div>
               </div>
             );
@@ -144,7 +144,7 @@ export default function RevenueTab({ rides, drivers }) {
           <div className="divide-y divide-border">
             {topDrivers.map(([email, earned], i) => (
               <div key={email} className="flex items-center gap-4 px-5 py-3">
-                <span className="text-lg w-8 text-center">{['🥇','🥈','🥉'][i] || `#${i+1}`}</span>
+                <span className="text-lg w-8 text-center">{['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'][i] || `#${i+1}`}</span>
                 <p className="flex-1 text-sm truncate">{email}</p>
                 <p className="font-bold text-sm">${earned.toFixed(2)}</p>
               </div>

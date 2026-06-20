@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Home, Briefcase, MapPin, Plus, Pencil, Trash2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -151,7 +151,7 @@ function AddressForm({ form, setForm, availableLabels, onSave, onCancel }) {
         })}
       </div>
       <AddressInput
-        placeholder="Enter address…"
+        placeholder="Enter addressâ€¦"
         value={form.address}
         onChange={(val, coords) => setForm(f => ({ ...f, address: val, lat: coords?.lat ?? null, lng: coords?.lng ?? null }))}
       />

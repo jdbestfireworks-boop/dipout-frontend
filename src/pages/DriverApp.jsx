@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Loader2, Car } from 'lucide-react';
 import DriverOnboarding from '@/components/driver/DriverOnboarding';
@@ -190,7 +190,7 @@ export default function DriverApp() {
             getSound().play().catch(() => console.log('Audio autoplay blocked'));
             setSelectedRequest(event.data);
             if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('🔔 New Ride Request!', {
+              new Notification('ðŸ”” New Ride Request!', {
                 body: `$${((event.data.fare || 0) * 0.8).toFixed(2)} earnings - ${event.data.distance_km || 0} mi`,
                 icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
                 tag: `ride-${event.id}`,
@@ -210,11 +210,11 @@ export default function DriverApp() {
           getSound().currentTime = 0;
           getSound().play().catch(() => {});
           toast.success(
-            `🚗 Ride assigned! Head to ${event.data.pickup_address}`,
-            { duration: 6000, description: `Fare: $${((event.data.fare || 0) * 0.8).toFixed(2)} · ${event.data.distance_km || 0} mi` }
+            `ðŸš— Ride assigned! Head to ${event.data.pickup_address}`,
+            { duration: 6000, description: `Fare: $${((event.data.fare || 0) * 0.8).toFixed(2)} Â· ${event.data.distance_km || 0} mi` }
           );
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('🚗 Ride Assigned!', {
+            new Notification('ðŸš— Ride Assigned!', {
               body: `Pickup: ${event.data.pickup_address}\nEarnings: $${((event.data.fare || 0) * 0.8).toFixed(2)}`,
               icon: 'https://media.base44.com/images/public/6a2adf5a7f92459340d0efc2/925d1fd18_generated_image.png',
               tag: `assigned-${event.id}`,
@@ -290,7 +290,7 @@ export default function DriverApp() {
       setActiveRide({ ...ride, status: 'accepted', driver_email: user.email });
       setRequests((prev) => prev.filter((r) => r.id !== ride.id));
       setSelectedRequest(null);
-      toast.success('Ride accepted — navigate to pickup location');
+      toast.success('Ride accepted â€” navigate to pickup location');
     } catch (error) {
       console.error('Accept ride error:', error);
       toast.error('Failed to accept ride. Another driver may have taken it.');
@@ -354,7 +354,7 @@ export default function DriverApp() {
         earnings: prev.earnings + earned,
         activeRide: null
       }));
-      toast.success(`Trip complete — you earned $${earned.toFixed(2)}`);
+      toast.success(`Trip complete â€” you earned $${earned.toFixed(2)}`);
       setActiveRide(null);
       setRequests([]);
     } catch (error) {

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { DollarSign, Car } from 'lucide-react';
 

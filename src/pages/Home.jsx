@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Car, MapPin, Shield, Bell, ArrowRight, Sun, Moon } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -83,21 +83,21 @@ export default function Home() {
     if (!isLoggedIn) {
       e.preventDefault();
       toast.info('Please sign in to book a ride');
-      navigate('/login');
+      navigate('/users/login');
     }
   };
 
   const handleDrive = (e) => {
     if (!isLoggedIn) {
       e.preventDefault();
-      navigate('/register/driver');
+      navigate('/users/register/driver');
     }
   };
 
   const handleBookRideClick = (e) => {
     if (!isLoggedIn) {
       e.preventDefault();
-      navigate('/register/rider');
+      navigate('/users/register/rider');
     }
   };
 
@@ -155,7 +155,7 @@ export default function Home() {
           className="text-center mb-10"
         >
           <h1 className="text-6xl font-display font-bold tracking-tight mb-3 bg-gradient-to-r from-primary via-amber-300 to-primary bg-clip-text text-transparent">Dip Out</h1>
-          <p className="text-muted-foreground text-lg font-light">Simple, affordable rides — Louisiana only.</p>
+          <p className="text-muted-foreground text-lg font-light">Simple, affordable rides â€” Louisiana only.</p>
         </motion.div>
 
         {/* Main CTAs */}
@@ -168,7 +168,7 @@ export default function Home() {
           {!isLoggedIn ? (
             <>
               <Link
-                to="/login"
+                to="/users/login"
                 className="group relative flex items-center justify-between w-full px-10 py-6 rounded-2xl bg-gradient-to-r from-primary via-amber-300 to-primary text-primary-foreground font-bold text-xl hover:shadow-2xl hover:shadow-primary/40 active:scale-[0.98] transition-all overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -180,7 +180,7 @@ export default function Home() {
               </Link>
 
               <Link
-                to="/register/rider"
+                to="/users/register/rider"
                 className="group flex items-center justify-between w-full px-10 py-6 rounded-2xl border-2 border-primary/50 bg-gradient-to-r from-primary/15 to-primary/5 backdrop-blur-sm text-primary font-bold text-xl hover:border-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-4">
@@ -245,7 +245,7 @@ export default function Home() {
             <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-primary/30 bg-primary/10">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                  <span className="text-base">📲</span>
+                  <span className="text-base">ðŸ“²</span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-foreground leading-none">Install Dip Out</p>
@@ -260,7 +260,7 @@ export default function Home() {
                   Install
                 </button>
                 <button onClick={() => setShowInstallBanner(false)} className="p-2 text-muted-foreground hover:text-foreground">
-                  ✕
+                  âœ•
                 </button>
               </div>
             </div>
@@ -308,7 +308,7 @@ export default function Home() {
               onClick={() => {
                 if (!isLoggedIn) {
                   toast.info('Please login to view ride history');
-                  navigate('/login');
+                  navigate('/users/login');
                 } else {
                   navigate('/rides');
                 }
@@ -321,7 +321,7 @@ export default function Home() {
               onClick={() => {
                 if (!isLoggedIn) {
                   toast.info('Please login to access settings');
-                  navigate('/login');
+                  navigate('/users/login');
                 } else {
                   navigate('/notifications');
                 }
@@ -331,7 +331,7 @@ export default function Home() {
               <Bell className="w-3 h-3" /> Settings
             </button>
           </div>
-          <Link to="/register/rider" className="text-primary font-semibold hover:underline">
+          <Link to="/users/register/rider" className="text-primary font-semibold hover:underline">
             Create Rider Account
           </Link>
         </motion.div>

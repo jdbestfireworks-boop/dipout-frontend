@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
         {/* Page content */}
         <main className="flex-1 p-3 sm:p-5 space-y-4 sm:space-y-6 w-full max-w-full sm:max-w-5xl mx-auto">
 
-          {/* ── OVERVIEW ── */}
+          {/* â”€â”€ OVERVIEW â”€â”€ */}
           {tab === 'overview' && (
             <>
               <DashboardSummaryCharts rides={rides} drivers={drivers} />
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-sm">Google Sheets Sync</p>
-                    <p className="text-xs text-muted-foreground">Auto-sync active · paid completed rides</p>
+                    <p className="text-xs text-muted-foreground">Auto-sync active Â· paid completed rides</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                   )}
                   <Button size="sm" variant="outline" onClick={bulkSync} disabled={syncing} className="gap-1.5 h-8">
                     <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
-                    {syncing ? 'Syncing…' : 'Sync All'}
+                    {syncing ? 'Syncingâ€¦' : 'Sync All'}
                   </Button>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
               <div className="rounded-2xl border border-border bg-card overflow-hidden">
                 <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                   <span className="font-semibold text-sm">Recent Rides</span>
-                  <button onClick={() => handleTabChange('rides')} className="text-xs text-primary hover:underline">View all →</button>
+                  <button onClick={() => handleTabChange('rides')} className="text-xs text-primary hover:underline">View all â†’</button>
                 </div>
                 <div className="divide-y divide-border">
                   {rides.slice(0, 5).map(r => (
@@ -236,8 +236,8 @@ export default function AdminDashboard() {
                         <MapPin className="w-4 h-4 text-muted-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{r.pickup_address} → {r.dropoff_address}</p>
-                        <p className="text-xs text-muted-foreground">{r.rider_email} · {r.created_date ? format(new Date(r.created_date), 'MMM d, HH:mm') : ''}</p>
+                        <p className="text-sm font-medium truncate">{r.pickup_address} â†’ {r.dropoff_address}</p>
+                        <p className="text-xs text-muted-foreground">{r.rider_email} Â· {r.created_date ? format(new Date(r.created_date), 'MMM d, HH:mm') : ''}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="font-bold text-sm">${(r.fare || 0).toFixed(2)}</span>
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
             </>
           )}
 
-          {/* ── RIDE HISTORY ── */}
+          {/* â”€â”€ RIDE HISTORY â”€â”€ */}
           {tab === 'rides' && (
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
               <div className="px-3 sm:px-4 py-3 border-b border-border flex items-center justify-between">
@@ -276,12 +276,12 @@ export default function AdminDashboard() {
                     {rides.map(r => (
                       <TableRow key={r.id}>
                         <TableCell className="whitespace-nowrap text-muted-foreground text-[10px] sm:text-xs">
-                          {r.created_date ? format(new Date(r.created_date), 'MMM d, HH:mm') : '—'}
+                          {r.created_date ? format(new Date(r.created_date), 'MMM d, HH:mm') : 'â€”'}
                         </TableCell>
                         <TableCell className="max-w-[100px] sm:max-w-[140px] truncate text-xs sm:text-sm">{r.rider_email}</TableCell>
-                        <TableCell className="max-w-[100px] sm:max-w-[140px] truncate text-xs sm:text-sm text-muted-foreground">{r.driver_email || '—'}</TableCell>
+                        <TableCell className="max-w-[100px] sm:max-w-[140px] truncate text-xs sm:text-sm text-muted-foreground">{r.driver_email || 'â€”'}</TableCell>
                         <TableCell className="max-w-[150px] sm:max-w-[200px] truncate text-[10px] sm:text-xs text-muted-foreground">
-                          {r.pickup_address} → {r.dropoff_address}
+                          {r.pickup_address} â†’ {r.dropoff_address}
                         </TableCell>
                         <TableCell className="font-semibold text-xs sm:text-sm">${(r.fare||0).toFixed(2)}</TableCell>
                         <TableCell className="text-muted-foreground text-xs sm:text-sm">{r.surge_multiplier||1}x</TableCell>
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <span className={`text-[10px] sm:text-xs font-medium ${r.payment_status === 'paid' ? 'text-green-400' : 'text-muted-foreground'}`}>
-                            {r.payment_status} · {r.payment_method || '—'}
+                            {r.payment_status} Â· {r.payment_method || 'â€”'}
                           </span>
                         </TableCell>
                       </TableRow>
@@ -306,27 +306,27 @@ export default function AdminDashboard() {
 
 
 
-          {/* ── DRIVER MANAGEMENT ── */}
+          {/* â”€â”€ DRIVER MANAGEMENT â”€â”€ */}
           {tab === 'drivers' && <DriverManagementPanel />}
 
-          {/* ── SYSTEM ALERTS ── */}
+          {/* â”€â”€ SYSTEM ALERTS â”€â”€ */}
           {tab === 'alerts' && <SystemAlertsPanel />}
 
-          {/* ── USER MANAGEMENT ── */}
+          {/* â”€â”€ USER MANAGEMENT â”€â”€ */}
           {tab === 'users' && <UserManagementPanel users={[]} rides={rides} />}
 
-          {/* ── DRIVER PERFORMANCE ── */}
+          {/* â”€â”€ DRIVER PERFORMANCE â”€â”€ */}
           {tab === 'performance' && <DriverPerformanceTab rides={rides} drivers={drivers} />}
 
-          {/* ── REVENUE ── */}
+          {/* â”€â”€ REVENUE â”€â”€ */}
           {tab === 'revenue' && <RevenueTab rides={rides} drivers={drivers} />}
 
-          {/* ── DRIVER MAP ── */}
+          {/* â”€â”€ DRIVER MAP â”€â”€ */}
           {tab === 'map' && (
             <DriverTrackingMap drivers={drivers} rides={rides} />
           )}
 
-          {/* ── SETTINGS ── */}
+          {/* â”€â”€ SETTINGS â”€â”€ */}
           {tab === 'settings' && (
             <div className="space-y-4">
               <PricingControls />
@@ -335,25 +335,25 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* ── EARNINGS ── */}
+          {/* â”€â”€ EARNINGS â”€â”€ */}
           {tab === 'earnings' && <DriverEarningsTab />}
 
-          {/* ── MONTHLY REPORTS ── */}
+          {/* â”€â”€ MONTHLY REPORTS â”€â”€ */}
           {tab === 'reports' && <MonthlyReportTab rides={rides} drivers={drivers} />}
 
-          {/* ── SYSTEM ALERTS ── */}
+          {/* â”€â”€ SYSTEM ALERTS â”€â”€ */}
           {tab === 'system-alerts' && <SystemAlertsPanel />}
 
-          {/* ── USER MANAGEMENT ── */}
+          {/* â”€â”€ USER MANAGEMENT â”€â”€ */}
           {tab === 'users' && <UserManagementPanel rides={rides} />}
 
-          {/* ── ADVANCED ANALYTICS ── */}
+          {/* â”€â”€ ADVANCED ANALYTICS â”€â”€ */}
           {tab === 'analytics' && <AdvancedAnalytics rides={rides} drivers={drivers} />}
 
-          {/* ── DRIVER ALERTS ── */}
+          {/* â”€â”€ DRIVER ALERTS â”€â”€ */}
           {tab === 'alerts' && <DriverAlertsTab />}
 
-          {/* ── AI ASSISTANT ── */}
+          {/* â”€â”€ AI ASSISTANT â”€â”€ */}
           {tab === 'ai' && <AIAssistantPanel />}
 
         </main>

@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster"
+﻿import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -64,14 +64,14 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/register/rider" element={<RegisterRider />} />
-      <Route path="/register/driver" element={<RegisterDriver />} />
+      <Route path="/users/login" element={<Login />} />
+      <Route path="/users/register" element={<Register />} />
+      <Route path="/users/register/rider" element={<RegisterRider />} />
+      <Route path="/users/register/driver" element={<RegisterDriver />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Home />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/users/login" replace />} />}>
         <Route element={<AppShell />}>
           <Route path="/rider" element={<RiderApp />} />
           <Route path="/driver" element={<DriverApp />} />

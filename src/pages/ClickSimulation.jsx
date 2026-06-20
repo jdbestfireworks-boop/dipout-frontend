@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -21,21 +21,21 @@ const RIDER_STEPS = [
     id: 1,
     title: 'Enter Pickup Location',
     description: 'As a rider, you start by entering where you want to be picked up',
-    action: () => toast.info('📍 Pickup location entered: "123 Main St, Lafayette, LA"'),
+    action: () => toast.info('ðŸ“ Pickup location entered: "123 Main St, Lafayette, LA"'),
     component: <LocationStep pickup="123 Main St, Lafayette, LA" destination="" showDestination={false} />
   },
   {
     id: 2,
     title: 'Enter Destination',
     description: 'Now enter where you want to go',
-    action: () => toast.info('🎯 Destination entered: "Cajun Field, Lafayette, LA"'),
+    action: () => toast.info('ðŸŽ¯ Destination entered: "Cajun Field, Lafayette, LA"'),
     component: <LocationStep pickup="123 Main St, Lafayette, LA" destination="Cajun Field, Lafayette, LA" showDestination={true} />
   },
   {
     id: 3,
     title: 'Get AI Fare Estimate',
     description: 'Our AI calculates the fare based on distance, demand, and time',
-    action: () => toast.success('💰 Fare calculated: $18.50 (2.3 miles)'),
+    action: () => toast.success('ðŸ’° Fare calculated: $18.50 (2.3 miles)'),
     component: <FareEstimate fare="$18.50" distance="2.3 mi" onSelectPayment={(method) => toast.info(`Payment method selected: ${method}`)} />
   },
   {
@@ -43,8 +43,8 @@ const RIDER_STEPS = [
     title: 'Request Ride',
     description: 'Tap to request the ride and find a nearby driver',
     action: async () => {
-      toast.loading('🚗 Finding your driver...', { duration: 2000 });
-      setTimeout(() => toast.success('✓ Driver found! Mike is 2 min away'), 2000);
+      toast.loading('ðŸš— Finding your driver...', { duration: 2000 });
+      setTimeout(() => toast.success('âœ“ Driver found! Mike is 2 min away'), 2000);
     },
     component: (
       <div className="bg-card rounded-xl border border-border p-6 text-center space-y-4">
@@ -62,15 +62,15 @@ const RIDER_STEPS = [
     id: 5,
     title: 'Driver Assigned',
     description: 'A driver has accepted your ride! Track them in real-time',
-    action: () => toast.success('🚙 Mike (4.8★) is on the way - Toyota Camry, Plate: ABC-123'),
+    action: () => toast.success('ðŸš™ Mike (4.8â˜…) is on the way - Toyota Camry, Plate: ABC-123'),
     component: <DriverAssigned driverName="Mike" rating="4.8" vehicle="Toyota Camry" plate="ABC-123" eta="2 min" />
   },
   {
     id: 6,
     title: 'Trip Complete & Payment',
     description: 'Rate your driver and complete payment',
-    action: () => toast.success('⭐ Trip complete! Payment processed: $18.50'),
-    component: <PostRidePayment fare="$18.50" paymentMethod="Card" onConfirm={() => toast.success('✓ Payment confirmed!')} />
+    action: () => toast.success('â­ Trip complete! Payment processed: $18.50'),
+    component: <PostRidePayment fare="$18.50" paymentMethod="Card" onConfirm={() => toast.success('âœ“ Payment confirmed!')} />
   }
 ];
 
@@ -79,7 +79,7 @@ const DRIVER_STEPS = [
     id: 7,
     title: 'Go Online',
     description: 'As a driver, toggle online to start receiving ride requests',
-    action: () => toast.success('✓ You\'re now online! Receiving ride requests...'),
+    action: () => toast.success('âœ“ You\'re now online! Receiving ride requests...'),
     component: (
       <div className="bg-card rounded-xl border border-border p-6 text-center space-y-4">
         <div className="flex items-center justify-center gap-3">
@@ -97,14 +97,14 @@ const DRIVER_STEPS = [
     id: 8,
     title: 'Receive Ride Request',
     description: 'A nearby rider needs a ride! Review the details and decide',
-    action: () => toast.info('🔔 New ride request: $18.50 fare, 2.3 miles'),
+    action: () => toast.info('ðŸ”” New ride request: $18.50 fare, 2.3 miles'),
     component: <RideRequestCard earnings="$14.80" pickup="123 Main St" dropoff="Cajun Field" distance="2.3 mi" />
   },
   {
     id: 9,
     title: 'Navigate to Pickup',
     description: 'Accept the ride and navigate to pick up the rider',
-    action: () => toast.success('✓ Ride accepted! Navigate to pickup location'),
+    action: () => toast.success('âœ“ Ride accepted! Navigate to pickup location'),
     component: (
       <div className="bg-card rounded-xl border border-border p-5 space-y-3">
         <div className="flex items-center gap-3">
@@ -113,7 +113,7 @@ const DRIVER_STEPS = [
           </div>
           <div className="flex-1">
             <p className="font-semibold">Rider: Sarah</p>
-            <p className="text-sm text-muted-foreground">4.9★ • 123 Main St</p>
+            <p className="text-sm text-muted-foreground">4.9â˜… â€¢ 123 Main St</p>
           </div>
         </div>
         <Button className="w-full">
@@ -126,14 +126,14 @@ const DRIVER_STEPS = [
     id: 10,
     title: 'Start Trip',
     description: 'Pick up the rider and start the trip',
-    action: () => toast.success('🚗 Trip started - heading to destination'),
+    action: () => toast.success('ðŸš— Trip started - heading to destination'),
     component: <ActiveTrip status="In Progress" fare="$18.50" destination="Cajun Field" distance="2.3 mi" />
   },
   {
     id: 11,
     title: 'Complete & Earn',
     description: 'Drop off the rider and complete the trip to get paid',
-    action: () => toast.success('💰 Trip complete! You earned $14.80'),
+    action: () => toast.success('ðŸ’° Trip complete! You earned $14.80'),
     component: <TripComplete earnings="$14.80" rating="5-star rating received!" />
   }
 ];
@@ -205,7 +205,7 @@ export default function ClickSimulation() {
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
     setCurrentStep(0);
-    toast.success(`✓ Playing as ${role}`);
+    toast.success(`âœ“ Playing as ${role}`);
   };
 
   return (
@@ -274,7 +274,7 @@ export default function ClickSimulation() {
                     variant="outline"
                     className="px-6"
                   >
-                    ← Previous
+                    â† Previous
                   </Button>
                   
                   <div className="flex gap-2">
@@ -301,7 +301,7 @@ export default function ClickSimulation() {
                     disabled={currentStep === totalSteps - 1 || isPlaying}
                     className="px-6"
                   >
-                    Next →
+                    Next â†’
                   </Button>
                 </div>
               </CardContent>
@@ -364,7 +364,7 @@ export default function ClickSimulation() {
               <Card>
                 <CardContent className="pt-4 text-center space-y-1">
                   <Star className="w-6 h-6 mx-auto text-primary" />
-                  <p className="text-2xl font-bold">4.8★</p>
+                  <p className="text-2xl font-bold">4.8â˜…</p>
                   <p className="text-xs text-muted-foreground">Avg Rating</p>
                 </CardContent>
               </Card>

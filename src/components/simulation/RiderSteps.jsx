@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, Clock, ChevronRight, Car, User, Star, CheckCircle2, Zap, CreditCard, Banknote, Loader2, Phone, MessageCircle } from 'lucide-react';
@@ -76,8 +76,8 @@ export function DriverAssigned({ name, rating, vehicle, plate, eta }) {
           <User className="w-6 h-6 text-primary" />
         </div>
         <div className="flex-1">
-          <p className="font-semibold">{name} • {rating}★</p>
-          <p className="text-sm text-muted-foreground">{vehicle} • {plate}</p>
+          <p className="font-semibold">{name} â€¢ {rating}â˜…</p>
+          <p className="text-sm text-muted-foreground">{vehicle} â€¢ {plate}</p>
         </div>
         <div className="text-right">
           <p className="text-xs text-muted-foreground">Arriving in</p>

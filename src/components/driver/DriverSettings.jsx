@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
@@ -60,7 +60,7 @@ export default function DriverSettings({ onClose }) {
         <div className="p-5 border-b border-border flex items-center justify-between">
           <h3 className="text-xl font-bold">Driver Settings</h3>
           <button onClick={onClose} className="p-2 hover:bg-accent rounded-lg transition-colors">
-            ✕
+            âœ•
           </button>
         </div>
 
@@ -71,7 +71,7 @@ export default function DriverSettings({ onClose }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <span className="text-xl">👆</span>
+                  <span className="text-xl">ðŸ‘†</span>
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Swipe to Accept/Decline</p>
@@ -100,7 +100,7 @@ export default function DriverSettings({ onClose }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <span className="text-xl">⚡</span>
+                  <span className="text-xl">âš¡</span>
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Auto Accept Rides</p>
@@ -128,7 +128,7 @@ export default function DriverSettings({ onClose }) {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <span className="text-xl">📍</span>
+                <span className="text-xl">ðŸ“</span>
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-sm">Max Accept Distance</p>
@@ -156,9 +156,9 @@ export default function DriverSettings({ onClose }) {
 
           {/* Info Box */}
           <div className="rounded-xl bg-muted/50 p-4 space-y-2">
-            <p className="text-xs font-semibold">💡 Pro Tips:</p>
+            <p className="text-xs font-semibold">ðŸ’¡ Pro Tips:</p>
             <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
-              <li>Use arrow keys (← →) to swipe when modal is open</li>
+              <li>Use arrow keys (â† â†’) to swipe when modal is open</li>
               <li>Auto-accept works even when phone is locked</li>
               <li>Shorter max distance = more relevant rides</li>
             </ul>

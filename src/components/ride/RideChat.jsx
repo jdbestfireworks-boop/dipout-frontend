@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -143,7 +143,7 @@ export default function RideChat({ ride, myEmail, myRole, otherEmail, driverPhon
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKey}
-                placeholder="Type a message…"
+                placeholder="Type a messageâ€¦"
                 className="flex-1 rounded-xl h-9"
               />
               <Button size="icon" onClick={send} className="h-9 w-9 rounded-xl shrink-0">

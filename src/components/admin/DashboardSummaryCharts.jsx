@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, Activity, Clock, DollarSign, Car, Users, Star } from 'lucide-react';
 import { format } from 'date-fns';
@@ -359,7 +359,7 @@ export default function DashboardSummaryCharts({ rides, drivers }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{driver.email}</p>
                     <p className="text-xs text-muted-foreground">
-                      {driver.trips} trips · {driver.status}
+                      {driver.trips} trips Â· {driver.status}
                     </p>
                   </div>
                   <div className="text-right">

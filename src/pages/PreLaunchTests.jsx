@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -227,7 +227,7 @@ export default function PreLaunchTests() {
         </Card>
 
         <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-          <h3 className="font-semibold text-sm text-yellow-400 mb-2">⚠️ Pre-Launch Reminders</h3>
+          <h3 className="font-semibold text-sm text-yellow-400 mb-2">âš ï¸ Pre-Launch Reminders</h3>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li>Switch to Production database before going live</li>
             <li>Update Stripe keys to live mode</li>

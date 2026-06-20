@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -236,7 +236,7 @@ export default function DriverEarningsTab() {
                         ${(driver.platform_cut || 0).toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right text-xs text-muted-foreground">
-                        {driver.calculated_date ? format(new Date(driver.calculated_date), 'MMM d, HH:mm') : '—'}
+                        {driver.calculated_date ? format(new Date(driver.calculated_date), 'MMM d, HH:mm') : 'â€”'}
                       </TableCell>
                     </TableRow>
                   ))}

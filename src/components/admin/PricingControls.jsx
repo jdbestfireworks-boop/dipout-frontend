@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -171,7 +171,7 @@ export default function PricingControls() {
           <span className="font-medium">${formData.base_fare?.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted-foreground">Distance (5 mi × ${formData.per_mile_rate?.toFixed(2)})</span>
+          <span className="text-muted-foreground">Distance (5 mi Ã— ${formData.per_mile_rate?.toFixed(2)})</span>
           <span className="font-medium">${(5 * formData.per_mile_rate).toFixed(2)}</span>
         </div>
         <div className="flex justify-between pt-2 border-t border-border font-bold text-base">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Clock, Calendar, X } from 'lucide-react';
 import { format, addMinutes, startOfMinute } from 'date-fns';
 
@@ -48,7 +48,7 @@ export default function SchedulePicker({ scheduledFor, onChange }) {
           {scheduledFor ? (
             <>
               <Calendar className="w-4 h-4" />
-              {format(new Date(scheduledFor), 'EEE, MMM d · h:mm a')}
+              {format(new Date(scheduledFor), 'EEE, MMM d Â· h:mm a')}
               <X className="w-3.5 h-3.5 ml-1 opacity-70" />
             </>
           ) : (

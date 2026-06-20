@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { MapPin, Navigation, CreditCard, Banknote, Loader2, Clock, ChevronDown, ChevronUp, User, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
@@ -113,7 +113,7 @@ export default function RideHistoryPage() {
             {rides.length === 0 ? (
               <div className="rounded-2xl border border-border bg-card p-10 text-center space-y-3">
                 <p className="text-muted-foreground text-sm">No completed rides yet.</p>
-                <Link to="/" className="text-primary text-sm font-medium hover:underline">Book your first ride →</Link>
+                <Link to="/" className="text-primary text-sm font-medium hover:underline">Book your first ride â†’</Link>
               </div>
             ) : (
               <div className="space-y-3">
@@ -121,15 +121,15 @@ export default function RideHistoryPage() {
                   const isExpanded = expandedId === r.id;
                   return (
                     <div key={r.id} className="rounded-2xl border border-border bg-card overflow-hidden">
-                      {/* Row header — always visible */}
+                      {/* Row header â€” always visible */}
                       <button
                         className="w-full flex items-center justify-between p-4 text-left hover:bg-accent/40 transition-colors"
                         onClick={() => setExpandedId(isExpanded ? null : r.id)}
                       >
                         <div className="space-y-0.5">
-                          <p className="text-xs text-muted-foreground">{format(new Date(r.created_date), 'EEE, MMM d yyyy · h:mm a')}</p>
+                          <p className="text-xs text-muted-foreground">{format(new Date(r.created_date), 'EEE, MMM d yyyy Â· h:mm a')}</p>
                           <p className="text-sm font-medium truncate max-w-[220px]">{r.pickup_address}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[220px]">→ {r.dropoff_address}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[220px]">â†’ {r.dropoff_address}</p>
                           {r.driver_email && (
                             <p className="text-xs text-muted-foreground flex items-center gap-1 pt-0.5">
                               <User className="w-3 h-3" />
@@ -176,7 +176,7 @@ export default function RideHistoryPage() {
                           <div className="grid grid-cols-3 gap-2 pt-1">
                             <div className="rounded-xl bg-secondary p-2.5 text-center">
                               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Distance</p>
-                              <p className="font-semibold text-sm mt-0.5">{r.distance_km ? `${r.distance_km} km` : '—'}</p>
+                              <p className="font-semibold text-sm mt-0.5">{r.distance_km ? `${r.distance_km} km` : 'â€”'}</p>
                             </div>
                             <div className="rounded-xl bg-secondary p-2.5 text-center">
                               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Payment</p>
@@ -196,7 +196,7 @@ export default function RideHistoryPage() {
                           {r.scheduled_for && (
                             <div className="flex items-center gap-2 text-xs text-primary font-medium">
                               <Clock className="w-3.5 h-3.5" />
-                              Scheduled for {format(new Date(r.scheduled_for), 'EEE, MMM d · h:mm a')}
+                              Scheduled for {format(new Date(r.scheduled_for), 'EEE, MMM d Â· h:mm a')}
                             </div>
                           )}
 

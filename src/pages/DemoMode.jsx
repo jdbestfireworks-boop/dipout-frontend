@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,22 +18,22 @@ const scenarios = [
       {
         title: 'Sarah opens the app',
         description: 'Sarah needs to get to the airport for her flight. She opens Dip Out and enters her pickup location (123 Main St) and destination (O\'Hare Airport).',
-        visual: '📱 Phone screen with address input'
+        visual: 'ðŸ“± Phone screen with address input'
       },
       {
         title: 'AI calculates fare',
         description: 'Our AI pricing engine analyzes distance (28 km), current demand, and traffic. Fare: $45.50 with 1.2x surge due to moderate demand.',
-        visual: '💰 Fare estimate: $45.50 (1.2x surge)'
+        visual: 'ðŸ’° Fare estimate: $45.50 (1.2x surge)'
       },
       {
         title: 'Ride requested',
         description: 'Sarah selects card payment and requests the ride. The system broadcasts to nearby drivers.',
-        visual: '🚗 Finding your driver...'
+        visual: 'ðŸš— Finding your driver...'
       },
       {
         title: 'Driver accepts',
-        description: 'Mike, a nearby driver (4.8★, 342 trips), accepts the ride. Sarah sees his location approaching on the map.',
-        visual: '✓ Mike is 3 min away'
+        description: 'Mike, a nearby driver (4.8â˜…, 342 trips), accepts the ride. Sarah sees his location approaching on the map.',
+        visual: 'âœ“ Mike is 3 min away'
       }
     ]
   },
@@ -44,22 +44,22 @@ const scenarios = [
       {
         title: 'Mike receives notification',
         description: 'Mike is online and available. He gets a ride request: $45.50 fare, 28 km to airport. He taps Accept.',
-        visual: '📲 New Ride Request - $45.50'
+        visual: 'ðŸ“² New Ride Request - $45.50'
       },
       {
         title: 'Picks up rider',
         description: 'Mike navigates to Sarah\'s location, confirms identity, and starts the trip in the app.',
-        visual: '🚙 Trip Started - In Progress'
+        visual: 'ðŸš™ Trip Started - In Progress'
       },
       {
         title: 'Completes ride',
         description: 'After dropping Sarah at O\'Hare, Mike marks the trip complete. He earns $36.40 (80% of fare).',
-        visual: '✓ Trip Complete - Earned $36.40'
+        visual: 'âœ“ Trip Complete - Earned $36.40'
       },
       {
         title: 'Gets rated',
-        description: 'Sarah rates Mike 5 stars and leaves a tip. His rating stays at 4.8★, boosting his visibility for future rides.',
-        visual: '⭐ 5-star rating received'
+        description: 'Sarah rates Mike 5 stars and leaves a tip. His rating stays at 4.8â˜…, boosting his visibility for future rides.',
+        visual: 'â­ 5-star rating received'
       }
     ]
   },
@@ -70,22 +70,22 @@ const scenarios = [
       {
         title: 'Dashboard overview',
         description: 'Admin logs in and sees real-time metrics: $2,847 revenue today, 63 completed rides, 12 drivers online, avg surge 1.3x.',
-        visual: '📊 Live Analytics Dashboard'
+        visual: 'ðŸ“Š Live Analytics Dashboard'
       },
       {
         title: 'Approves new driver',
         description: 'New driver application from "John D." with license and insurance uploaded. Admin reviews documents and clicks Approve.',
-        visual: '✓ Driver Approved - Can now drive'
+        visual: 'âœ“ Driver Approved - Can now drive'
       },
       {
         title: 'Manages surge zones',
         description: 'High demand detected at downtown area. Admin activates surge zone with 1.5x multiplier to attract more drivers.',
-        visual: '🔥 Surge Zone Active: Downtown (1.5x)'
+        visual: 'ðŸ”¥ Surge Zone Active: Downtown (1.5x)'
       },
       {
         title: 'Monitors ride quality',
         description: 'Admin checks recent rides table, ensuring all payments processed and monitoring rider/driver satisfaction.',
-        visual: '📋 All systems operating normally'
+        visual: 'ðŸ“‹ All systems operating normally'
       }
     ]
   }

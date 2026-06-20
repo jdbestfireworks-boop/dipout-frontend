@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Phone } from 'lucide-react';
 
@@ -15,7 +15,7 @@ export default function DriverContact({ driverEmail }) {
       <div>
         <p className="text-muted-foreground text-xs mb-0.5">Your driver</p>
         <p className="font-medium">{driverEmail}</p>
-        {profile?.vehicle && <p className="text-xs text-muted-foreground mt-0.5">{profile.vehicle} · {profile.plate}</p>}
+        {profile?.vehicle && <p className="text-xs text-muted-foreground mt-0.5">{profile.vehicle} Â· {profile.plate}</p>}
       </div>
       {profile?.phone && (
         <a

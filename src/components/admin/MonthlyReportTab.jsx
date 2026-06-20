@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -197,7 +197,7 @@ export default function MonthlyReportTab() {
             className="gap-2 px-6 py-3 text-base"
             size="lg"
           >
-            {generating ? 'Generating...' : '📧 Email Report'}
+            {generating ? 'Generating...' : 'ðŸ“§ Email Report'}
           </Button>
         </div>
       </div>
@@ -250,7 +250,7 @@ export default function MonthlyReportTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{currentMonth.activeDrivers}</div>
-            <p className="text-xs text-muted-foreground">Completed ≥1 ride</p>
+            <p className="text-xs text-muted-foreground">Completed â‰¥1 ride</p>
           </CardContent>
         </Card>
       </div>
@@ -356,7 +356,7 @@ export default function MonthlyReportTab() {
                     <TableRow key={email}>
                       <TableCell>
                         <Badge variant={i < 3 ? 'default' : 'secondary'}>
-                          {['🥇','🥈','🥉'][i] || `#${i+1}`}
+                          {['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'][i] || `#${i+1}`}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium">{email}</TableCell>

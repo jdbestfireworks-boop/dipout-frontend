@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SplashScreen({ onComplete }) {
@@ -130,7 +130,7 @@ export default function SplashScreen({ onComplete }) {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-muted-foreground text-lg font-light"
           >
-            Simple, affordable rides — Louisiana only
+            Simple, affordable rides â€” Louisiana only
           </motion.p>
         </motion.div>
 

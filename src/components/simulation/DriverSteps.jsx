@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, CheckCircle2, Clock, Star, Zap, Car, User } from 'lucide-react';
@@ -62,7 +62,7 @@ export function NavigateToPickup({ riderName, rating, address, distance }) {
         </div>
         <div className="flex-1">
           <p className="font-semibold">{riderName}</p>
-          <p className="text-sm text-muted-foreground">{rating}★ • {address}</p>
+          <p className="text-sm text-muted-foreground">{rating}â˜… â€¢ {address}</p>
         </div>
       </div>
       <Button className="w-full">

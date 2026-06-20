@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Production Health Check Utility
  * 
  * Provides programmatic access to production readiness checks

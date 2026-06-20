@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Navigation, CreditCard, Banknote, Loader2 } from 'lucide-react';
@@ -50,7 +50,7 @@ export default function RideHistory() {
         rides.map((r) => (
           <div key={r.id} className="rounded-2xl border border-border bg-card p-4 space-y-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{format(new Date(r.created_date), 'MMM d, yyyy · h:mm a')}</span>
+              <span className="text-xs text-muted-foreground">{format(new Date(r.created_date), 'MMM d, yyyy Â· h:mm a')}</span>
               <Badge variant={r.payment_status === 'paid' ? 'default' : 'outline'} className="capitalize text-xs">
                 {r.payment_status}
               </Badge>

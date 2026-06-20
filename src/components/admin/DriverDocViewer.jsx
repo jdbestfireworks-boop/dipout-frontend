@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { FileText, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +29,7 @@ export default function DriverDocViewer({ drivers }) {
               >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{d.user_email}</p>
-                  <p className="text-xs text-muted-foreground">{d.vehicle} · {d.plate}</p>
+                  <p className="text-xs text-muted-foreground">{d.vehicle} Â· {d.plate}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {allDocs ? (

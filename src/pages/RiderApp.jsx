@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,7 @@ import TripProgress from '@/components/rider/TripProgress';
 import NotificationPermissionBanner from '@/components/notifications/NotificationPermissionBanner';
 
 const statusLabels = {
-  requested: 'Finding your driver…',
+  requested: 'Finding your driverâ€¦',
   accepted: 'Driver is on the way',
   in_progress: 'Trip in progress',
   completed: 'Trip completed',
@@ -195,7 +195,7 @@ export default function RiderApp() {
         setRide(event.data);
         // Show notification when driver is assigned
         if (event.data.status === 'accepted' && event.data.driver_email && ride.status === 'requested') {
-          toast.success('🚗 Driver found!', {
+          toast.success('ðŸš— Driver found!', {
             description: `Your driver is on the way to ${event.data.pickup_address}`,
             duration: 5000
           });

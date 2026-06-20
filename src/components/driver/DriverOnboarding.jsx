@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { base44 } from '@/api/base44Client';
@@ -9,7 +9,7 @@ import {
   Hash, Star, Clock, ChevronRight
 } from 'lucide-react';
 
-// ─── Step definitions ────────────────────────────────────────────
+// â”€â”€â”€ Step definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STEPS = [
   { id: 'welcome',  icon: Star,     title: 'Welcome',        sub: 'Join the Dip Out fleet' },
   { id: 'personal', icon: User,     title: 'About You',      sub: 'Contact details' },
@@ -18,7 +18,7 @@ const STEPS = [
   { id: 'review',   icon: Shield,   title: 'Review',         sub: 'Confirm & submit' },
 ];
 
-// ─── File upload widget ──────────────────────────────────────────
+// â”€â”€â”€ File upload widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FileUpload({ label, hint, value, uploading, onChange }) {
   const done = typeof value === 'string';
   return (
@@ -37,7 +37,7 @@ function FileUpload({ label, hint, value, uploading, onChange }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm">{label}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{uploading ? 'Uploading…' : done ? 'Uploaded ✓' : hint}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{uploading ? 'Uploadingâ€¦' : done ? 'Uploaded âœ“' : hint}</p>
       </div>
       {done && <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />}
       <input type="file" accept="image/*,.pdf" className="hidden"
@@ -46,7 +46,7 @@ function FileUpload({ label, hint, value, uploading, onChange }) {
   );
 }
 
-// ─── Field row for review screen ────────────────────────────────
+// â”€â”€â”€ Field row for review screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ReviewRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-center gap-3 py-2.5 border-b border-border last:border-0">
@@ -55,13 +55,13 @@ function ReviewRow({ icon: Icon, label, value }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{label}</p>
-        <p className="text-sm font-medium truncate">{value || '—'}</p>
+        <p className="text-sm font-medium truncate">{value || 'â€”'}</p>
       </div>
     </div>
   );
 }
 
-// ─── Step progress bar ───────────────────────────────────────────
+// â”€â”€â”€ Step progress bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StepBar({ current, total }) {
   return (
     <div className="flex gap-1.5">
@@ -77,7 +77,7 @@ function StepBar({ current, total }) {
   );
 }
 
-// ─── Main component ──────────────────────────────────────────────
+// â”€â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function DriverOnboarding({ user, onComplete }) {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -118,9 +118,9 @@ export default function DriverOnboarding({ user, onComplete }) {
     onComplete(p);
   };
 
-  // ── Slide content ──────────────────────────────────────────────
+  // â”€â”€ Slide content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const slides = [
-    // STEP 0 — Welcome
+    // STEP 0 â€” Welcome
     <div key="welcome" className="space-y-8 text-center pt-4">
       <div className="w-24 h-24 rounded-full bg-primary/15 border-4 border-primary/30 flex items-center justify-center mx-auto shadow-xl shadow-primary/20">
         <Car className="w-12 h-12 text-primary" />
@@ -128,7 +128,7 @@ export default function DriverOnboarding({ user, onComplete }) {
       <div className="space-y-3">
         <h2 className="text-3xl font-display font-bold">Become a Driver</h2>
         <p className="text-muted-foreground text-base max-w-xs mx-auto">
-          Earn on your schedule. Drive when you want, where you want — Louisiana only.
+          Earn on your schedule. Drive when you want, where you want â€” Louisiana only.
         </p>
       </div>
       <div className="text-left space-y-3 bg-secondary/60 rounded-2xl p-5">
@@ -148,7 +148,7 @@ export default function DriverOnboarding({ user, onComplete }) {
       </div>
     </div>,
 
-    // STEP 1 — Personal
+    // STEP 1 â€” Personal
     <div key="personal" className="space-y-6">
       <div className="space-y-1">
         <p className="text-xs font-bold text-primary uppercase tracking-widest">Step 1 of 3</p>
@@ -189,7 +189,7 @@ export default function DriverOnboarding({ user, onComplete }) {
       </div>
     </div>,
 
-    // STEP 2 — Vehicle
+    // STEP 2 â€” Vehicle
     <div key="vehicle" className="space-y-6">
       <div className="space-y-1">
         <p className="text-xs font-bold text-primary uppercase tracking-widest">Step 2 of 3</p>
@@ -219,12 +219,12 @@ export default function DriverOnboarding({ user, onComplete }) {
       </div>
     </div>,
 
-    // STEP 3 — Documents
+    // STEP 3 â€” Documents
     <div key="docs" className="space-y-6">
       <div className="space-y-1">
         <p className="text-xs font-bold text-primary uppercase tracking-widest">Step 3 of 3</p>
         <h2 className="text-2xl font-display font-bold">Documents</h2>
-        <p className="text-sm text-muted-foreground">Upload clear photos — both are required before you can drive.</p>
+        <p className="text-sm text-muted-foreground">Upload clear photos â€” both are required before you can drive.</p>
       </div>
       <div className="space-y-3">
         <FileUpload
@@ -250,7 +250,7 @@ export default function DriverOnboarding({ user, onComplete }) {
       </div>
     </div>,
 
-    // STEP 4 — Review
+    // STEP 4 â€” Review
     <div key="review" className="space-y-5">
       <div className="space-y-1">
         <p className="text-xs font-bold text-primary uppercase tracking-widest">Almost there!</p>
@@ -292,8 +292,8 @@ export default function DriverOnboarding({ user, onComplete }) {
           </p>
         </div>
         <div className="px-4">
-          <ReviewRow icon={FileText} label="Driver's License" value={license.url ? '✓ Uploaded' : 'Missing'} />
-          <ReviewRow icon={Shield}   label="Insurance Card"   value={insurance.url ? '✓ Uploaded' : 'Missing'} />
+          <ReviewRow icon={FileText} label="Driver's License" value={license.url ? 'âœ“ Uploaded' : 'Missing'} />
+          <ReviewRow icon={Shield}   label="Insurance Card"   value={insurance.url ? 'âœ“ Uploaded' : 'Missing'} />
         </div>
       </div>
 
@@ -322,7 +322,7 @@ export default function DriverOnboarding({ user, onComplete }) {
         </div>
       </div>
 
-      {/* Step progress — hidden on welcome screen */}
+      {/* Step progress â€” hidden on welcome screen */}
       {step > 0 && (
         <div className="mb-8 space-y-2">
           <StepBar current={step} total={STEPS.length - 1} />
@@ -376,7 +376,7 @@ export default function DriverOnboarding({ user, onComplete }) {
               className="h-14 rounded-2xl flex-1 font-bold text-base gap-2 bg-green-600 hover:bg-green-700"
             >
               {saving ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Submitting…</>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Submittingâ€¦</>
               ) : (
                 <><CheckCircle2 className="w-5 h-5" /> Submit Application</>
               )}

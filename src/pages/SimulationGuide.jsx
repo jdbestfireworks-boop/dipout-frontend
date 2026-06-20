@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,40 +32,40 @@ const SCENARIOS = {
             <Button className="w-full max-w-xs">Book a Ride</Button>
           </div>
         ),
-        action: () => toast.info('📱 App opened - Ready to book a ride')
+        action: () => toast.info('ðŸ“± App opened - Ready to book a ride')
       },
       {
         title: 'Enter Locations',
         description: 'Sarah enters her pickup location (123 Main St) and destination (Airport).',
         visual: <LocationInput pickup="123 Main St, Lafayette, LA" destination="Airport Terminal" />,
-        action: () => toast.info('📍 Locations entered')
+        action: () => toast.info('ðŸ“ Locations entered')
       },
       {
         title: 'Get Fare Estimate',
         description: 'AI calculates the fare based on distance, demand, and current traffic.',
         visual: <RideRequest fare="$32.50" distance="18.2 mi" surge={1.2} />,
-        action: () => toast.success('💰 Fare calculated: $32.50 (1.2x surge)')
+        action: () => toast.success('ðŸ’° Fare calculated: $32.50 (1.2x surge)')
       },
       {
         title: 'Request Ride',
         description: 'Sarah selects card payment and requests the ride.',
         visual: <FindingDriver />,
         action: async () => {
-          toast.loading('🚗 Finding your driver...', { duration: 2000 });
-          setTimeout(() => toast.success('✓ Driver found!'), 2000);
+          toast.loading('ðŸš— Finding your driver...', { duration: 2000 });
+          setTimeout(() => toast.success('âœ“ Driver found!'), 2000);
         }
       },
       {
         title: 'Driver Assigned',
         description: 'Mike accepts the ride. Sarah can track his location in real-time.',
         visual: <DriverAssigned name="Mike" rating="4.8" vehicle="Toyota Camry" plate="ABC-123" eta="3 min" />,
-        action: () => toast.success('🚙 Mike (4.8★) is on the way')
+        action: () => toast.success('ðŸš™ Mike (4.8â˜…) is on the way')
       },
       {
         title: 'Trip In Progress',
         description: 'Sarah is on her way to the airport. She can track the route.',
         visual: <TripInProgress destination="Airport Terminal" distance="18.2 mi" fare="$32.50" />,
-        action: () => toast.info('🛣️ Trip in progress to airport')
+        action: () => toast.info('ðŸ›£ï¸ Trip in progress to airport')
       },
       {
         title: 'Complete & Pay',
@@ -86,7 +86,7 @@ const SCENARIOS = {
             </Button>
           </div>
         ),
-        action: () => toast.success('⭐ Trip complete! Payment processed')
+        action: () => toast.success('â­ Trip complete! Payment processed')
       }
     ]
   },
@@ -98,31 +98,31 @@ const SCENARIOS = {
         title: 'Go Online',
         description: 'Mike toggles online to start receiving ride requests.',
         visual: <GoOnline />,
-        action: () => toast.success('✓ You\'re now online!')
+        action: () => toast.success('âœ“ You\'re now online!')
       },
       {
         title: 'Receive Request',
         description: 'Mike receives a ride request to the airport. He reviews the details.',
         visual: <RideRequestCard earnings="$26.00" pickup="123 Main St" dropoff="Airport Terminal" distance="18.2 mi" />,
-        action: () => toast.info('🔔 New ride request: $26.00 earnings')
+        action: () => toast.info('ðŸ”” New ride request: $26.00 earnings')
       },
       {
         title: 'Accept & Navigate',
         description: 'Mike accepts the ride and navigates to pick up Sarah.',
         visual: <NavigateToPickup riderName="Sarah" rating="4.9" address="123 Main St" distance="0.8 mi" />,
-        action: () => toast.success('✓ Ride accepted! Navigate to pickup')
+        action: () => toast.success('âœ“ Ride accepted! Navigate to pickup')
       },
       {
         title: 'Start Trip',
         description: 'Mike picks up Sarah and starts the trip.',
         visual: <ActiveTrip status="In Progress" fare="$32.50" destination="Airport Terminal" distance="18.2 mi" />,
-        action: () => toast.success('🚗 Trip started')
+        action: () => toast.success('ðŸš— Trip started')
       },
       {
         title: 'Complete & Earn',
         description: 'Mike drops off Sarah and completes the trip to get paid.',
         visual: <TripComplete earnings="$26.00" rating="5-star rating received!" />,
-        action: () => toast.success('💰 Trip complete! You earned $26.00')
+        action: () => toast.success('ðŸ’° Trip complete! You earned $26.00')
       }
     ]
   }
@@ -253,7 +253,7 @@ export default function SimulationGuide() {
                 variant="outline"
                 className="px-6"
               >
-                ← Previous
+                â† Previous
               </Button>
               
               <div className="flex gap-2">
@@ -284,7 +284,7 @@ export default function SimulationGuide() {
                 disabled={currentStep === currentScenario.steps.length - 1}
                 className="px-6"
               >
-                Next →
+                Next â†’
               </Button>
             </div>
           </CardContent>
@@ -331,7 +331,7 @@ export default function SimulationGuide() {
           <Card>
             <CardContent className="pt-4 text-center space-y-1">
               <Star className="w-6 h-6 mx-auto text-primary" />
-              <p className="text-2xl font-bold">4.8★</p>
+              <p className="text-2xl font-bold">4.8â˜…</p>
               <p className="text-xs text-muted-foreground">Avg Rating</p>
             </CardContent>
           </Card>

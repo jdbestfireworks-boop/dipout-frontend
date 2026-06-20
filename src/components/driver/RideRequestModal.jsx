@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Car, Banknote, CreditCard, MapPin, Navigation, X, Check, Hand, MousePointer2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -105,7 +105,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
                 transition={{ delay: 0.5 }}
                 className="text-red-500/50 text-xs font-bold"
               >
-                ← SWIPE LEFT
+                â† SWIPE LEFT
               </motion.div>
               <motion.div 
                 initial={{ opacity: 0 }}
@@ -113,7 +113,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
                 transition={{ delay: 0.5 }}
                 className="text-green-500/50 text-xs font-bold"
               >
-                SWIPE RIGHT →
+                SWIPE RIGHT â†’
               </motion.div>
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
               <div>
                 <h3 className="text-xl font-bold">New Ride Request</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {swipeMode ? 'Swipe → to accept, ← to decline' : 'Tap accept to claim this ride'}
+                  {swipeMode ? 'Swipe â†’ to accept, â† to decline' : 'Tap accept to claim this ride'}
                 </p>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-medium"
                 >
-                  Open in Maps ↗
+                  Open in Maps â†—
                 </a>
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-primary mt-1 hover:underline font-medium"
                 >
-                  Open in Maps ↗
+                  Open in Maps â†—
                 </a>
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function RideRequestModal({ ride, onAccept, onDecline, swipeMode 
         {swipeMode && (
           <div className="px-5 pb-3 text-center">
             <p className="text-[10px] text-muted-foreground">
-              ⌨️ Arrow keys: ← decline, → accept
+              âŒ¨ï¸ Arrow keys: â† decline, â†’ accept
             </p>
           </div>
         )}

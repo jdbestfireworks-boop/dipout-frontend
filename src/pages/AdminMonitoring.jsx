@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Activity, AlertTriangle, DollarSign, Users, TrendingUp, Clock, CheckCircle, XCircle, BarChart3, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -179,7 +179,7 @@ export default function AdminMonitoring() {
                         <span className="text-sm font-medium">{error.message}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(error.timestamp), 'HH:mm:ss')} · {error.details.rider}
+                        {format(new Date(error.timestamp), 'HH:mm:ss')} Â· {error.details.rider}
                       </p>
                     </div>
                     <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">

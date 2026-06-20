@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const perks = [
   { icon: DollarSign, text: "Keep 80% of every fare you earn" },
   { icon: Clock,      text: "Set your own hours, drive when you want" },
-  { icon: Car,        text: "Use your own vehicle — any make or model" },
+  { icon: Car,        text: "Use your own vehicle â€” any make or model" },
   { icon: Shield,     text: "Insured, verified, and supported" },
 ];
 
@@ -50,7 +50,7 @@ export default function RegisterDriver() {
       if (result?.access_token) base44.auth.setToken(result.access_token);
       window.location.href = next;
     } catch (err) {
-      setError(err.message || "Invalid code — please try again");
+      setError(err.message || "Invalid code â€” please try again");
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ export default function RegisterDriver() {
             ))}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">© 2025 Dip Out · Louisiana</p>
+        <p className="text-xs text-muted-foreground">Â© 2025 Dip Out Â· Louisiana</p>
       </div>
 
       {/* Right panel */}
@@ -150,17 +150,17 @@ export default function RegisterDriver() {
                       className="pl-10 h-12 rounded-xl" required />
                   </div>
                   <Button type="submit" className="w-full h-12 rounded-xl font-bold text-base mt-2 bg-green-600 hover:bg-green-700 text-white" disabled={loading}>
-                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account…</> : "Create Driver Account →"}
+                    {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating accountâ€¦</> : "Create Driver Account â†’"}
                   </Button>
                 </form>
 
                 <p className="text-center text-sm text-muted-foreground mt-6">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-primary font-semibold hover:underline">Log in</Link>
+                  <Link to="/users/login" className="text-primary font-semibold hover:underline">Log in</Link>
                 </p>
                 <p className="text-center text-sm text-muted-foreground mt-2">
                   Looking for a ride?{" "}
-                  <Link to="/register/rider" className="text-primary font-semibold hover:underline">Rider sign up →</Link>
+                  <Link to="/users/register/rider" className="text-primary font-semibold hover:underline">Rider sign up â†’</Link>
                 </p>
               </motion.div>
             ) : (
@@ -190,7 +190,7 @@ export default function RegisterDriver() {
                 </div>
                 <Button className="w-full h-12 rounded-xl font-bold text-base gap-2 bg-green-600 hover:bg-green-700 text-white"
                   onClick={handleVerify} disabled={loading || otpCode.length < 6}>
-                  {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Verifying…</> : <><CheckCircle2 className="w-4 h-4" /> Verify & Continue</>}
+                  {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Verifyingâ€¦</> : <><CheckCircle2 className="w-4 h-4" /> Verify & Continue</>}
                 </Button>
                 <p className="text-center text-sm text-muted-foreground mt-5">
                   Didn't get it?{" "}
